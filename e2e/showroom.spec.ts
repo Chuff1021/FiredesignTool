@@ -39,7 +39,7 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   await expect(
     page.getByRole("heading", { name: "4237 Ember-Glo Clean Face Deluxe" }),
   ).toBeVisible();
-  await expect(page.getByLabel("Mantel height")).toHaveValue("58");
+  await expect(page.getByLabel("Mantel height")).toHaveValue("45.75");
   await page.getByLabel("Centurion stone").selectOption("brown-ledge");
   await page.getByLabel("Mantel style").selectOption("linear");
   await page.getByRole("button", { name: "84″" }).click();
@@ -55,18 +55,42 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   ).toBeVisible();
 });
 
-test("adds a height-linked Centurion hearth and exposes exact modular widths", async ({
+test("matches the raised Centurion hearth to the selected stone width", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+  await page.getByLabel("Stone width").fill("50");
   await page.getByLabel("Add raised hearth").evaluate((element: HTMLInputElement) => {
     element.click();
   });
   await expect(page.getByLabel("Add raised hearth")).toBeChecked();
   await expect(page.getByLabel("Fireplace elevation")).toHaveValue("12");
-  await expect(page.getByText("Centurion #860 hearthstones align to the 12″")).toBeVisible();
-  await page.getByRole("button", { name: "90″" }).click();
-  await expect(page.getByText("5 × 18″ pieces")).toBeVisible();
+  await expect(
+    page.getByText("Centurion #860 hearthstones match the 50″ stone field"),
+  ).toBeVisible();
+  await expect(page.getByText("Kentucky Hearthstone · 50″")).toBeVisible();
+  await expect(page.getByText("3 pieces · centered end cuts as needed")).toBeVisible();
+});
+
+test("offers larger Pearl non-combustible profiles with unrestricted placement", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+  await page.getByLabel("Mantel style").selectOption("tavern");
+  await expect(page.getByText("ASTM E136 non-combustible · 8″ high × 8″ deep")).toBeVisible();
+  await page.getByLabel("Mantel finish").selectOption("tavern-toasted-rye");
+  await page.getByLabel("Mantel height").fill("20");
+  await expect(page.getByLabel("Mantel height")).toHaveValue("20");
+  await page.getByLabel("Mantel style").selectOption("natural-cut-stone");
+  await expect(page.getByRole("button", { name: "84″" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await expect(
+    page.getByText(
+      "864 Clean Face · Clean Face · Kentucky Ledge · Greystone Natural Cut Stone 84″",
+    ),
+  ).toBeVisible();
 });
 
 test("switches view, opens diagnostics, and resets safely", async ({ page }, testInfo) => {
@@ -104,7 +128,7 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("38 / 38 verified")).toBeVisible();
+  await expect(page.getByText("62 / 62 verified")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,
   });

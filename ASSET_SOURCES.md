@@ -107,13 +107,43 @@ approval.
 - Finish photography:
   `https://www.pearlmantels.com/images/products/linear/{FINISH_ASSET}.jpg`
 
+### Tavern Timbered Beam
+
+- Product: Tavern Timbered Beam non-combustible mantel shelf, ASTM E136
+- Official sizes: 60 in and 72 in
+- Published section: 8 in H × 8 in D
+- Published weights: 129 lb and 157 lb
+- Official finishes: Fieldstone, River Rock, Toasted Rye, Wheat
+- Product pages:
+  `https://www.pearlmantels.com/tavernfieldstone.html`,
+  `https://www.pearlmantels.com/tavernriverrock.html`,
+  `https://www.pearlmantels.com/taverntoastedrye.html`, and
+  `https://www.pearlmantels.com/tavernwheat.html`
+
+### Natural Cut Stone
+
+- Product: Natural Cut Stone non-combustible mantel shelf, ASTM E136
+- Official sizes: 60 in, 72 in, and 84 in
+- Published 60- and 72-inch section: 5 in H × 9 in D
+- Published 84-inch section: 5.25 in H × 9.5 in D
+- Published weights: 100 lb, 115 lb, and 130 lb
+- Official finishes: Mist, Dusk, Arctic Blast, Greystone
+- Product pages:
+  `https://www.pearlmantels.com/cutstonemist.html`,
+  `https://www.pearlmantels.com/cutstonedusk.html`,
+  `https://www.pearlmantels.com/cutstonearcticblast.html`, and
+  `https://www.pearlmantels.com/cutstonegreystone.html`
+
 Every shelf geometry uses its published dimensions and weight. Separate
 manufacturer-derived front and top maps prevent studio-background streaks from
 being wrapped around the shelf geometry.
 
 Pearl’s own heat-clearance note directs users to follow the fireplace
-manufacturer’s combustible-shelf requirements. The configurator therefore
-uses each selected FPX manual’s fireplace-base datum and depth table.
+manufacturer’s requirements. The configurator reports each selected FPX
+manual’s fireplace-base datum and combustible depth-table reference but, by
+showroom policy, does not enforce a minimum for its ASTM E136 non-combustible
+Pearl shelves. Installation still requires review of the current appliance
+manual, mantel instructions, wall assembly, and local code.
 
 ## Usage
 

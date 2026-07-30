@@ -2,7 +2,6 @@ import { z } from "zod";
 import {
   faceOptionIdSchema,
   fireplaceIdSchema,
-  getFaceOption,
   getFireplaceProduct,
   getMantelFinish,
   getMantelProduct,
@@ -15,15 +14,14 @@ import {
 
 export const WALL_WIDTH_RANGE = { min: 120, max: 240, step: 1 } as const;
 export const WALL_HEIGHT_RANGE = { min: 96, max: 144, step: 1 } as const;
-export const STONE_WIDTH_RANGE = { min: 72, max: 192, step: 1 } as const;
+export const STONE_WIDTH_RANGE = { min: 50, max: 192, step: 1 } as const;
 export const FIREPLACE_ELEVATION_RANGE = { min: 0, max: 24, step: 0.5 } as const;
-export const MANTEL_HEIGHT_RANGE = { min: 40, max: 84, step: 0.25 } as const;
+export const MANTEL_HEIGHT_RANGE = { min: 0, max: 84, step: 0.25 } as const;
 
 export const cameraModeSchema = z.enum(["front", "perspective"]);
-export const hearthStoneCountSchema = z.union([z.literal(3), z.literal(4), z.literal(5)]);
 
 export const featureWallConfigurationSchema = z.object({
-  schemaVersion: z.literal(3),
+  schemaVersion: z.literal(4),
   wallWidth: z.number().min(WALL_WIDTH_RANGE.min).max(WALL_WIDTH_RANGE.max).finite(),
   wallHeight: z.number().min(WALL_HEIGHT_RANGE.min).max(WALL_HEIGHT_RANGE.max).finite(),
   stoneWidth: z.number().min(STONE_WIDTH_RANGE.min).max(WALL_WIDTH_RANGE.max).finite(),
@@ -44,7 +42,6 @@ export const featureWallConfigurationSchema = z.object({
   mantelWidth: mantelWidthSchema,
   mantelFinishId: mantelFinishIdSchema,
   hearthEnabled: z.boolean(),
-  hearthStoneCount: hearthStoneCountSchema,
   cameraMode: cameraModeSchema,
   showDimensions: z.boolean(),
 });
@@ -53,7 +50,7 @@ export type FeatureWallConfiguration = z.infer<typeof featureWallConfigurationSc
 export type CameraMode = z.infer<typeof cameraModeSchema>;
 
 export const DEFAULT_CONFIGURATION: FeatureWallConfiguration = Object.freeze({
-  schemaVersion: 3,
+  schemaVersion: 4,
   wallWidth: 144,
   wallHeight: 108,
   stoneWidth: 96,
@@ -66,7 +63,6 @@ export const DEFAULT_CONFIGURATION: FeatureWallConfiguration = Object.freeze({
   mantelWidth: 72,
   mantelFinishId: "graywash",
   hearthEnabled: false,
-  hearthStoneCount: 4,
   cameraMode: "front",
   showDimensions: true,
 });
@@ -101,25 +97,38 @@ export function getMinimumMantelHeight(
   return last.minimumHeight;
 }
 
-export function getMinimumStoneWidth(
-  fireplaceId: FeatureWallConfiguration["fireplaceId"],
-  faceOptionId: FeatureWallConfiguration["faceOptionId"],
-  mantelWidth: FeatureWallConfiguration["mantelWidth"],
-  hearthEnabled = false,
-  hearthStoneCount: FeatureWallConfiguration["hearthStoneCount"] = 4,
-): number {
-  const face = getFaceOption(fireplaceId, faceOptionId);
-  const hearthWidth = hearthEnabled ? hearthStoneCount * 18 : 0;
-  return Math.max(
-    STONE_WIDTH_RANGE.min,
-    mantelWidth + 12,
-    face.visibleFace.width + 12,
-    hearthWidth + 6,
-  );
+export function getMinimumStoneWidth(): number {
+  return STONE_WIDTH_RANGE.min;
 }
 
 export function getHearthWidth(configuration: FeatureWallConfiguration): number {
-  return configuration.hearthStoneCount * 18;
+  return configuration.stoneWidth;
+}
+
+export type HearthStoneSegment = {
+  centerX: number;
+  width: number;
+};
+
+export function getHearthStoneSegments(stoneWidth: number): HearthStoneSegment[] {
+  const width = clampToRange(stoneWidth, STONE_WIDTH_RANGE);
+  const moduleWidth = 18;
+  const count = Math.max(1, Math.ceil(width / moduleWidth));
+  const innerCount = Math.max(0, count - 2);
+  const endWidth = count === 1 ? width : (width - innerCount * moduleWidth) / 2;
+  const widths =
+    count === 1
+      ? [width]
+      : [endWidth, ...Array.from({ length: innerCount }, () => moduleWidth), endWidth];
+  let cursor = -width / 2;
+  return widths.map((segmentWidth) => {
+    const segment = {
+      centerX: cursor + segmentWidth / 2,
+      width: segmentWidth,
+    };
+    cursor += segmentWidth;
+    return segment;
+  });
 }
 
 export function normalizeConfiguration(
@@ -151,28 +160,16 @@ export function normalizeConfiguration(
   const mantelFinishId = mantelProduct.finishIds.includes(requestedMantelFinishId)
     ? requestedMantelFinishId
     : mantelProduct.defaultFinishId;
-  const mantelSize = getMantelSize(mantelProductId, mantelWidth);
   const hearthEnabled = candidate.hearthEnabled ?? DEFAULT_CONFIGURATION.hearthEnabled;
-  const hearthStoneCount = hearthStoneCountSchema
-    .catch(DEFAULT_CONFIGURATION.hearthStoneCount)
-    .parse(candidate.hearthStoneCount);
   const wallWidth = clampToRange(
     candidate.wallWidth ?? DEFAULT_CONFIGURATION.wallWidth,
     WALL_WIDTH_RANGE,
   );
-  const minimumStoneWidth = getMinimumStoneWidth(
-    fireplaceId,
-    faceOptionId,
-    mantelWidth,
-    hearthEnabled,
-    hearthStoneCount,
-  );
+  const minimumStoneWidth = getMinimumStoneWidth();
   const stoneWidth = clampToRange(candidate.stoneWidth ?? DEFAULT_CONFIGURATION.stoneWidth, {
     min: minimumStoneWidth,
     max: Math.min(STONE_WIDTH_RANGE.max, wallWidth),
   });
-  const minimumMantelHeight = getMinimumMantelHeight(fireplaceId, mantelSize.depth);
-
   const fireplaceElevation = clampToRange(
     candidate.fireplaceElevation ?? DEFAULT_CONFIGURATION.fireplaceElevation,
     {
@@ -182,7 +179,7 @@ export function normalizeConfiguration(
   );
 
   const normalized: FeatureWallConfiguration = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     wallWidth,
     wallHeight: clampToRange(
       candidate.wallHeight ?? DEFAULT_CONFIGURATION.wallHeight,
@@ -191,11 +188,8 @@ export function normalizeConfiguration(
     stoneWidth,
     fireplaceElevation,
     mantelHeightAboveBase: clampToRange(
-      candidate.mantelHeightAboveBase ?? minimumMantelHeight,
-      {
-        min: minimumMantelHeight,
-        max: MANTEL_HEIGHT_RANGE.max,
-      },
+      candidate.mantelHeightAboveBase ?? DEFAULT_CONFIGURATION.mantelHeightAboveBase,
+      MANTEL_HEIGHT_RANGE,
     ),
     fireplaceId,
     faceOptionId,
@@ -204,7 +198,6 @@ export function normalizeConfiguration(
     mantelWidth,
     mantelFinishId,
     hearthEnabled,
-    hearthStoneCount,
     cameraMode: cameraModeSchema
       .catch(DEFAULT_CONFIGURATION.cameraMode)
       .parse(candidate.cameraMode),
@@ -216,11 +209,7 @@ export function normalizeConfiguration(
 }
 
 export function getMantelBottom(configuration: FeatureWallConfiguration): number {
-  const size = getMantelSize(configuration.mantelProductId, configuration.mantelWidth);
-  const minimum = getMinimumMantelHeight(configuration.fireplaceId, size.depth);
-  return (
-    configuration.fireplaceElevation + Math.max(configuration.mantelHeightAboveBase, minimum)
-  );
+  return configuration.fireplaceElevation + configuration.mantelHeightAboveBase;
 }
 
 export function getMantelCenter(configuration: FeatureWallConfiguration): number {

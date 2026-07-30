@@ -23,6 +23,8 @@ describe("approved product catalog", () => {
       "zachary-smooth",
       "zachary-wood",
       "linear",
+      "tavern",
+      "natural-cut-stone",
     ]);
     expect(
       mantelProducts
@@ -38,6 +40,14 @@ describe("approved product catalog", () => {
       "mocha",
       "onyx",
       "saddle",
+      "tavern-fieldstone",
+      "tavern-river-rock",
+      "tavern-toasted-rye",
+      "tavern-wheat",
+      "cut-stone-mist",
+      "cut-stone-dusk",
+      "cut-stone-arctic-blast",
+      "cut-stone-greystone",
     ]);
     expect(stoneProducts.map((stone) => stone.productCode)).toEqual([
       "150-260-15",
@@ -46,7 +56,7 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(ALL_ASSET_PATHS).toHaveLength(38);
+    expect(ALL_ASSET_PATHS).toHaveLength(62);
     expect(new Set(ALL_ASSET_PATHS).size).toBe(ALL_ASSET_PATHS.length);
     expect(ALL_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });

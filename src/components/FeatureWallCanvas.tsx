@@ -28,6 +28,7 @@ import {
 } from "@/domain/catalog";
 import {
   calculateOrthographicZoom,
+  getHearthStoneSegments,
   getHearthWidth,
   getMantelBottom,
   getMantelCenter,
@@ -225,6 +226,10 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
   );
   const hearthstone = getHearthstone(configuration.stoneId);
   const hearthWidth = getHearthWidth(configuration);
+  const hearthSegments = useMemo(
+    () => getHearthStoneSegments(configuration.stoneWidth),
+    [configuration.stoneWidth],
+  );
   const mantelCenter = getMantelCenter(configuration);
 
   const stoneTextures = useMemo(() => {
@@ -255,19 +260,19 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
   const hearthTextures = useMemo(() => {
     const colorSource = requireTexture(textures, hearthstone.assets[0]!.localPath);
     const bumpSource = requireTexture(textures, hearthstone.assets[1]!.localPath);
-    const caps = Array.from({ length: configuration.hearthStoneCount }, (_, index) => {
+    const caps = hearthSegments.map((segment, index) => {
       const color = colorSource.clone();
       const bump = bumpSource.clone();
       for (const texture of [color, bump]) {
         texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
-        texture.repeat.set(0.72, 0.72);
+        texture.repeat.set(0.72 * (segment.width / 18), 0.72);
         texture.offset.set(0.05 + ((index * 0.07) % 0.18), 0.06 + ((index * 0.05) % 0.16));
         texture.needsUpdate = true;
       }
       return { color, bump };
     });
     return caps;
-  }, [configuration.hearthStoneCount, hearthstone.assets, textures]);
+  }, [hearthSegments, hearthstone.assets, textures]);
 
   const hearthRiserTextures = useMemo(() => {
     const color = requireTexture(textures, stone.assets[0]!.localPath).clone();
@@ -371,7 +376,9 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
         args={[mantelSize.width, mantelSize.height, mantelSize.depth]}
         castShadow
         position={[0, mantelCenter, mantelSize.depth / 2 + 0.15]}
-        radius={mantelProduct.id === "linear" ? 0.34 : 0.18}
+        radius={
+          mantelProduct.id === "tavern" ? 0.55 : mantelProduct.id === "linear" ? 0.34 : 0.18
+        }
         receiveShadow
         smoothness={6}
       >
@@ -445,21 +452,21 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
             </>
           ) : null}
           {hearthTextures.map((texture, index) => {
-            const x =
-              (index - (configuration.hearthStoneCount - 1) / 2) * hearthstone.dimensions.width;
+            const segment = hearthSegments[index];
+            if (!segment) return null;
             const bodyColor = hearthstone.colorName === "Kentucky" ? "#817c78" : "#80624f";
 
             return (
               <group key={index}>
                 <RoundedBox
                   args={[
-                    hearthstone.dimensions.width - 0.16,
+                    segment.width - 0.16,
                     hearthstone.dimensions.thickness,
                     hearthstone.dimensions.depth,
                   ]}
                   castShadow
                   position={[
-                    x,
+                    segment.centerX,
                     configuration.fireplaceElevation - hearthstone.dimensions.thickness / 2,
                     hearthstone.dimensions.depth / 2 + 0.05,
                   ]}
@@ -471,7 +478,7 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
                 </RoundedBox>
                 <mesh
                   position={[
-                    x,
+                    segment.centerX,
                     configuration.fireplaceElevation + 0.01,
                     hearthstone.dimensions.depth / 2 + 0.05,
                   ]}
@@ -479,10 +486,7 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
                   rotation={[-Math.PI / 2, 0, 0]}
                 >
                   <planeGeometry
-                    args={[
-                      hearthstone.dimensions.width - 0.38,
-                      hearthstone.dimensions.depth - 0.38,
-                    ]}
+                    args={[segment.width - 0.38, hearthstone.dimensions.depth - 0.38]}
                   />
                   <meshStandardMaterial
                     bumpMap={texture.bump}
@@ -571,10 +575,9 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
   const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
   const hearthEnabled = useConfigurationStore((state) => state.hearthEnabled);
-  const hearthStoneCount = useConfigurationStore((state) => state.hearthStoneCount);
   const showDimensions = useConfigurationStore((state) => state.showDimensions);
   const configuration: FeatureWallConfiguration = {
-    schemaVersion: 3,
+    schemaVersion: 4,
     wallWidth,
     wallHeight,
     stoneWidth,
@@ -587,7 +590,6 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
     mantelWidth,
     mantelFinishId,
     hearthEnabled,
-    hearthStoneCount,
     cameraMode,
     showDimensions,
   };
@@ -614,7 +616,6 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
         shadows="basic"
       >
         <color args={["#171513"]} attach="background" />
-        <fog args={["#171513", 230, 520]} attach="fog" />
         <CameraRig />
         <ambientLight color="#fff6e9" intensity={1.2} />
         <hemisphereLight color="#fff3dc" groundColor="#29211c" intensity={1.05} />

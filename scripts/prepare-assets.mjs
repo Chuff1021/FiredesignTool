@@ -64,7 +64,8 @@ async function stoneVariant(sourceBuffer, width, height, index) {
   const x = (index * 47) % (overscanX + 1);
   const y = (index * 29) % (overscanY + 1);
   let pipeline = sharp(sourceBuffer).resize(width + overscanX, height + overscanY, {
-    fit: "fill",
+    fit: "cover",
+    position: "centre",
     kernel: sharp.kernel.lanczos3,
   });
   if (index % 2 === 1) pipeline = pipeline.flop();
@@ -238,6 +239,62 @@ const mantelSources = [
     front: "pearl-linear-saddle.jpg",
     top: "pearl-linear-saddle.jpg",
   },
+  {
+    id: "tavern-fieldstone",
+    front: "pearl-tavern-fieldstone-front.jpg",
+    top: "pearl-tavern-fieldstone-top.jpg",
+    frontHeight: 267,
+    frontBottomInset: 0.12,
+  },
+  {
+    id: "tavern-river-rock",
+    front: "pearl-tavern-river-rock-front.jpg",
+    top: "pearl-tavern-river-rock-top.jpg",
+    frontHeight: 267,
+    frontBottomInset: 0.12,
+  },
+  {
+    id: "tavern-toasted-rye",
+    front: "pearl-tavern-toasted-rye-front.jpg",
+    top: "pearl-tavern-toasted-rye-top.jpg",
+    frontHeight: 267,
+    frontBottomInset: 0.12,
+  },
+  {
+    id: "tavern-wheat",
+    front: "pearl-tavern-wheat-front.jpg",
+    top: "pearl-tavern-wheat-top.jpg",
+    frontHeight: 267,
+    frontBottomInset: 0.12,
+  },
+  {
+    id: "cut-stone-mist",
+    front: "pearl-cut-stone-mist-front.jpg",
+    top: "pearl-cut-stone-mist-top.jpg",
+    frontHeight: 167,
+    frontBottomInset: 0.1,
+  },
+  {
+    id: "cut-stone-dusk",
+    front: "pearl-cut-stone-dusk-front.jpg",
+    top: "pearl-cut-stone-dusk-top.jpg",
+    frontHeight: 167,
+    frontBottomInset: 0.1,
+  },
+  {
+    id: "cut-stone-arctic-blast",
+    front: "pearl-cut-stone-arctic-front.jpg",
+    top: "pearl-cut-stone-arctic-top.jpg",
+    frontHeight: 167,
+    frontBottomInset: 0.1,
+  },
+  {
+    id: "cut-stone-greystone",
+    front: "pearl-cut-stone-greystone-front.jpg",
+    top: "pearl-cut-stone-greystone-top.jpg",
+    frontHeight: 167,
+    frontBottomInset: 0.1,
+  },
 ];
 
 async function trimProductPhoto(sourceName) {
@@ -248,7 +305,7 @@ async function trimProductPhoto(sourceName) {
     .toBuffer();
 }
 
-async function mantelFaceMap(sourceName, face) {
+async function mantelFaceMap(sourceName, face, frontHeight = 160, frontBottomInset = 0) {
   const product = await trimProductPhoto(sourceName);
   const metadata = await sharp(product).metadata();
   if (!metadata.width || !metadata.height) {
@@ -256,8 +313,11 @@ async function mantelFaceMap(sourceName, face) {
   }
   const insetX = Math.round(metadata.width * 0.035);
   const top = face === "top" ? 0 : Math.round(metadata.height * 0.4);
+  const bottomInset = face === "top" ? 0 : Math.round(metadata.height * frontBottomInset);
   const height =
-    face === "top" ? Math.max(1, Math.round(metadata.height * 0.36)) : metadata.height - top;
+    face === "top"
+      ? Math.max(1, Math.round(metadata.height * 0.36))
+      : metadata.height - top - bottomInset;
   return sharp(product)
     .extract({
       left: insetX,
@@ -265,7 +325,7 @@ async function mantelFaceMap(sourceName, face) {
       width: metadata.width - insetX * 2,
       height,
     })
-    .resize(2400, face === "top" ? 300 : 160, {
+    .resize(2400, face === "top" ? 300 : frontHeight, {
       fit: "fill",
       kernel: sharp.kernel.lanczos3,
     })
@@ -274,8 +334,13 @@ async function mantelFaceMap(sourceName, face) {
 }
 
 for (const mantel of mantelSources) {
-  const front = await mantelFaceMap(mantel.front, "front");
-  const top = await mantelFaceMap(mantel.top, "top");
+  const front = await mantelFaceMap(
+    mantel.front,
+    "front",
+    mantel.frontHeight,
+    mantel.frontBottomInset,
+  );
+  const top = await mantelFaceMap(mantel.top, "top", mantel.frontHeight);
 
   await sharp(front)
     .webp({ quality: 94, smartSubsample: true, effort: 6 })

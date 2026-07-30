@@ -3,6 +3,7 @@ import { DEFAULT_CONFIGURATION } from "@/domain/configuration";
 import {
   LEGACY_STORAGE_KEY,
   LEGACY_V2_STORAGE_KEY,
+  LEGACY_V3_STORAGE_KEY,
   STORAGE_KEY,
   readPersistedConfiguration,
   writePersistedConfiguration,
@@ -20,7 +21,7 @@ describe("configuration persistence", () => {
     });
   });
 
-  it("revalidates saved clearances when product depth changes", () => {
+  it("retains freely positioned non-combustible mantel heights", () => {
     const saved = {
       ...DEFAULT_CONFIGURATION,
       mantelHeightAboveBase: 44.75,
@@ -31,7 +32,29 @@ describe("configuration persistence", () => {
     const storage = {
       getItem: vi.fn((key: string) => (key === STORAGE_KEY ? JSON.stringify(saved) : null)),
     };
-    expect(readPersistedConfiguration(storage).configuration.mantelHeightAboveBase).toBe(45.75);
+    expect(readPersistedConfiguration(storage).configuration.mantelHeightAboveBase).toBe(44.75);
+  });
+
+  it("migrates version-three hearths to the stone-matched model", () => {
+    const legacy = {
+      ...DEFAULT_CONFIGURATION,
+      schemaVersion: 3,
+      stoneWidth: 90,
+      hearthEnabled: true,
+      hearthStoneCount: 5,
+    };
+    const storage = {
+      getItem: vi.fn((key: string) =>
+        key === LEGACY_V3_STORAGE_KEY ? JSON.stringify(legacy) : null,
+      ),
+    };
+    const result = readPersistedConfiguration(storage);
+    expect(result.configuration).toMatchObject({
+      schemaVersion: 4,
+      stoneWidth: 90,
+      hearthEnabled: true,
+    });
+    expect(result.configuration).not.toHaveProperty("hearthStoneCount");
   });
 
   it("migrates the original single-combination layout", () => {
@@ -52,7 +75,7 @@ describe("configuration persistence", () => {
     const result = readPersistedConfiguration(storage);
     expect(result.recovered).toBe(false);
     expect(result.configuration).toMatchObject({
-      schemaVersion: 3,
+      schemaVersion: 4,
       wallWidth: 168,
       fireplaceElevation: 4,
       mantelHeightAboveBase: 46.75,
@@ -83,7 +106,7 @@ describe("configuration persistence", () => {
     };
     expect(readPersistedConfiguration(storage)).toMatchObject({
       configuration: {
-        schemaVersion: 3,
+        schemaVersion: 4,
         mantelProductId: "linear",
         mantelWidth: 84,
         mantelFinishId: "onyx",

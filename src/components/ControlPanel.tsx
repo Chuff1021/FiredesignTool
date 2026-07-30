@@ -25,7 +25,7 @@ import {
   STONE_WIDTH_RANGE,
   WALL_HEIGHT_RANGE,
   WALL_WIDTH_RANGE,
-  getHearthWidth,
+  getHearthStoneSegments,
   getMinimumMantelHeight,
   getMinimumStoneWidth,
   inchesLabel,
@@ -57,7 +57,6 @@ export function ControlPanel({
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
   const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
   const hearthEnabled = useConfigurationStore((state) => state.hearthEnabled);
-  const hearthStoneCount = useConfigurationStore((state) => state.hearthStoneCount);
   const cameraMode = useConfigurationStore((state) => state.cameraMode);
   const showDimensions = useConfigurationStore((state) => state.showDimensions);
   const setWallWidth = useConfigurationStore((state) => state.setWallWidth);
@@ -74,7 +73,6 @@ export function ControlPanel({
   const setMantelWidth = useConfigurationStore((state) => state.setMantelWidth);
   const setMantelFinishId = useConfigurationStore((state) => state.setMantelFinishId);
   const setHearthEnabled = useConfigurationStore((state) => state.setHearthEnabled);
-  const setHearthStoneCount = useConfigurationStore((state) => state.setHearthStoneCount);
   const setCameraMode = useConfigurationStore((state) => state.setCameraMode);
   const setShowDimensions = useConfigurationStore((state) => state.setShowDimensions);
   const reset = useConfigurationStore((state) => state.reset);
@@ -90,31 +88,9 @@ export function ControlPanel({
   );
   const hearthstone = getHearthstone(stoneId);
   const minimumMantelHeight = getMinimumMantelHeight(fireplaceId, mantelSize.depth);
-  const minimumStoneWidth = getMinimumStoneWidth(
-    fireplaceId,
-    faceOptionId,
-    mantelWidth,
-    hearthEnabled,
-    hearthStoneCount,
-  );
-  const hearthWidth = getHearthWidth({
-    schemaVersion: 3,
-    wallWidth,
-    wallHeight,
-    stoneWidth,
-    fireplaceElevation,
-    mantelHeightAboveBase,
-    fireplaceId,
-    faceOptionId,
-    stoneId,
-    mantelProductId,
-    mantelWidth,
-    mantelFinishId,
-    hearthEnabled,
-    hearthStoneCount,
-    cameraMode,
-    showDimensions,
-  });
+  const minimumStoneWidth = getMinimumStoneWidth();
+  const hearthWidth = stoneWidth;
+  const hearthSegments = getHearthStoneSegments(stoneWidth);
 
   return (
     <aside className="control-panel">
@@ -244,22 +220,23 @@ export function ControlPanel({
             value={fireplaceElevation}
           />
           <RangeControl
-            description={`From fireplace base · minimum ${inchesLabel(minimumMantelHeight)} · manual p.${fireplace.mantelRule.manualPage}`}
+            description="From fireplace base · free placement for non-combustible shelves"
             label="Mantel height"
             max={MANTEL_HEIGHT_RANGE.max}
-            min={minimumMantelHeight}
+            min={MANTEL_HEIGHT_RANGE.min}
             onChange={setMantelHeightAboveBase}
             step={MANTEL_HEIGHT_RANGE.step}
             value={mantelHeightAboveBase}
           />
           <div className="rule-note">
-            <UiIcon name="check" size={15} />
+            <UiIcon name="warning" size={15} />
             <span>
-              A {inchesLabel(mantelSize.depth)} deep mantel must be at least{" "}
-              {inchesLabel(minimumMantelHeight)} above the base of the fireplace.
+              Showroom override: no minimum is enforced for this ASTM E136 non-combustible
+              shelf.
               <small>
-                Travis install manual · rev. {fireplace.mantelRule.manualRevision} · p.
-                {fireplace.mantelRule.manualPage} · measured from fireplace base
+                Confirm local code and manufacturer instructions before installation · published
+                combustible reference {inchesLabel(minimumMantelHeight)} from fireplace base ·
+                manual p.{fireplace.mantelRule.manualPage}
               </small>
             </span>
           </div>
@@ -301,7 +278,8 @@ export function ControlPanel({
               ))}
             </select>
             <small>
-              {inchesLabel(mantelSize.height)} high × {inchesLabel(mantelSize.depth)} deep
+              {mantelProduct.classification} · {inchesLabel(mantelSize.height)} high ×{" "}
+              {inchesLabel(mantelSize.depth)} deep
             </small>
           </label>
 
@@ -389,43 +367,27 @@ export function ControlPanel({
           </div>
           <p className="section-description">
             {hearthEnabled
-              ? `Centurion #860 hearthstones align to the ${inchesLabel(fireplaceElevation)} fireplace base.`
+              ? `Centurion #860 hearthstones match the ${inchesLabel(stoneWidth)} stone field and align to the ${inchesLabel(fireplaceElevation)} fireplace base.`
               : "Add a stone riser and matching Centurion hearthstones for a raised fireplace."}
           </p>
           {hearthEnabled ? (
-            <>
-              <div className="field-label">Hearth width</div>
-              <div
-                aria-label="Hearth width"
-                className="segmented-control segmented-control--compact"
-                role="group"
-              >
-                {([3, 4, 5] as const).map((count) => (
-                  <button
-                    aria-pressed={hearthStoneCount === count}
-                    key={count}
-                    onClick={() => setHearthStoneCount(count)}
-                    type="button"
-                  >
-                    {count * 18}″
-                  </button>
-                ))}
-              </div>
-              <div className="hearth-spec">
-                <span
-                  className="material-swatch"
-                  style={{
-                    backgroundImage: `url(${hearthstone.assets[0]!.localPath})`,
-                  }}
-                />
-                <p>
-                  <strong>
-                    {hearthstone.colorName} Hearthstone · {inchesLabel(hearthWidth)}
-                  </strong>
-                  <small>{hearthStoneCount} × 18″ pieces · 20″ deep × 1½″ thick</small>
-                </p>
-              </div>
-            </>
+            <div className="hearth-spec">
+              <span
+                className="material-swatch"
+                style={{
+                  backgroundImage: `url(${hearthstone.assets[0]!.localPath})`,
+                }}
+              />
+              <p>
+                <strong>
+                  {hearthstone.colorName} Hearthstone · {inchesLabel(hearthWidth)}
+                </strong>
+                <small>
+                  {hearthSegments.length} pieces · centered end cuts as needed · 20″ deep × 1½″
+                  thick
+                </small>
+              </p>
+            </div>
           ) : null}
         </section>
 

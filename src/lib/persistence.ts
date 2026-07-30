@@ -6,9 +6,49 @@ import {
   type FeatureWallConfiguration,
 } from "@/domain/configuration";
 
-export const STORAGE_KEY = "firedesign:feature-wall:v3";
+export const STORAGE_KEY = "firedesign:feature-wall:v4";
+export const LEGACY_V3_STORAGE_KEY = "firedesign:feature-wall:v3";
 export const LEGACY_V2_STORAGE_KEY = "firedesign:feature-wall:v2";
 export const LEGACY_STORAGE_KEY = "firedesign:feature-wall:v1";
+
+const legacyV3ConfigurationSchema = z.object({
+  schemaVersion: z.literal(3),
+  wallWidth: z.number().finite(),
+  wallHeight: z.number().finite(),
+  stoneWidth: z.number().finite(),
+  fireplaceElevation: z.number().finite(),
+  mantelHeightAboveBase: z.number().finite(),
+  fireplaceId: z.enum([
+    "864-trv-31k-clean-face",
+    "864-trv-31k-deluxe",
+    "4237-ember-glo-clean-face",
+  ]),
+  faceOptionId: z.enum([
+    "clean-face",
+    "classic-arch",
+    "arched-french-country",
+    "metropolitan",
+    "rectangle-double-door",
+    "4237-clean-face",
+  ]),
+  stoneId: z.enum(["kentucky-ledge", "brown-ledge"]),
+  mantelProductId: z.enum(["zachary-smooth", "zachary-wood", "linear"]),
+  mantelWidth: z.union([z.literal(48), z.literal(60), z.literal(72), z.literal(84)]),
+  mantelFinishId: z.enum([
+    "whitewash",
+    "graywash",
+    "little-river",
+    "pearl",
+    "graphite",
+    "mocha",
+    "onyx",
+    "saddle",
+  ]),
+  hearthEnabled: z.boolean(),
+  hearthStoneCount: z.union([z.literal(3), z.literal(4), z.literal(5)]),
+  cameraMode: z.enum(["front", "perspective"]),
+  showDimensions: z.boolean(),
+});
 
 const legacyV2ConfigurationSchema = z.object({
   schemaVersion: z.literal(2),
@@ -70,6 +110,25 @@ function parseCurrent(raw: string): PersistenceResult {
   };
 }
 
+function migrateV3(raw: string): PersistenceResult {
+  try {
+    const legacy = legacyV3ConfigurationSchema.parse(JSON.parse(raw));
+    return {
+      configuration: normalizeConfiguration({
+        ...legacy,
+        schemaVersion: undefined,
+      }),
+      recovered: false,
+    };
+  } catch {
+    return {
+      configuration: DEFAULT_CONFIGURATION,
+      recovered: true,
+      reason: "Saved layout was invalid and safe defaults were restored.",
+    };
+  }
+}
+
 function migrateV2(raw: string): PersistenceResult {
   try {
     const legacy = legacyV2ConfigurationSchema.parse(JSON.parse(raw));
@@ -79,7 +138,6 @@ function migrateV2(raw: string): PersistenceResult {
         schemaVersion: undefined,
         mantelProductId: "linear",
         hearthEnabled: false,
-        hearthStoneCount: 4,
       }),
       recovered: false,
     };
@@ -121,6 +179,9 @@ export function readPersistedConfiguration(
   const current = storage.getItem(STORAGE_KEY);
   if (current) return parseCurrent(current);
 
+  const legacyV3 = storage.getItem(LEGACY_V3_STORAGE_KEY);
+  if (legacyV3) return migrateV3(legacyV3);
+
   const legacyV2 = storage.getItem(LEGACY_V2_STORAGE_KEY);
   if (legacyV2) return migrateV2(legacyV2);
 
@@ -140,6 +201,7 @@ export function writePersistedConfiguration(
 
 export function clearPersistedConfiguration(storage: Pick<Storage, "removeItem">): void {
   storage.removeItem(STORAGE_KEY);
+  storage.removeItem(LEGACY_V3_STORAGE_KEY);
   storage.removeItem(LEGACY_V2_STORAGE_KEY);
   storage.removeItem(LEGACY_STORAGE_KEY);
 }

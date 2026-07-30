@@ -10,12 +10,16 @@ The current approved catalog contains:
   two rectangular official designer faces
 - Fireplace Xtrordinair 4237 Ember-Glo Clean Face Deluxe (`98500344`)
 - Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
-- Centurion #860 hearthstones in matching Kentucky and Brown colors, assembled
-  in exact 18 × 20 × 1.5-inch modules
+- Centurion #860 hearthstones in matching Kentucky and Brown colors, laid out
+  across the exact selected stone-field width with centered field cuts
 - Pearl Mantels Zachary Smooth shelves in Whitewash and Graywash and Zachary
   Wood Look in Little River, each in 48-, 60-, 72-, and 84-inch lengths
 - Pearl Mantels Linear non-combustible shelves in the official 60- and 84-inch
   sizes and Pearl, Graphite, Mocha, Onyx, and Saddle finishes
+- Pearl Mantels Tavern Timbered Beam non-combustible shelves in 60- and
+  72-inch lengths and Fieldstone, River Rock, Toasted Rye, and Wheat finishes
+- Pearl Mantels Natural Cut Stone non-combustible shelves in 60-, 72-, and
+  84-inch lengths and Mist, Dusk, Arctic Blast, and Greystone finishes
 
 The tool does not generate, invent, or substitute product imagery.
 
@@ -65,10 +69,11 @@ version 1 renderer.
 
 ## Product and safety notes
 
-Wall width and centered stone-field width are independent. The stone field is
-automatically kept wide enough for the selected fireplace and mantel.
-An optional raised hearth follows the fireplace elevation and supports three,
-four, or five exact Centurion #860 modules (54, 72, or 90 inches).
+Wall width and centered stone-field width are independent. The stone field has
+a 50-inch minimum and is not automatically widened to the mantel. An optional
+raised hearth follows the fireplace elevation and always matches the selected
+stone width exactly. Full 18-inch Centurion #860 caps are centered, with equal
+field-cut end caps where the selected width is not an exact multiple.
 
 Mantel placement is measured from the fireplace base, matching the datum in
 the selected Travis Industries installation manual:
@@ -79,11 +84,12 @@ the selected Travis Industries installation manual:
 - 4237: an 8-inch-deep shelf requires a 57-inch minimum height above the
   fireplace base.
 
-Pearl states that its non-combustible shelves should follow the fireplace
-manufacturer’s combustible-mantel clearances unless the fireplace manual’s
-complete alternate non-combustible framing and facing assembly is provided.
-This visualization therefore enforces the conservative published table.
-It is a sales aid, not an installation approval.
+The tool displays the fireplace manual’s published combustible-mantel
+reference, but it does not constrain placement of the cataloged ASTM E136
+non-combustible Pearl shelves. This showroom override is for visualization
+only. Confirm the current fireplace manual, the shelf instructions, the
+complete wall assembly, and local code before installation. It is a sales aid,
+not an installation approval.
 
 The isolated official product layers remain below the required resolution for
 a final 4K release. The largest processed layers are 624×468, 660×570, and

@@ -67,7 +67,13 @@ export const fireplaceProductSchema = z.object({
   mantelRule: mantelRuleSchema,
 });
 
-export const mantelProductIdSchema = z.enum(["zachary-smooth", "zachary-wood", "linear"]);
+export const mantelProductIdSchema = z.enum([
+  "zachary-smooth",
+  "zachary-wood",
+  "linear",
+  "tavern",
+  "natural-cut-stone",
+]);
 
 export const mantelFinishIdSchema = z.enum([
   "whitewash",
@@ -78,6 +84,14 @@ export const mantelFinishIdSchema = z.enum([
   "mocha",
   "onyx",
   "saddle",
+  "tavern-fieldstone",
+  "tavern-river-rock",
+  "tavern-toasted-rye",
+  "tavern-wheat",
+  "cut-stone-mist",
+  "cut-stone-dusk",
+  "cut-stone-arctic-blast",
+  "cut-stone-greystone",
 ]);
 
 export const mantelWidthSchema = z.union([
@@ -98,6 +112,7 @@ export const mantelSizeSchema = z.object({
 export const mantelProductSchema = z.object({
   id: mantelProductIdSchema,
   manufacturer: z.literal("Pearl Mantels"),
+  classification: z.literal("ASTM E136 non-combustible"),
   name: z.string().min(1),
   shortLabel: z.string().min(1),
   sourceUrl: z.string().url(),
@@ -331,6 +346,7 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
   {
     id: "zachary-smooth",
     manufacturer: "Pearl Mantels",
+    classification: "ASTM E136 non-combustible",
     name: "Zachary Smooth Non-Combustible Shelf",
     shortLabel: "Zachary Smooth",
     sourceUrl: "https://www.pearlmantels.com/zacharysmoothwhitewash.html",
@@ -347,6 +363,7 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
   {
     id: "zachary-wood",
     manufacturer: "Pearl Mantels",
+    classification: "ASTM E136 non-combustible",
     name: "Zachary Wood Texture Non-Combustible Shelf",
     shortLabel: "Zachary Wood Look",
     sourceUrl: "https://pearlmantels.com/zacharywoodlooklitriv.html",
@@ -363,6 +380,7 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
   {
     id: "linear",
     manufacturer: "Pearl Mantels",
+    classification: "ASTM E136 non-combustible",
     name: "Linear Non-Combustible Mantel Shelf",
     shortLabel: "Linear",
     sourceUrl: "https://www.pearlmantels.com/linearpearl.html",
@@ -373,6 +391,42 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
     finishIds: ["pearl", "graphite", "mocha", "onyx", "saddle"],
     defaultWidth: 60,
     defaultFinishId: "pearl",
+  },
+  {
+    id: "tavern",
+    manufacturer: "Pearl Mantels",
+    classification: "ASTM E136 non-combustible",
+    name: "Tavern Timbered Beam Non-Combustible Mantel Shelf",
+    shortLabel: "Tavern Timbered Beam",
+    sourceUrl: "https://www.pearlmantels.com/tavernfieldstone.html",
+    sizes: [
+      { width: 60, height: 8, depth: 8, weight: 129, modelCode: "NCT-60" },
+      { width: 72, height: 8, depth: 8, weight: 157, modelCode: "NCT-72" },
+    ],
+    finishIds: ["tavern-fieldstone", "tavern-river-rock", "tavern-toasted-rye", "tavern-wheat"],
+    defaultWidth: 72,
+    defaultFinishId: "tavern-fieldstone",
+  },
+  {
+    id: "natural-cut-stone",
+    manufacturer: "Pearl Mantels",
+    classification: "ASTM E136 non-combustible",
+    name: "Natural Cut Stone Non-Combustible Mantel Shelf",
+    shortLabel: "Natural Cut Stone",
+    sourceUrl: "https://www.pearlmantels.com/cutstonearcticblast.html",
+    sizes: [
+      { width: 60, height: 5, depth: 9, weight: 100, modelCode: "NCCS-60" },
+      { width: 72, height: 5, depth: 9, weight: 115, modelCode: "NCCS-72" },
+      { width: 84, height: 5.25, depth: 9.5, weight: 130, modelCode: "NCCS-84" },
+    ],
+    finishIds: [
+      "cut-stone-mist",
+      "cut-stone-dusk",
+      "cut-stone-arctic-blast",
+      "cut-stone-greystone",
+    ],
+    defaultWidth: 84,
+    defaultFinishId: "cut-stone-greystone",
   },
 ]);
 
@@ -471,6 +525,102 @@ export const mantelFinishes = z.array(mantelFinishSchema).parse([
       "https://www.pearlmantels.com/images/products/linear/SaddleFrontHigh_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/SaddleFrontHigh_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/SaddleTopDetail_LG.jpg",
+    ),
+  },
+  {
+    id: "tavern-fieldstone",
+    name: "Fieldstone",
+    colorHex: "#76685a",
+    compatibleProductIds: ["tavern"],
+    assets: finishAssets(
+      "tavern-fieldstone",
+      "https://pearlmantels.com/images/products/7205_LG_Web_JPEG/7205_6ft_Tavern_Mantel_Fieldstone_Front.jpg",
+      "https://pearlmantels.com/images/products/7208_LG_WEB_JPEG/7208_5ft_TavernMantel_Fieldstone_LeftAngle1.jpg",
+      "https://pearlmantels.com/images/products/7205_LG_Web_JPEG/7205_6ft_Tavern_Mantel_Fieldstone_Front.jpg",
+    ),
+  },
+  {
+    id: "tavern-river-rock",
+    name: "River Rock",
+    colorHex: "#6b5b50",
+    compatibleProductIds: ["tavern"],
+    assets: finishAssets(
+      "tavern-river-rock",
+      "https://pearlmantels.com/images/products/7206_LG_WEB_JPEG/7206_6ft_TavernMantel_RiverRock_Front.jpg",
+      "https://pearlmantels.com/images/products/7209_LG_WEB_JPEG/7209_5ft_TavernMantel_RiverRock_LeftAngle1.jpg",
+      "https://pearlmantels.com/images/products/7206_LG_WEB_JPEG/7206_6ft_TavernMantel_RiverRock_Front.jpg",
+    ),
+  },
+  {
+    id: "tavern-toasted-rye",
+    name: "Toasted Rye",
+    colorHex: "#8d6847",
+    compatibleProductIds: ["tavern"],
+    assets: finishAssets(
+      "tavern-toasted-rye",
+      "https://pearlmantels.com/images/products/7204_LG_Web_JPEG/7204_6ft_Tavern_ToastedRye_Front.jpg",
+      "https://pearlmantels.com/images/products/7207_LG_WEB_JPG/7207_5ft_TavernMantel_ToastedRye_LeftAngle1.jpg",
+      "https://pearlmantels.com/images/products/7204_LG_Web_JPEG/7204_6ft_Tavern_ToastedRye_Front.jpg",
+    ),
+  },
+  {
+    id: "tavern-wheat",
+    name: "Wheat",
+    colorHex: "#a88762",
+    compatibleProductIds: ["tavern"],
+    assets: finishAssets(
+      "tavern-wheat",
+      "https://pearlmantels.com/images/products/7228_LG_WEB_JPEG/7228_6ft_Tavern_Mantel_Wheat_Front.jpg",
+      "https://pearlmantels.com/images/products/7229_LG_WEB_JPEG/7229_Pearl_5ft_Tavern_Mantel_Wheat_LeftAngle1.jpg",
+      "https://pearlmantels.com/images/products/7228_LG_WEB_JPEG/7228_6ft_Tavern_Mantel_Wheat_Front.jpg",
+    ),
+  },
+  {
+    id: "cut-stone-mist",
+    name: "Mist",
+    colorHex: "#aaa89f",
+    compatibleProductIds: ["natural-cut-stone"],
+    assets: finishAssets(
+      "cut-stone-mist",
+      "https://pearlmantels.com/images/products/CutStoneMistFrontLG.jpg",
+      "https://pearlmantels.com/images/products/CutStone_Mist_Right%20High%20AngleLG.jpg",
+      "https://pearlmantels.com/images/products/CutStoneMistFrontLG.jpg",
+    ),
+  },
+  {
+    id: "cut-stone-dusk",
+    name: "Dusk",
+    colorHex: "#827870",
+    compatibleProductIds: ["natural-cut-stone"],
+    assets: finishAssets(
+      "cut-stone-dusk",
+      "https://pearlmantels.com/images/products/CutStoneDuskFrontLG.jpg",
+      "https://pearlmantels.com/images/products/CutStone_Dusk_Right%20High%20AngleLG.jpg",
+      "https://pearlmantels.com/images/products/CutStoneDuskFrontLG.jpg",
+    ),
+  },
+  {
+    id: "cut-stone-arctic-blast",
+    name: "Arctic Blast",
+    colorHex: "#d1d0c8",
+    compatibleProductIds: ["natural-cut-stone"],
+    assets: finishAssets(
+      "cut-stone-arctic-blast",
+      "https://pearlmantels.com/images/products/CutStoneArcticBlastFrontLG.jpg",
+      "https://pearlmantels.com/images/products/7223_LG_WEB_JPEG/7223_5ft_Arctic%20Blast_AboveLeft1.jpg",
+      "https://pearlmantels.com/images/products/CutStoneArcticBlastFrontLG.jpg",
+    ),
+  },
+  {
+    id: "cut-stone-greystone",
+    name: "Greystone",
+    colorHex: "#77736d",
+    compatibleProductIds: ["natural-cut-stone"],
+    assets: finishAssets(
+      "cut-stone-greystone",
+      "https://pearlmantels.com/images/products/CutStoneGreystoneFrontLG.jpg",
+      "https://pearlmantels.com/images/products/7222_LG_Web_JPEG/7222_5ft_GreystoneAboveLeft1.jpg",
+      "https://pearlmantels.com/images/products/CutStoneGreystoneFrontLG.jpg",
     ),
   },
 ]);
@@ -634,8 +784,8 @@ export const ALL_ASSET_PATHS = [
   ...mantelFinishes.flatMap((finish) => finish.assets.map((asset) => asset.localPath)),
 ].filter((path, index, all) => all.indexOf(path) === index);
 
-export const APP_VERSION = "0.3.0";
-export const ASSET_VERSION = "2026.07.30-4";
+export const APP_VERSION = "0.4.0";
+export const ASSET_VERSION = "2026.07.30-5";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_CONFIGURATION,
   calculateOrthographicZoom,
+  getHearthStoneSegments,
   getMantelBottom,
   getMantelCenter,
   getMinimumMantelHeight,
@@ -11,14 +12,14 @@ import {
 } from "@/domain/configuration";
 
 describe("feature wall dimensions", () => {
-  it("uses the 864 manual's fireplace-base datum for the selected mantel depth", () => {
+  it("allows free placement for approved non-combustible mantels", () => {
     const configuration = normalizeConfiguration({
       ...DEFAULT_CONFIGURATION,
       mantelHeightAboveBase: -10,
     });
-    expect(configuration.mantelHeightAboveBase).toBe(45.75);
-    expect(getMantelBottom(configuration)).toBe(45.75);
-    expect(getMantelCenter(configuration)).toBe(48.25);
+    expect(configuration.mantelHeightAboveBase).toBe(0);
+    expect(getMantelBottom(configuration)).toBe(0);
+    expect(getMantelCenter(configuration)).toBe(2.5);
 
     const linear = normalizeConfiguration({
       ...configuration,
@@ -27,7 +28,7 @@ describe("feature wall dimensions", () => {
       mantelFinishId: "pearl",
       mantelHeightAboveBase: -10,
     });
-    expect(linear.mantelHeightAboveBase).toBe(44.75);
+    expect(linear.mantelHeightAboveBase).toBe(0);
   });
 
   it("uses the current 4237 manual's fireplace-base datum", () => {
@@ -38,8 +39,8 @@ describe("feature wall dimensions", () => {
       fireplaceElevation: 6,
       mantelHeightAboveBase: 44,
     });
-    expect(configuration.mantelHeightAboveBase).toBe(58);
-    expect(getMantelBottom(configuration)).toBe(64);
+    expect(configuration.mantelHeightAboveBase).toBe(44);
+    expect(getMantelBottom(configuration)).toBe(50);
     expect(getMinimumMantelHeight("4237-ember-glo-clean-face", 10)).toBe(59);
   });
 
@@ -52,26 +53,30 @@ describe("feature wall dimensions", () => {
     ).toBe("classic-arch");
   });
 
-  it("keeps stone width separate from wall width and large enough for the shelf", () => {
+  it("keeps stone width independent with an exact 50-inch minimum", () => {
     const configuration = normalizeConfiguration({
       wallWidth: 180,
-      stoneWidth: 60,
+      stoneWidth: 20,
       mantelWidth: 84,
     });
     expect(configuration.wallWidth).toBe(180);
-    expect(configuration.stoneWidth).toBe(96);
+    expect(configuration.stoneWidth).toBe(50);
   });
 
-  it("builds an exact modular hearth and aligns it to a raised fireplace", () => {
+  it("matches the hearth to the stone field with centered end cuts", () => {
     const configuration = normalizeConfiguration({
       ...DEFAULT_CONFIGURATION,
+      stoneWidth: 50,
       hearthEnabled: true,
-      hearthStoneCount: 5,
       fireplaceElevation: 0,
     });
     expect(configuration.fireplaceElevation).toBe(1.5);
-    expect(getHearthWidth(configuration)).toBe(90);
-    expect(configuration.stoneWidth).toBeGreaterThanOrEqual(96);
+    expect(getHearthWidth(configuration)).toBe(50);
+    expect(getHearthStoneSegments(configuration.stoneWidth)).toEqual([
+      { centerX: -17, width: 16 },
+      { centerX: 0, width: 18 },
+      { centerX: 17, width: 16 },
+    ]);
   });
 
   it("clamps every adjustable physical dimension to its approved range", () => {

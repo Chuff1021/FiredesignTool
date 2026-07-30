@@ -1,16 +1,16 @@
 {
-  "version": "2026.07.30-4",
+  "version": "2026.07.30-5",
   "generatedAt": "2026-07-30T00:00:00.000Z",
   "files": [
     {
       "path": "/assets/centurion-brown-ledge-bump.webp",
-      "sha256": "cbaf2631bdc0ff84eeafe0df522b9e4a07760654856c97d07aa6c0f0165f8609",
-      "size": 3412664
+      "sha256": "afd82b25ca4f9211224db1184e228fbc1648b588ed774a8a3b0c03d788788ba5",
+      "size": 3354632
     },
     {
       "path": "/assets/centurion-brown-ledge.webp",
-      "sha256": "a153b687487758742df55786c30cf8b1c2cd69afca5446471d7e0dd9ebd4b2e1",
-      "size": 6588822
+      "sha256": "9e4ef4370bf7a17665b950324699c2748ab73ecaae5687ff86ab7389361a515d",
+      "size": 6512908
     },
     {
       "path": "/assets/centurion-hearthstone-brown-bump.webp",
@@ -34,13 +34,13 @@
     },
     {
       "path": "/assets/centurion-kentucky-ledge-bump.webp",
-      "sha256": "c738fa9068de2cd4b97050691b3307bf798614d369243a77c5ad47cb19a69abd",
-      "size": 3282438
+      "sha256": "911231eadce9baad4f36b072c0046c05ff96b64784d936f914b79a458838e7c7",
+      "size": 3407540
     },
     {
       "path": "/assets/centurion-kentucky-ledge.webp",
-      "sha256": "dfd23a27db4e206086fb89f1b0a52e945835d4b9e368b78daf7d8d400c77d1fb",
-      "size": 6273348
+      "sha256": "ae5344bbce61910ced9af3c9c194ec2798b1876950948ef147bad612cc431bb0",
+      "size": 6174196
     },
     {
       "path": "/assets/fpx-4237-clean-face.png",
@@ -71,6 +71,66 @@
       "path": "/assets/fpx-864-trv-31k-clean-face.png",
       "sha256": "99d523e41fff1f8b086614d523f1fcbda7711338665762206a6eea76777d9a58",
       "size": 395462
+    },
+    {
+      "path": "/assets/pearl-cut-stone-arctic-blast-bump.webp",
+      "sha256": "12c08c75f5e6d0e7a8df2e8eb640d98036eeb64e0ffd13a3437beeec9ae8b1cf",
+      "size": 143430
+    },
+    {
+      "path": "/assets/pearl-cut-stone-arctic-blast-front.webp",
+      "sha256": "d771ef1171ba07c549ef9d54eacd224c59ce0f8284305c5d327b25cd8c1578fa",
+      "size": 109412
+    },
+    {
+      "path": "/assets/pearl-cut-stone-arctic-blast-top.webp",
+      "sha256": "583ddad6e498daeefa12a1690590929a55f859f6a02dc88881ec71d22411b1ce",
+      "size": 48726
+    },
+    {
+      "path": "/assets/pearl-cut-stone-dusk-bump.webp",
+      "sha256": "0b5dbd6d391a9a7c4cb8062c6948497ae03df95f2a2a4651bdd5ccff7c383483",
+      "size": 146298
+    },
+    {
+      "path": "/assets/pearl-cut-stone-dusk-front.webp",
+      "sha256": "3daa20ab384baf849b00e62037ff9412be516b8dc43e99cbf06d50b0aba36795",
+      "size": 161452
+    },
+    {
+      "path": "/assets/pearl-cut-stone-dusk-top.webp",
+      "sha256": "919078c00952ad9412747376345bb3af4472e2285b71075e15cbe85bfe389f9b",
+      "size": 98208
+    },
+    {
+      "path": "/assets/pearl-cut-stone-greystone-bump.webp",
+      "sha256": "7a1e23569dea361b8b159c39bab62e69a878743707538d74bd708b2008b2f9fc",
+      "size": 145080
+    },
+    {
+      "path": "/assets/pearl-cut-stone-greystone-front.webp",
+      "sha256": "df38b48609ccd55eef0e1f5255e54b0293b34f67d5d72afec4b144247748a24e",
+      "size": 167812
+    },
+    {
+      "path": "/assets/pearl-cut-stone-greystone-top.webp",
+      "sha256": "68471ef0d4995d89ba9907c4a999ba733f6749d345a0a082c39641785a33afe2",
+      "size": 95678
+    },
+    {
+      "path": "/assets/pearl-cut-stone-mist-bump.webp",
+      "sha256": "64ff40f85aea2ac41a9ffd04cd00d2a589d02878c259f22fff02d0b8c4245249",
+      "size": 142812
+    },
+    {
+      "path": "/assets/pearl-cut-stone-mist-front.webp",
+      "sha256": "348387f0dae70432f8583f5b8eec907b0404245acb6100dd23646e9ad1b82e1a",
+      "size": 164090
+    },
+    {
+      "path": "/assets/pearl-cut-stone-mist-top.webp",
+      "sha256": "007a5d70e9af56e852aae968877630d0bcfc392d3faafbfe9c6b70a806f5f7b1",
+      "size": 95122
     },
     {
       "path": "/assets/pearl-graphite-bump.webp",
@@ -176,6 +236,66 @@
       "path": "/assets/pearl-saddle-top.webp",
       "sha256": "3d9b092d20c20fc27184ad3a2425f952cb3dfe3abdd9506b74dee5522c2afc75",
       "size": 61366
+    },
+    {
+      "path": "/assets/pearl-tavern-fieldstone-bump.webp",
+      "sha256": "1ae654e8511af54c62736807f7f46314e5378ac3d51b1fab5d179f2293e0d79a",
+      "size": 140308
+    },
+    {
+      "path": "/assets/pearl-tavern-fieldstone-front.webp",
+      "sha256": "33e1b84960d1cebfc78514bd5181973e68e5e66efb1e2276be128cb8125fc064",
+      "size": 224112
+    },
+    {
+      "path": "/assets/pearl-tavern-fieldstone-top.webp",
+      "sha256": "09ab7ecc4596521f2d19e5726d68d049f942513953f4a4b1ef65dd457752afdf",
+      "size": 172358
+    },
+    {
+      "path": "/assets/pearl-tavern-river-rock-bump.webp",
+      "sha256": "3083bbb123bf06ede8897c4904231e33b35709b384c90381c8092a3c1b49ae74",
+      "size": 151862
+    },
+    {
+      "path": "/assets/pearl-tavern-river-rock-front.webp",
+      "sha256": "d289a45a12019f647be742735b8e39e3ea914a729ee5a9aed333ecff50d62512",
+      "size": 230718
+    },
+    {
+      "path": "/assets/pearl-tavern-river-rock-top.webp",
+      "sha256": "c75371c46e421cf78e246942ce5728928f62822f3c99f363002d7a0d02079b5a",
+      "size": 148378
+    },
+    {
+      "path": "/assets/pearl-tavern-toasted-rye-bump.webp",
+      "sha256": "0748805d75d6480b8191fc61d65471a25b090a4f635dee09bf5c90b2402f9711",
+      "size": 159312
+    },
+    {
+      "path": "/assets/pearl-tavern-toasted-rye-front.webp",
+      "sha256": "f68e2dc75d90b59a4ecb0d14994ba09afe07128f976065062ba383b937146119",
+      "size": 263514
+    },
+    {
+      "path": "/assets/pearl-tavern-toasted-rye-top.webp",
+      "sha256": "be031132e010fd65cdc047220b7c33fcb3fcff05ea8c73baefea393816f522ad",
+      "size": 136554
+    },
+    {
+      "path": "/assets/pearl-tavern-wheat-bump.webp",
+      "sha256": "0bfc72c5648eb28d2e092f4b9bd88d47dab433312f2d4207a381e610bb3c1394",
+      "size": 122810
+    },
+    {
+      "path": "/assets/pearl-tavern-wheat-front.webp",
+      "sha256": "ac05a1201de6b9caf859a2d6e3579f8620161fbd2f7e4bb02ee56881703bda5b",
+      "size": 154812
+    },
+    {
+      "path": "/assets/pearl-tavern-wheat-top.webp",
+      "sha256": "db2d6ec8a611986359258c8dfaf8cde0cd14bbdcd22899f0f4273e8689b3d1a7",
+      "size": 173426
     },
     {
       "path": "/assets/pearl-whitewash-bump.webp",

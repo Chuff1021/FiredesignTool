@@ -9,6 +9,7 @@ import type {
   MantelWidth,
   StoneId,
 } from "@/domain/catalog";
+import { getMantelProduct } from "@/domain/catalog";
 import {
   DEFAULT_CONFIGURATION,
   normalizeConfiguration,
@@ -37,7 +38,6 @@ type ConfigurationState = FeatureWallConfiguration & {
   setMantelWidth: (value: MantelWidth) => void;
   setMantelFinishId: (value: MantelFinishId) => void;
   setHearthEnabled: (value: boolean) => void;
-  setHearthStoneCount: (value: 3 | 4 | 5) => void;
   setCameraMode: (value: CameraMode) => void;
   setShowDimensions: (value: boolean) => void;
   reset: () => void;
@@ -45,7 +45,7 @@ type ConfigurationState = FeatureWallConfiguration & {
 
 function pickConfiguration(state: ConfigurationState): FeatureWallConfiguration {
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     wallWidth: state.wallWidth,
     wallHeight: state.wallHeight,
     stoneWidth: state.stoneWidth,
@@ -58,7 +58,6 @@ function pickConfiguration(state: ConfigurationState): FeatureWallConfiguration 
     mantelWidth: state.mantelWidth,
     mantelFinishId: state.mantelFinishId,
     hearthEnabled: state.hearthEnabled,
-    hearthStoneCount: state.hearthStoneCount,
     cameraMode: state.cameraMode,
     showDimensions: state.showDimensions,
   };
@@ -92,7 +91,15 @@ export const useConfigurationStore = create<ConfigurationState>((set) => ({
   setFireplaceId: (value) => set((state) => saveNext(state, { fireplaceId: value })),
   setFaceOptionId: (value) => set((state) => saveNext(state, { faceOptionId: value })),
   setStoneId: (value) => set((state) => saveNext(state, { stoneId: value })),
-  setMantelProductId: (value) => set((state) => saveNext(state, { mantelProductId: value })),
+  setMantelProductId: (value) =>
+    set((state) => {
+      const product = getMantelProduct(value);
+      return saveNext(state, {
+        mantelProductId: value,
+        mantelWidth: product.defaultWidth,
+        mantelFinishId: product.defaultFinishId,
+      });
+    }),
   setMantelWidth: (value) => set((state) => saveNext(state, { mantelWidth: value })),
   setMantelFinishId: (value) => set((state) => saveNext(state, { mantelFinishId: value })),
   setHearthEnabled: (value) =>
@@ -103,7 +110,6 @@ export const useConfigurationStore = create<ConfigurationState>((set) => ({
           value && state.fireplaceElevation < 1.5 ? 12 : state.fireplaceElevation,
       }),
     ),
-  setHearthStoneCount: (value) => set((state) => saveNext(state, { hearthStoneCount: value })),
   setCameraMode: (value) => set((state) => saveNext(state, { cameraMode: value })),
   setShowDimensions: (value) => set((state) => saveNext(state, { showDimensions: value })),
   reset: () => {
