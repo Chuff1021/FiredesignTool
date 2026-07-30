@@ -15,18 +15,18 @@ application version, asset version, preview URL, and deployment ID.
       stretch, missing asset, or obvious material repetition.
 - [ ] Startup reaches presentation-ready within 10 seconds after caching.
 - [ ] Control feedback appears within 100 milliseconds.
-- [ ] Diagnostics reports five verified assets and an offline-ready cache.
+- [ ] Diagnostics reports 20 verified assets and an offline-ready cache.
 - [ ] Production bundle, memory, texture dimensions, and sustained frame rate
       are recorded.
 
 ## Physical showroom gate
 
-- [ ] A tape-measured screen reference is within 1% for the fireplace viewing
-      area and 60-inch mantel.
-- [ ] Kentucky Ledge color and relief match the physical showroom sample under
-      showroom lighting.
-- [ ] Pearl finish and geometry match the physical shelf sample.
-- [ ] The FPX product remains sharp at the maximum supported 4K size.
+- [ ] A tape-measured screen reference is within 1% for all three fireplace
+      viewing areas and both 60- and 84-inch mantels.
+- [ ] Kentucky and Brown Ledge color and relief match physical showroom samples
+      under showroom lighting.
+- [ ] All five Pearl finishes and both shelf lengths match physical samples.
+- [ ] Every FPX model and face remains sharp at the maximum supported 4K size.
 - [ ] Cold launch, browser restart, computer restart, internet loss, internet
       restoration, and offline reload all pass.
 - [ ] WebGL context recovery is tested on the production computer.
@@ -47,7 +47,8 @@ application version, asset version, preview URL, and deployment ID.
 
 ## Current blocking gate
 
-The approved isolated FPX FireBuilder product source is 520×390 pixels after
-manual cropping. It must be replaced by dealer/manufacturer high-resolution
-isolated photography or usable official CAD/BIM output before this release
-can be approved for 4K production presentation.
+The approved isolated FPX FireBuilder product layers remain between 600 and
+660 pixels wide after calibrated cropping. They must be replaced by
+dealer/manufacturer high-resolution isolated photography or usable official
+CAD/BIM output before this release can be approved for 4K production
+presentation.

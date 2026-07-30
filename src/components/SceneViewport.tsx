@@ -2,6 +2,13 @@
 
 import dynamic from "next/dynamic";
 import { UiIcon } from "@/components/UiIcon";
+import {
+  getFaceOption,
+  getFireplaceProduct,
+  getMantelFinish,
+  getStoneProduct,
+} from "@/domain/catalog";
+import { useConfigurationStore } from "@/store/configurationStore";
 
 const FeatureWallCanvas = dynamic(
   () => import("@/components/FeatureWallCanvas").then((module) => module.FeatureWallCanvas),
@@ -29,6 +36,16 @@ export function SceneViewport({
   onFps,
   onRendererStatus,
 }: SceneViewportProps) {
+  const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
+  const faceOptionId = useConfigurationStore((state) => state.faceOptionId);
+  const stoneId = useConfigurationStore((state) => state.stoneId);
+  const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
+  const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
+  const fireplace = getFireplaceProduct(fireplaceId);
+  const face = getFaceOption(fireplaceId, faceOptionId);
+  const stone = getStoneProduct(stoneId);
+  const mantelFinish = getMantelFinish(mantelFinishId);
+
   return (
     <section
       aria-label="Fireplace design visualization"
@@ -45,7 +62,10 @@ export function SceneViewport({
       </div>
       <div className="scene-caption">
         <span>Current composition</span>
-        <strong>864 TRV · Kentucky Ledge · Pearl Linear 60″</strong>
+        <strong>
+          {fireplace.shortLabel} · {face.name} · {stone.name} · {mantelFinish.name} Linear{" "}
+          {mantelWidth}″
+        </strong>
       </div>
       {isPresentation ? (
         <button className="exit-presentation" onClick={onExitPresentation} type="button">

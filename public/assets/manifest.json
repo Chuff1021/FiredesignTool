@@ -1,31 +1,106 @@
 {
-  "version": "2026.07.30-2",
+  "version": "2026.07.30-3",
   "generatedAt": "2026-07-30T00:00:00.000Z",
   "files": [
     {
+      "path": "/assets/centurion-brown-ledge-bump.webp",
+      "sha256": "cbaf2631bdc0ff84eeafe0df522b9e4a07760654856c97d07aa6c0f0165f8609",
+      "size": 3412664
+    },
+    {
+      "path": "/assets/centurion-brown-ledge.webp",
+      "sha256": "a153b687487758742df55786c30cf8b1c2cd69afca5446471d7e0dd9ebd4b2e1",
+      "size": 6588822
+    },
+    {
       "path": "/assets/centurion-kentucky-ledge-bump.webp",
-      "sha256": "d9c3b183d7ccacf020ecf8d6d130afac81a9a4c55f32e3e58bcea0e66d4ff25c",
-      "size": 3007178
+      "sha256": "c738fa9068de2cd4b97050691b3307bf798614d369243a77c5ad47cb19a69abd",
+      "size": 3282438
     },
     {
       "path": "/assets/centurion-kentucky-ledge.webp",
-      "sha256": "515e9cab527d609b59220421dd7afaa270b79e2cee64c7160a19495b44d6f4d9",
-      "size": 5109678
+      "sha256": "dfd23a27db4e206086fb89f1b0a52e945835d4b9e368b78daf7d8d400c77d1fb",
+      "size": 6273348
+    },
+    {
+      "path": "/assets/fpx-4237-clean-face.png",
+      "sha256": "f76c0fc2b1fdb24c6766f6dc8ce7fdd4f4fc91727eb5ddf9aa08f5fcb99588fb",
+      "size": 495873
+    },
+    {
+      "path": "/assets/fpx-864-arched-french-country.png",
+      "sha256": "a6f838a6416eb70543ba228f33f5a544aea68125a1d845e934d9e1ce082a57f4",
+      "size": 505162
+    },
+    {
+      "path": "/assets/fpx-864-classic-arch.png",
+      "sha256": "44787713f60959c8cea5079a4e578173b00e114998156b871243efeb54f262cb",
+      "size": 544418
+    },
+    {
+      "path": "/assets/fpx-864-metropolitan.png",
+      "sha256": "c57499f84fd49fe13fe852d5584ee2d60bde88191a9c5d88b4ecdf3e08f73172",
+      "size": 591924
+    },
+    {
+      "path": "/assets/fpx-864-rectangle-double-door.png",
+      "sha256": "632f993fd9bf5f141a7e25f91ea5f30e5f8a96411ee2da1c7f6399c2edc86770",
+      "size": 625547
     },
     {
       "path": "/assets/fpx-864-trv-31k-clean-face.png",
-      "sha256": "62a2f53ad3aedd3bdcd992ba447684165a676fbec01fa3c7343e5df538d8f268",
-      "size": 278454
+      "sha256": "99d523e41fff1f8b086614d523f1fcbda7711338665762206a6eea76777d9a58",
+      "size": 395462
     },
     {
-      "path": "/assets/pearl-ncl-60-pearl-bump.webp",
+      "path": "/assets/pearl-linear-graphite-bump.webp",
+      "sha256": "6d8ec3c6cc8dd1de1b894e6c1f2b8f2e7babce8fd14d36ca4eeff1855154d4cc",
+      "size": 56112
+    },
+    {
+      "path": "/assets/pearl-linear-graphite.webp",
+      "sha256": "f144114997e421a97fd4618d4d372cb736ee21ff612b53e5b00149e7dc18a7e2",
+      "size": 59960
+    },
+    {
+      "path": "/assets/pearl-linear-mocha-bump.webp",
+      "sha256": "e76c5fa03b0631d77c4027d044c4530ca4a928dc99df0dbcd380026ea85e62aa",
+      "size": 66940
+    },
+    {
+      "path": "/assets/pearl-linear-mocha.webp",
+      "sha256": "1b5e269ba57b0b4bb4155dd47acb25945a88314754ae4e6839376b336439f24b",
+      "size": 50820
+    },
+    {
+      "path": "/assets/pearl-linear-onyx-bump.webp",
+      "sha256": "2b6db88d78098363e29568061786616a01219b1118c58d9ff15b84d795ed6d22",
+      "size": 50658
+    },
+    {
+      "path": "/assets/pearl-linear-onyx.webp",
+      "sha256": "1a6245efdecd4353dd8468e7af25f8925e942acb6664f5d5a5e5d312fa2fb960",
+      "size": 41004
+    },
+    {
+      "path": "/assets/pearl-linear-pearl-bump.webp",
       "sha256": "baf9c3c82f060e3ebb0cafa177c072bff2c2e95c58ea8c050ba403ebebab5a37",
       "size": 68528
     },
     {
-      "path": "/assets/pearl-ncl-60-pearl.webp",
-      "sha256": "4667ac360044b2a0e82c8b0295d69ecb32fa07de2943d4f0f9401ac6d8817d3d",
-      "size": 13084
+      "path": "/assets/pearl-linear-pearl.webp",
+      "sha256": "198e26f822f63e22ca1f702d3ee11c4d4a3c0480dae7ec4ea5772bc7848f73d6",
+      "size": 14680
+    },
+    {
+      "path": "/assets/pearl-linear-saddle-bump.webp",
+      "sha256": "cbedb88df191c5ce7ed362b182ac43f0695a88b393b50cf2c127314539cf80c0",
+      "size": 69582
+    },
+    {
+      "path": "/assets/pearl-linear-saddle.webp",
+      "sha256": "aa98e7a3add16b6c695bf3c49e1ac785b2312fbf01cbe980cecbf3acd3e5b175",
+      "size": 51144
     }
   ]
 }

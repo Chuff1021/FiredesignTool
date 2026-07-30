@@ -1,4 +1,4 @@
-const CACHE_VERSION = "firedesign-2026.07.30-2";
+const CACHE_VERSION = "firedesign-2026.07.30-3";
 const CORE = [
   "/",
   "/manifest.webmanifest",
@@ -6,11 +6,26 @@ const CORE = [
   "/icon-192.png",
   "/icon-512.png",
   "/assets/manifest.json",
+  "/assets/fpx-4237-clean-face.png",
+  "/assets/fpx-864-arched-french-country.png",
+  "/assets/fpx-864-classic-arch.png",
+  "/assets/fpx-864-metropolitan.png",
+  "/assets/fpx-864-rectangle-double-door.png",
   "/assets/fpx-864-trv-31k-clean-face.png",
+  "/assets/centurion-brown-ledge.webp",
+  "/assets/centurion-brown-ledge-bump.webp",
   "/assets/centurion-kentucky-ledge.webp",
   "/assets/centurion-kentucky-ledge-bump.webp",
-  "/assets/pearl-ncl-60-pearl.webp",
-  "/assets/pearl-ncl-60-pearl-bump.webp",
+  "/assets/pearl-linear-graphite.webp",
+  "/assets/pearl-linear-graphite-bump.webp",
+  "/assets/pearl-linear-mocha.webp",
+  "/assets/pearl-linear-mocha-bump.webp",
+  "/assets/pearl-linear-onyx.webp",
+  "/assets/pearl-linear-onyx-bump.webp",
+  "/assets/pearl-linear-pearl.webp",
+  "/assets/pearl-linear-pearl-bump.webp",
+  "/assets/pearl-linear-saddle.webp",
+  "/assets/pearl-linear-saddle-bump.webp",
 ];
 
 self.addEventListener("install", (event) => {

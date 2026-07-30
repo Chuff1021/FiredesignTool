@@ -1,27 +1,48 @@
 import { describe, expect, it } from "vitest";
 import {
-  fireplaceProduct,
+  ALL_ASSET_PATHS,
   fireplaceProductSchema,
-  mantelProduct,
-  mantelProductSchema,
-  stoneProduct,
+  fireplaceProducts,
+  mantelFinishes,
+  mantelSizes,
   stoneProductSchema,
+  stoneProducts,
 } from "@/domain/catalog";
 
 describe("approved product catalog", () => {
-  it("validates the exact single-combination release", () => {
-    expect(fireplaceProductSchema.parse(fireplaceProduct).sku).toBe("98500187");
-    expect(mantelProductSchema.parse(mantelProduct).dimensions).toEqual({
-      width: 60,
-      height: 4,
-      depth: 8,
-    });
-    expect(stoneProductSchema.parse(stoneProduct).colorCode).toBe("260");
+  it("validates the expanded manufacturer catalog", () => {
+    expect(fireplaceProducts.map((product) => product.sku)).toEqual([
+      "98500187",
+      "98500186",
+      "98500344",
+    ]);
+    expect(
+      fireplaceProducts.find((product) => product.sku === "98500186")?.faceOptions,
+    ).toHaveLength(4);
+    expect(mantelSizes.map((size) => size.width)).toEqual([60, 84]);
+    expect(mantelFinishes.map((finish) => finish.id)).toEqual([
+      "pearl",
+      "graphite",
+      "mocha",
+      "onyx",
+      "saddle",
+    ]);
+    expect(stoneProducts.map((stone) => stone.productCode)).toEqual([
+      "150-260-15",
+      "150-200-25",
+    ]);
+  });
+
+  it("keeps every runtime asset local, unique, and readiness-gated", () => {
+    expect(ALL_ASSET_PATHS).toHaveLength(20);
+    expect(new Set(ALL_ASSET_PATHS).size).toBe(ALL_ASSET_PATHS.length);
+    expect(ALL_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });
 
   it("rejects unchecked substitutions", () => {
+    expect(() => fireplaceProductSchema.parse({ ...fireplaceProducts[0], sku: "" })).toThrow();
     expect(() =>
-      fireplaceProductSchema.parse({ ...fireplaceProduct, sku: "unknown" }),
+      stoneProductSchema.parse({ ...stoneProducts[0], manufacturer: "Generic Stone" }),
     ).toThrow();
   });
 });

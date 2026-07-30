@@ -1,14 +1,19 @@
 # FireDesignTool
 
-Showroom-grade, dimensionally accurate visualization for a single approved
-fireplace composition:
+Showroom-grade, dimensionally accurate visualization built from deterministic,
+manufacturer-sourced product material.
+
+The current approved catalog contains:
 
 - Fireplace Xtrordinair 864 TRV 31K Clean Face Deluxe (`98500187`)
-- Centurion Stone Kentucky Ledge (`150-260`)
-- Pearl Mantels Linear non-combustible 60-inch shelf (`NCL-60Pearl`)
+- Fireplace Xtrordinair 864 TRV 31K Deluxe (`98500186`) with two arched and
+  two rectangular official designer faces
+- Fireplace Xtrordinair 4237 Ember-Glo Clean Face Deluxe (`98500344`)
+- Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
+- Pearl Mantels Linear non-combustible shelves in the official 60- and 84-inch
+  sizes and Pearl, Graphite, Mocha, Onyx, and Saddle finishes
 
-This release deliberately uses deterministic, manufacturer-sourced visuals.
-It does not generate or substitute product imagery.
+The tool does not generate, invent, or substitute product imagery.
 
 ## Run locally
 
@@ -37,16 +42,18 @@ means the approved visual release changed and requires a fresh review.
 
 ## Architecture
 
-- `src/domain` contains validated catalog data, physical constraints, and
-  inch-based calculations.
-- `src/lib` owns asset readiness, integrity verification, and persistence.
+- `src/domain` contains the runtime-validated catalog, product-specific mantel
+  rules, physical constraints, and inch-based calculations.
+- `src/lib` owns asset readiness, integrity verification, state migration, and
+  persistence.
 - `src/store` is the validated local configuration boundary.
 - `src/components/FeatureWallCanvas.tsx` implements the stable dimensional
   scene. One Three.js unit equals one physical inch.
 - `src/components/FireDesignApp.tsx` owns startup gating, offline readiness,
   fullscreen mode, diagnostics, and recovery.
 - `assets-source` preserves the exact official inputs.
-- `scripts/prepare-assets.mjs` performs deterministic asset processing.
+- `scripts/prepare-assets.mjs` performs deterministic cropping, compositing,
+  texture preparation, and relief-map generation.
 
 The WebGL surface is dynamically imported and kept behind
 `FeatureWallCanvas`, so a projector route can reuse it without rewriting the
@@ -54,17 +61,30 @@ version 1 renderer.
 
 ## Product and safety notes
 
-The interface enforces at least 8 inches between the top of the appliance
-face and the bottom of the 8-inch-deep shelf. Product dimensions remain
-reference-only; installation must follow the current official manual and
-applicable code.
+Wall width and centered stone-field width are independent. The stone field is
+automatically kept wide enough for the selected fireplace and mantel.
 
-The original FireBuilder layer is retained as a calibrated product source.
-Its usable isolated crop is 520×390 pixels. That source is acceptable for
-functional and scale verification, but **the release remains preview-only
-for 4K customer presentation until an approved higher-resolution isolated
-product master or convertible manufacturer CAD/BIM file is supplied**.
-The software does not disguise that limitation with generative enhancement.
+Mantel placement is measured from the fireplace base, matching the datum in
+the selected Travis Industries installation manual:
+
+- Both 864 variants: an 8-inch-deep shelf requires a 44-3/4-inch minimum
+  height above the fireplace base.
+- 4237: an 8-inch-deep shelf requires a 57-inch minimum height above the
+  fireplace base.
+
+Pearl states that its non-combustible shelves should follow the fireplace
+manufacturer’s combustible-mantel clearances unless the fireplace manual’s
+complete alternate non-combustible framing and facing assembly is provided.
+This visualization therefore enforces the conservative published table.
+It is a sales aid, not an installation approval.
+
+The isolated official product layers remain below the required resolution for
+a final 4K release. The largest processed layers are 624×468, 660×570, and
+600×518 pixels. They are suitable for configurator and scale validation, but
+**this release remains preview-only for 4K customer presentation until
+approved higher-resolution isolated product masters or usable manufacturer
+CAD/BIM files are supplied**. The software does not disguise that limitation
+with generative enhancement.
 
 See [ASSET_SOURCES.md](./ASSET_SOURCES.md) for provenance and
 [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) for promotion gates.

@@ -1,6 +1,6 @@
 "use client";
 
-import { APP_VERSION, ASSET_VERSION } from "@/domain/catalog";
+import { ALL_ASSET_PATHS, APP_VERSION, ASSET_VERSION } from "@/domain/catalog";
 import type { GraphicsSupport } from "@/lib/readiness";
 import { UiIcon } from "@/components/UiIcon";
 
@@ -75,8 +75,8 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
           <DiagnosticRow label="Asset release" value={ASSET_VERSION} />
           <DiagnosticRow
             label="Approved assets"
-            tone={data.verifiedAssets === 5 ? "good" : "warn"}
-            value={`${data.verifiedAssets} / 5 verified`}
+            tone={data.verifiedAssets === ALL_ASSET_PATHS.length ? "good" : "warn"}
+            value={`${data.verifiedAssets} / ${ALL_ASSET_PATHS.length} verified`}
           />
           <DiagnosticRow
             label="Offline cache"

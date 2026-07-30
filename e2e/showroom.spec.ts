@@ -9,18 +9,47 @@ test("loads the approved showroom composition without customer-facing errors", a
   page,
 }) => {
   await expect(page.getByRole("heading", { name: "FireDesign" })).toBeVisible();
-  await expect(page.getByText("864 TRV · Kentucky Ledge · Pearl Linear 60″")).toBeVisible();
+  await expect(
+    page.getByText("864 Clean Face · Clean Face · Kentucky Ledge · Pearl Linear 60″"),
+  ).toBeVisible();
   await expect(page.getByText("The presentation could not start safely.")).toHaveCount(0);
 });
 
 test("adjusts and persists physical dimensions", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
   const wallWidth = page.getByLabel("Wall width");
+  const stoneWidth = page.getByLabel("Stone width");
   await wallWidth.fill("168");
+  await stoneWidth.fill("108");
   await expect(page.getByText("Wall 168″")).toBeVisible();
+  await expect(page.getByText("Stone 108″")).toBeVisible();
   await page.reload();
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
   await expect(wallWidth).toHaveValue("168");
+  await expect(stoneWidth).toHaveValue("108");
+});
+
+test("switches official fireplaces, faces, stone, and mantel options", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+  await page.getByLabel("Fireplace model").selectOption("4237-ember-glo-clean-face");
+  await expect(
+    page.getByRole("heading", { name: "4237 Ember-Glo Clean Face Deluxe" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Mantel height")).toHaveValue("57");
+  await page.getByLabel("Centurion stone").selectOption("brown-ledge");
+  await page.getByRole("button", { name: "84″" }).click();
+  await page.getByLabel("Mantel finish").selectOption("onyx");
+  await expect(
+    page.getByText("4237 Clean Face · Clean Face · Brown Ledge · Onyx Linear 84″"),
+  ).toBeVisible();
+
+  await page.getByLabel("Fireplace model").selectOption("864-trv-31k-deluxe");
+  await page.getByLabel("Face or trim").selectOption("metropolitan");
+  await expect(
+    page.getByText("864 Designer Face · Metropolitan · Black · Brown Ledge · Onyx Linear 84″"),
+  ).toBeVisible();
 });
 
 test("switches view, opens diagnostics, and resets safely", async ({ page }, testInfo) => {
@@ -58,7 +87,7 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("5 / 5 verified")).toBeVisible();
+  await expect(page.getByText("20 / 20 verified")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,
   });
