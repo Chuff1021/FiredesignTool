@@ -1,4 +1,5 @@
 {
+  "buildCommand": "npm run verify && npm run audit:production",
   "framework": "nextjs",
   "cleanUrls": true
 }
