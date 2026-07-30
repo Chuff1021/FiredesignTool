@@ -6,8 +6,36 @@ import {
   type FeatureWallConfiguration,
 } from "@/domain/configuration";
 
-export const STORAGE_KEY = "firedesign:feature-wall:v2";
+export const STORAGE_KEY = "firedesign:feature-wall:v3";
+export const LEGACY_V2_STORAGE_KEY = "firedesign:feature-wall:v2";
 export const LEGACY_STORAGE_KEY = "firedesign:feature-wall:v1";
+
+const legacyV2ConfigurationSchema = z.object({
+  schemaVersion: z.literal(2),
+  wallWidth: z.number().finite(),
+  wallHeight: z.number().finite(),
+  stoneWidth: z.number().finite(),
+  fireplaceElevation: z.number().finite(),
+  mantelHeightAboveBase: z.number().finite(),
+  fireplaceId: z.enum([
+    "864-trv-31k-clean-face",
+    "864-trv-31k-deluxe",
+    "4237-ember-glo-clean-face",
+  ]),
+  faceOptionId: z.enum([
+    "clean-face",
+    "classic-arch",
+    "arched-french-country",
+    "metropolitan",
+    "rectangle-double-door",
+    "4237-clean-face",
+  ]),
+  stoneId: z.enum(["kentucky-ledge", "brown-ledge"]),
+  mantelWidth: z.union([z.literal(60), z.literal(84)]),
+  mantelFinishId: z.enum(["pearl", "graphite", "mocha", "onyx", "saddle"]),
+  cameraMode: z.enum(["front", "perspective"]),
+  showDimensions: z.boolean(),
+});
 
 const legacyConfigurationSchema = z.object({
   schemaVersion: z.literal(1),
@@ -30,7 +58,7 @@ function parseCurrent(raw: string): PersistenceResult {
     const parsed: unknown = JSON.parse(raw);
     const result = featureWallConfigurationSchema.safeParse(parsed);
     if (result.success) {
-      return { configuration: result.data, recovered: false };
+      return { configuration: normalizeConfiguration(result.data), recovered: false };
     }
   } catch {
     // The common recovery response is returned below.
@@ -42,7 +70,29 @@ function parseCurrent(raw: string): PersistenceResult {
   };
 }
 
-function migrateLegacy(raw: string): PersistenceResult {
+function migrateV2(raw: string): PersistenceResult {
+  try {
+    const legacy = legacyV2ConfigurationSchema.parse(JSON.parse(raw));
+    return {
+      configuration: normalizeConfiguration({
+        ...legacy,
+        schemaVersion: undefined,
+        mantelProductId: "linear",
+        hearthEnabled: false,
+        hearthStoneCount: 4,
+      }),
+      recovered: false,
+    };
+  } catch {
+    return {
+      configuration: DEFAULT_CONFIGURATION,
+      recovered: true,
+      reason: "Saved layout was invalid and safe defaults were restored.",
+    };
+  }
+}
+
+function migrateV1(raw: string): PersistenceResult {
   try {
     const legacy = legacyConfigurationSchema.parse(JSON.parse(raw));
     return {
@@ -71,8 +121,11 @@ export function readPersistedConfiguration(
   const current = storage.getItem(STORAGE_KEY);
   if (current) return parseCurrent(current);
 
+  const legacyV2 = storage.getItem(LEGACY_V2_STORAGE_KEY);
+  if (legacyV2) return migrateV2(legacyV2);
+
   const legacy = storage.getItem(LEGACY_STORAGE_KEY);
-  if (legacy) return migrateLegacy(legacy);
+  if (legacy) return migrateV1(legacy);
 
   return { configuration: DEFAULT_CONFIGURATION, recovered: false };
 }
@@ -87,5 +140,6 @@ export function writePersistedConfiguration(
 
 export function clearPersistedConfiguration(storage: Pick<Storage, "removeItem">): void {
   storage.removeItem(STORAGE_KEY);
+  storage.removeItem(LEGACY_V2_STORAGE_KEY);
   storage.removeItem(LEGACY_STORAGE_KEY);
 }

@@ -199,48 +199,118 @@ for (const stone of [
 
 const mantelSources = [
   {
+    id: "whitewash",
+    front: "pearl-zachary-whitewash-front.jpg",
+    top: "pearl-zachary-whitewash-top.jpg",
+  },
+  {
+    id: "graywash",
+    front: "pearl-zachary-graywash-front.jpg",
+    top: "pearl-zachary-graywash-top.jpg",
+  },
+  {
+    id: "little-river",
+    front: "pearl-zachary-little-river-front.jpg",
+    top: "pearl-zachary-little-river-top.jpg",
+  },
+  {
     id: "pearl",
     front: "pearl-ncl-60-pearl.jpg",
-    detail: "pearl-ncl-60-pearl-detail.jpg",
+    top: "pearl-ncl-60-pearl.jpg",
   },
   {
     id: "graphite",
     front: "pearl-linear-graphite.jpg",
-    detail: "pearl-linear-graphite-detail.jpg",
+    top: "pearl-linear-graphite.jpg",
   },
   {
     id: "mocha",
     front: "pearl-linear-mocha.jpg",
-    detail: "pearl-linear-mocha-detail.jpg",
+    top: "pearl-linear-mocha.jpg",
   },
   {
     id: "onyx",
     front: "pearl-linear-onyx.jpg",
-    detail: "pearl-linear-onyx-detail.jpg",
+    top: "pearl-linear-onyx.jpg",
   },
   {
     id: "saddle",
     front: "pearl-linear-saddle.jpg",
-    detail: "pearl-linear-saddle-detail.jpg",
+    top: "pearl-linear-saddle.jpg",
   },
 ];
 
-for (const mantel of mantelSources) {
-  await sharp(path.join(source, mantel.front))
+async function trimProductPhoto(sourceName) {
+  return sharp(path.join(source, sourceName))
     .rotate()
     .trim({ background: "#ffffff", threshold: 18 })
-    .resize({ width: 2000, withoutEnlargement: true })
-    .webp({ quality: 94, smartSubsample: true, effort: 6 })
-    .toFile(path.join(output, `pearl-linear-${mantel.id}.webp`));
+    .png()
+    .toBuffer();
+}
 
-  await sharp(path.join(source, mantel.detail))
-    .rotate()
-    .resize({ width: 1600, withoutEnlargement: true })
+async function mantelFaceMap(sourceName, face) {
+  const product = await trimProductPhoto(sourceName);
+  const metadata = await sharp(product).metadata();
+  if (!metadata.width || !metadata.height) {
+    throw new Error(`Could not inspect mantel reference: ${sourceName}`);
+  }
+  const insetX = Math.round(metadata.width * 0.035);
+  const top = face === "top" ? 0 : Math.round(metadata.height * 0.4);
+  const height =
+    face === "top" ? Math.max(1, Math.round(metadata.height * 0.36)) : metadata.height - top;
+  return sharp(product)
+    .extract({
+      left: insetX,
+      top,
+      width: metadata.width - insetX * 2,
+      height,
+    })
+    .resize(2400, face === "top" ? 300 : 160, {
+      fit: "fill",
+      kernel: sharp.kernel.lanczos3,
+    })
+    .png()
+    .toBuffer();
+}
+
+for (const mantel of mantelSources) {
+  const front = await mantelFaceMap(mantel.front, "front");
+  const top = await mantelFaceMap(mantel.top, "top");
+
+  await sharp(front)
+    .webp({ quality: 94, smartSubsample: true, effort: 6 })
+    .toFile(path.join(output, `pearl-${mantel.id}-front.webp`));
+
+  await sharp(top)
+    .webp({ quality: 94, smartSubsample: true, effort: 6 })
+    .toFile(path.join(output, `pearl-${mantel.id}-top.webp`));
+
+  await sharp(front)
     .greyscale()
     .normalise()
     .blur(0.45)
     .webp({ quality: 90, effort: 6 })
-    .toFile(path.join(output, `pearl-linear-${mantel.id}-bump.webp`));
+    .toFile(path.join(output, `pearl-${mantel.id}-bump.webp`));
+}
+
+for (const hearthstone of [
+  { id: "kentucky", sourceName: "centurion-hearthstone-kentucky.webp" },
+  { id: "brown", sourceName: "centurion-hearthstone-brown.webp" },
+]) {
+  const color = await sharp(path.join(source, hearthstone.sourceName))
+    .rotate()
+    .resize(1800, 2000, { fit: "fill", kernel: sharp.kernel.lanczos3 })
+    .png()
+    .toBuffer();
+  await sharp(color)
+    .webp({ quality: 94, smartSubsample: true, effort: 6 })
+    .toFile(path.join(output, `centurion-hearthstone-${hearthstone.id}.webp`));
+  await sharp(color)
+    .greyscale()
+    .normalise()
+    .blur(0.55)
+    .webp({ quality: 90, effort: 6 })
+    .toFile(path.join(output, `centurion-hearthstone-${hearthstone.id}-bump.webp`));
 }
 
 await sharp(path.join(root, "public", "icon.svg"))

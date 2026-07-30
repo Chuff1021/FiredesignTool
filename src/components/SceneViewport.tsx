@@ -6,6 +6,7 @@ import {
   getFaceOption,
   getFireplaceProduct,
   getMantelFinish,
+  getMantelProduct,
   getStoneProduct,
 } from "@/domain/catalog";
 import { useConfigurationStore } from "@/store/configurationStore";
@@ -39,12 +40,14 @@ export function SceneViewport({
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const faceOptionId = useConfigurationStore((state) => state.faceOptionId);
   const stoneId = useConfigurationStore((state) => state.stoneId);
+  const mantelProductId = useConfigurationStore((state) => state.mantelProductId);
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
   const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
   const fireplace = getFireplaceProduct(fireplaceId);
   const face = getFaceOption(fireplaceId, faceOptionId);
   const stone = getStoneProduct(stoneId);
-  const mantelFinish = getMantelFinish(mantelFinishId);
+  const mantelProduct = getMantelProduct(mantelProductId);
+  const mantelFinish = getMantelFinish(mantelProductId, mantelFinishId);
 
   return (
     <section
@@ -63,8 +66,8 @@ export function SceneViewport({
       <div className="scene-caption">
         <span>Current composition</span>
         <strong>
-          {fireplace.shortLabel} · {face.name} · {stone.name} · {mantelFinish.name} Linear{" "}
-          {mantelWidth}″
+          {fireplace.shortLabel} · {face.name} · {stone.name} · {mantelFinish.name}{" "}
+          {mantelProduct.shortLabel} {mantelWidth}″
         </strong>
       </div>
       {isPresentation ? (

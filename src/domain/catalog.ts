@@ -67,20 +67,52 @@ export const fireplaceProductSchema = z.object({
   mantelRule: mantelRuleSchema,
 });
 
+export const mantelProductIdSchema = z.enum(["zachary-smooth", "zachary-wood", "linear"]);
+
+export const mantelFinishIdSchema = z.enum([
+  "whitewash",
+  "graywash",
+  "little-river",
+  "pearl",
+  "graphite",
+  "mocha",
+  "onyx",
+  "saddle",
+]);
+
+export const mantelWidthSchema = z.union([
+  z.literal(48),
+  z.literal(60),
+  z.literal(72),
+  z.literal(84),
+]);
+
 export const mantelSizeSchema = z.object({
-  width: z.union([z.literal(60), z.literal(84)]),
-  height: z.literal(4),
-  depth: z.literal(8),
+  width: mantelWidthSchema,
+  height: positiveInches,
+  depth: positiveInches,
   weight: positiveInches,
+  modelCode: z.string().min(1),
 });
 
-export const mantelFinishIdSchema = z.enum(["pearl", "graphite", "mocha", "onyx", "saddle"]);
+export const mantelProductSchema = z.object({
+  id: mantelProductIdSchema,
+  manufacturer: z.literal("Pearl Mantels"),
+  name: z.string().min(1),
+  shortLabel: z.string().min(1),
+  sourceUrl: z.string().url(),
+  sizes: z.array(mantelSizeSchema).min(1),
+  finishIds: z.array(mantelFinishIdSchema).min(1),
+  defaultWidth: mantelWidthSchema,
+  defaultFinishId: mantelFinishIdSchema,
+});
 
 export const mantelFinishSchema = z.object({
   id: mantelFinishIdSchema,
   name: z.string().min(1),
   colorHex: z.string().regex(/^#[a-f0-9]{6}$/i),
-  assets: z.array(assetSourceSchema).length(2),
+  compatibleProductIds: z.array(mantelProductIdSchema).min(1),
+  assets: z.array(assetSourceSchema).length(3),
 });
 
 export const stoneIdSchema = z.enum(["kentucky-ledge", "brown-ledge"]);
@@ -99,6 +131,19 @@ export const stoneProductSchema = z.object({
     heightMax: positiveInches,
   }),
   assets: z.array(assetSourceSchema).length(2),
+  hearthstone: z.object({
+    manufacturer: z.literal("Centurion Stone"),
+    name: z.literal("Hearthstone"),
+    patternCode: z.literal("860"),
+    colorName: z.string().min(1),
+    colorCode: z.string().min(1),
+    dimensions: z.object({
+      width: z.literal(18),
+      depth: z.literal(20),
+      thickness: z.literal(1.5),
+    }),
+    assets: z.array(assetSourceSchema).length(2),
+  }),
 });
 
 const retrievedAt = "2026-07-30";
@@ -259,35 +304,123 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
   },
 ]);
 
-export const mantelSizes = z.array(mantelSizeSchema).parse([
-  { width: 60, height: 4, depth: 8, weight: 87 },
-  { width: 84, height: 4, depth: 8, weight: 132 },
-]);
-
 const finishAssets = (
   id: z.infer<typeof mantelFinishIdSchema>,
   frontUrl: string,
-  detailUrl: string,
+  topUrl: string,
+  bumpUrl: string,
 ) => [
   officialLayer(
-    `/assets/pearl-linear-${id}.webp`,
+    `/assets/pearl-${id}-front.webp`,
     frontUrl,
-    `Official Pearl Mantels ${id} finish reference`,
+    `Official Pearl Mantels ${id} front-face reference`,
   ),
   officialLayer(
-    `/assets/pearl-linear-${id}-bump.webp`,
-    detailUrl,
-    `Deterministic relief map derived from official Pearl Mantels ${id} detail photography`,
+    `/assets/pearl-${id}-top.webp`,
+    topUrl,
+    `Official Pearl Mantels ${id} top-face reference`,
+  ),
+  officialLayer(
+    `/assets/pearl-${id}-bump.webp`,
+    bumpUrl,
+    `Deterministic relief map derived from official Pearl Mantels ${id} photography`,
   ),
 ];
 
+export const mantelProducts = z.array(mantelProductSchema).parse([
+  {
+    id: "zachary-smooth",
+    manufacturer: "Pearl Mantels",
+    name: "Zachary Smooth Non-Combustible Shelf",
+    shortLabel: "Zachary Smooth",
+    sourceUrl: "https://www.pearlmantels.com/zacharysmoothwhitewash.html",
+    sizes: [
+      { width: 48, height: 5, depth: 9, weight: 26, modelCode: "NC-48" },
+      { width: 60, height: 5, depth: 9, weight: 35, modelCode: "NC-60" },
+      { width: 72, height: 5, depth: 9, weight: 42, modelCode: "NC-72" },
+      { width: 84, height: 5, depth: 9, weight: 55, modelCode: "NC-84" },
+    ],
+    finishIds: ["whitewash", "graywash"],
+    defaultWidth: 72,
+    defaultFinishId: "graywash",
+  },
+  {
+    id: "zachary-wood",
+    manufacturer: "Pearl Mantels",
+    name: "Zachary Wood Texture Non-Combustible Shelf",
+    shortLabel: "Zachary Wood Look",
+    sourceUrl: "https://pearlmantels.com/zacharywoodlooklitriv.html",
+    sizes: [
+      { width: 48, height: 5, depth: 7.87, weight: 21, modelCode: "NC-48" },
+      { width: 60, height: 5, depth: 7.87, weight: 26, modelCode: "NC-60" },
+      { width: 72, height: 5, depth: 7.87, weight: 30, modelCode: "NC-72" },
+      { width: 84, height: 5, depth: 7.87, weight: 48, modelCode: "NC-84" },
+    ],
+    finishIds: ["little-river"],
+    defaultWidth: 72,
+    defaultFinishId: "little-river",
+  },
+  {
+    id: "linear",
+    manufacturer: "Pearl Mantels",
+    name: "Linear Non-Combustible Mantel Shelf",
+    shortLabel: "Linear",
+    sourceUrl: "https://www.pearlmantels.com/linearpearl.html",
+    sizes: [
+      { width: 60, height: 4, depth: 8, weight: 87, modelCode: "NCL-60" },
+      { width: 84, height: 4, depth: 8, weight: 132, modelCode: "NCL-84" },
+    ],
+    finishIds: ["pearl", "graphite", "mocha", "onyx", "saddle"],
+    defaultWidth: 60,
+    defaultFinishId: "pearl",
+  },
+]);
+
 export const mantelFinishes = z.array(mantelFinishSchema).parse([
+  {
+    id: "whitewash",
+    name: "Whitewash",
+    colorHex: "#d9d5c8",
+    compatibleProductIds: ["zachary-smooth"],
+    assets: finishAssets(
+      "whitewash",
+      "https://www.pearlmantels.com/images/products/ZachsmoothwhtFrontNew.jpg",
+      "https://www.pearlmantels.com/images/products/ZachsmwhttopLG.jpg",
+      "https://www.pearlmantels.com/images/products/ZachsmoothwhtFrontNew.jpg",
+    ),
+  },
+  {
+    id: "graywash",
+    name: "Graywash",
+    colorHex: "#85847c",
+    compatibleProductIds: ["zachary-smooth"],
+    assets: finishAssets(
+      "graywash",
+      "https://www.pearlmantels.com/images/products/ZachsmoothGrtFrontNew.jpg",
+      "https://www.pearlmantels.com/images/products/ZachsmGrytopLG.jpg",
+      "https://www.pearlmantels.com/images/products/ZachsmoothGrtFrontNew.jpg",
+    ),
+  },
+  {
+    id: "little-river",
+    name: "Little River",
+    colorHex: "#6e625d",
+    compatibleProductIds: ["zachary-wood"],
+    assets: finishAssets(
+      "little-river",
+      "https://www.pearlmantels.com/images/products/ZacharyLitRivFrontNew.jpg",
+      "https://www.pearlmantels.com/images/products/ZachwdLkLitRivtopLG.jpg",
+      "https://www.pearlmantels.com/images/products/ZacharyLitRivFrontNew.jpg",
+    ),
+  },
   {
     id: "pearl",
     name: "Pearl",
     colorHex: "#e8e3d8",
+    compatibleProductIds: ["linear"],
     assets: finishAssets(
       "pearl",
+      "https://www.pearlmantels.com/images/products/linear/PearlFrontTop__LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/PearlFrontTop__LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/PearlDetailA_LG.jpg",
     ),
@@ -296,8 +429,10 @@ export const mantelFinishes = z.array(mantelFinishSchema).parse([
     id: "graphite",
     name: "Graphite",
     colorHex: "#53504b",
+    compatibleProductIds: ["linear"],
     assets: finishAssets(
       "graphite",
+      "https://www.pearlmantels.com/images/products/linear/GraphiteFrontTop_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/GraphiteFrontTop_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/GraphiteDetailA_LG.jpg",
     ),
@@ -306,8 +441,10 @@ export const mantelFinishes = z.array(mantelFinishSchema).parse([
     id: "mocha",
     name: "Mocha",
     colorHex: "#765a46",
+    compatibleProductIds: ["linear"],
     assets: finishAssets(
       "mocha",
+      "https://www.pearlmantels.com/images/products/linear/MochaFrontHigh_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/MochaFrontHigh_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/MochaTopDetailA_LG.jpg",
     ),
@@ -316,8 +453,10 @@ export const mantelFinishes = z.array(mantelFinishSchema).parse([
     id: "onyx",
     name: "Onyx",
     colorHex: "#2c2b29",
+    compatibleProductIds: ["linear"],
     assets: finishAssets(
       "onyx",
+      "https://www.pearlmantels.com/images/products/linear/OnyxFrontTop_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/OnyxFrontTop_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/OnyxTopDetailA_LG.jpg",
     ),
@@ -326,8 +465,10 @@ export const mantelFinishes = z.array(mantelFinishSchema).parse([
     id: "saddle",
     name: "Saddle",
     colorHex: "#8b6848",
+    compatibleProductIds: ["linear"],
     assets: finishAssets(
       "saddle",
+      "https://www.pearlmantels.com/images/products/linear/SaddleFrontHigh_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/SaddleFrontHigh_LG.jpg",
       "https://www.pearlmantels.com/images/products/linear/SaddleTopDetail_LG.jpg",
     ),
@@ -362,6 +503,26 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
         "Deterministic relief map derived from the official swatch",
       ),
     ],
+    hearthstone: {
+      manufacturer: "Centurion Stone",
+      name: "Hearthstone",
+      patternCode: "860",
+      colorName: "Kentucky",
+      colorCode: "260-15",
+      dimensions: { width: 18, depth: 20, thickness: 1.5 },
+      assets: [
+        officialLayer(
+          "/assets/centurion-hearthstone-kentucky.webp",
+          "https://www.centurionstone.com/wp-content/uploads/2024/08/Kentucky.webp",
+          "Official Centurion Kentucky accessory-color reference",
+        ),
+        officialLayer(
+          "/assets/centurion-hearthstone-kentucky-bump.webp",
+          "https://www.centurionstone.com/wp-content/uploads/2024/08/Kentucky.webp",
+          "Deterministic relief map derived from the official Kentucky accessory swatch",
+        ),
+      ],
+    },
   },
   {
     id: "brown-ledge",
@@ -383,6 +544,26 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
         "Deterministic relief map derived from the official swatch",
       ),
     ],
+    hearthstone: {
+      manufacturer: "Centurion Stone",
+      name: "Hearthstone",
+      patternCode: "860",
+      colorName: "Brown",
+      colorCode: "200-25",
+      dimensions: { width: 18, depth: 20, thickness: 1.5 },
+      assets: [
+        officialLayer(
+          "/assets/centurion-hearthstone-brown.webp",
+          "https://www.centurionstone.com/wp-content/uploads/2024/08/Brown.webp",
+          "Official Centurion Brown accessory-color reference",
+        ),
+        officialLayer(
+          "/assets/centurion-hearthstone-brown-bump.webp",
+          "https://www.centurionstone.com/wp-content/uploads/2024/08/Brown.webp",
+          "Deterministic relief map derived from the official Brown accessory swatch",
+        ),
+      ],
+    },
   },
 ]);
 
@@ -412,16 +593,34 @@ export function getStoneProduct(id: z.infer<typeof stoneIdSchema>) {
   return product;
 }
 
-export function getMantelSize(width: 60 | 84) {
-  const size = mantelSizes.find((candidate) => candidate.width === width);
-  if (!size) throw new Error(`Unknown approved mantel size: ${width}`);
+export function getMantelProduct(id: z.infer<typeof mantelProductIdSchema>) {
+  const product = mantelProducts.find((candidate) => candidate.id === id);
+  if (!product) throw new Error(`Unknown approved mantel product: ${id}`);
+  return product;
+}
+
+export function getMantelSize(
+  productId: z.infer<typeof mantelProductIdSchema>,
+  width: z.infer<typeof mantelWidthSchema>,
+) {
+  const size = getMantelProduct(productId).sizes.find((candidate) => candidate.width === width);
+  if (!size) throw new Error(`Mantel ${productId} is not offered at ${width} inches.`);
   return size;
 }
 
-export function getMantelFinish(id: z.infer<typeof mantelFinishIdSchema>) {
+export function getMantelFinish(
+  productId: z.infer<typeof mantelProductIdSchema>,
+  id: z.infer<typeof mantelFinishIdSchema>,
+) {
   const finish = mantelFinishes.find((candidate) => candidate.id === id);
-  if (!finish) throw new Error(`Unknown approved mantel finish: ${id}`);
+  if (!finish || !finish.compatibleProductIds.includes(productId)) {
+    throw new Error(`Mantel finish ${id} is not approved for ${productId}.`);
+  }
   return finish;
+}
+
+export function getHearthstone(stoneId: z.infer<typeof stoneIdSchema>) {
+  return getStoneProduct(stoneId).hearthstone;
 }
 
 export const ALL_ASSET_PATHS = [
@@ -429,15 +628,21 @@ export const ALL_ASSET_PATHS = [
     product.faceOptions.map((option) => option.asset.localPath),
   ),
   ...stoneProducts.flatMap((product) => product.assets.map((asset) => asset.localPath)),
+  ...stoneProducts.flatMap((product) =>
+    product.hearthstone.assets.map((asset) => asset.localPath),
+  ),
   ...mantelFinishes.flatMap((finish) => finish.assets.map((asset) => asset.localPath)),
 ].filter((path, index, all) => all.indexOf(path) === index);
 
-export const APP_VERSION = "0.2.0";
-export const ASSET_VERSION = "2026.07.30-3";
+export const APP_VERSION = "0.3.0";
+export const ASSET_VERSION = "2026.07.30-4";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;
 export type MantelFinishId = z.infer<typeof mantelFinishIdSchema>;
+export type MantelProductId = z.infer<typeof mantelProductIdSchema>;
+export type MantelWidth = z.infer<typeof mantelWidthSchema>;
 export type StoneId = z.infer<typeof stoneIdSchema>;
 export type FireplaceProduct = z.infer<typeof fireplaceProductSchema>;
+export type MantelProduct = z.infer<typeof mantelProductSchema>;
 export type StoneProduct = z.infer<typeof stoneProductSchema>;

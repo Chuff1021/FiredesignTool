@@ -4,7 +4,7 @@ import {
   fireplaceProductSchema,
   fireplaceProducts,
   mantelFinishes,
-  mantelSizes,
+  mantelProducts,
   stoneProductSchema,
   stoneProducts,
 } from "@/domain/catalog";
@@ -19,8 +19,20 @@ describe("approved product catalog", () => {
     expect(
       fireplaceProducts.find((product) => product.sku === "98500186")?.faceOptions,
     ).toHaveLength(4);
-    expect(mantelSizes.map((size) => size.width)).toEqual([60, 84]);
+    expect(mantelProducts.map((product) => product.id)).toEqual([
+      "zachary-smooth",
+      "zachary-wood",
+      "linear",
+    ]);
+    expect(
+      mantelProducts
+        .find((product) => product.id === "zachary-smooth")
+        ?.sizes.map((size) => size.width),
+    ).toEqual([48, 60, 72, 84]);
     expect(mantelFinishes.map((finish) => finish.id)).toEqual([
+      "whitewash",
+      "graywash",
+      "little-river",
       "pearl",
       "graphite",
       "mocha",
@@ -34,7 +46,7 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(ALL_ASSET_PATHS).toHaveLength(20);
+    expect(ALL_ASSET_PATHS).toHaveLength(38);
     expect(new Set(ALL_ASSET_PATHS).size).toBe(ALL_ASSET_PATHS.length);
     expect(ALL_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });

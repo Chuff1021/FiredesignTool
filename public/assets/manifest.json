@@ -1,5 +1,5 @@
 {
-  "version": "2026.07.30-3",
+  "version": "2026.07.30-4",
   "generatedAt": "2026-07-30T00:00:00.000Z",
   "files": [
     {
@@ -11,6 +11,26 @@
       "path": "/assets/centurion-brown-ledge.webp",
       "sha256": "a153b687487758742df55786c30cf8b1c2cd69afca5446471d7e0dd9ebd4b2e1",
       "size": 6588822
+    },
+    {
+      "path": "/assets/centurion-hearthstone-brown-bump.webp",
+      "sha256": "7c598162c107a6f916d2574256b3cf37f1e762746d761e6dcbe1d7f0d79df1be",
+      "size": 169176
+    },
+    {
+      "path": "/assets/centurion-hearthstone-brown.webp",
+      "sha256": "0a9b4b99f345da9e5600cf9263268884dcb473a3fdf44b3b0277d317fadaa125",
+      "size": 188704
+    },
+    {
+      "path": "/assets/centurion-hearthstone-kentucky-bump.webp",
+      "sha256": "e6877d619383194c7210e5037c4cb55ff5cd996bf1134ecf464d1eb345963275",
+      "size": 153384
+    },
+    {
+      "path": "/assets/centurion-hearthstone-kentucky.webp",
+      "sha256": "897089a560d9857fb2094362b6d0d63990a172a8fa8f79ba7144b55ebac2d5ce",
+      "size": 167830
     },
     {
       "path": "/assets/centurion-kentucky-ledge-bump.webp",
@@ -53,54 +73,124 @@
       "size": 395462
     },
     {
-      "path": "/assets/pearl-linear-graphite-bump.webp",
-      "sha256": "6d8ec3c6cc8dd1de1b894e6c1f2b8f2e7babce8fd14d36ca4eeff1855154d4cc",
-      "size": 56112
+      "path": "/assets/pearl-graphite-bump.webp",
+      "sha256": "17a4085b2ae033a9d85609c610136dce95687f73485ecd89a68597cb5d8cff5c",
+      "size": 50880
     },
     {
-      "path": "/assets/pearl-linear-graphite.webp",
-      "sha256": "f144114997e421a97fd4618d4d372cb736ee21ff612b53e5b00149e7dc18a7e2",
-      "size": 59960
+      "path": "/assets/pearl-graphite-front.webp",
+      "sha256": "48e7d48b021437c73a426899c0b36c9959f9dcaa1ac44435cfd1708853439c92",
+      "size": 72236
     },
     {
-      "path": "/assets/pearl-linear-mocha-bump.webp",
-      "sha256": "e76c5fa03b0631d77c4027d044c4530ca4a928dc99df0dbcd380026ea85e62aa",
-      "size": 66940
+      "path": "/assets/pearl-graphite-top.webp",
+      "sha256": "ba68a3dc622eb85178275faf7c05c855f1c660f9c1a3f5f1ec3f234ab773e63b",
+      "size": 75950
     },
     {
-      "path": "/assets/pearl-linear-mocha.webp",
-      "sha256": "1b5e269ba57b0b4bb4155dd47acb25945a88314754ae4e6839376b336439f24b",
-      "size": 50820
+      "path": "/assets/pearl-graywash-bump.webp",
+      "sha256": "c84ba1c70baa24f901bd42fe1dd84f72696be88e15b2d3b36c4b733e2de00de4",
+      "size": 77168
     },
     {
-      "path": "/assets/pearl-linear-onyx-bump.webp",
-      "sha256": "2b6db88d78098363e29568061786616a01219b1118c58d9ff15b84d795ed6d22",
-      "size": 50658
+      "path": "/assets/pearl-graywash-front.webp",
+      "sha256": "a5029ad7af8684e0cefe933e42a95bef5ecaba554074e8dde6fd3a28a303cb1f",
+      "size": 66766
     },
     {
-      "path": "/assets/pearl-linear-onyx.webp",
-      "sha256": "1a6245efdecd4353dd8468e7af25f8925e942acb6664f5d5a5e5d312fa2fb960",
-      "size": 41004
+      "path": "/assets/pearl-graywash-top.webp",
+      "sha256": "92054583da3b30f0449f9da745d9bf059e23c6c810cd78292b7a8cde9dc4401d",
+      "size": 65196
     },
     {
-      "path": "/assets/pearl-linear-pearl-bump.webp",
-      "sha256": "baf9c3c82f060e3ebb0cafa177c072bff2c2e95c58ea8c050ba403ebebab5a37",
-      "size": 68528
+      "path": "/assets/pearl-little-river-bump.webp",
+      "sha256": "52ace94745d92b71c0a6ee87ae190712a2e05be7131887422ea58890a33cafa7",
+      "size": 68938
     },
     {
-      "path": "/assets/pearl-linear-pearl.webp",
-      "sha256": "198e26f822f63e22ca1f702d3ee11c4d4a3c0480dae7ec4ea5772bc7848f73d6",
-      "size": 14680
+      "path": "/assets/pearl-little-river-front.webp",
+      "sha256": "b394700fc823207a02d9a0178af7ed997c323186b934d63c059358212f7cd6a5",
+      "size": 84964
     },
     {
-      "path": "/assets/pearl-linear-saddle-bump.webp",
-      "sha256": "cbedb88df191c5ce7ed362b182ac43f0695a88b393b50cf2c127314539cf80c0",
-      "size": 69582
+      "path": "/assets/pearl-little-river-top.webp",
+      "sha256": "db1f7fb194b1808c8f6373219f45a68c1545ceb778d7b8caa368f57286650b97",
+      "size": 79562
     },
     {
-      "path": "/assets/pearl-linear-saddle.webp",
-      "sha256": "aa98e7a3add16b6c695bf3c49e1ac785b2312fbf01cbe980cecbf3acd3e5b175",
-      "size": 51144
+      "path": "/assets/pearl-mocha-bump.webp",
+      "sha256": "2ef98100c30cab215b490e2d44ff4994633fc0cc949e1b68943a78932a661e4a",
+      "size": 36798
+    },
+    {
+      "path": "/assets/pearl-mocha-front.webp",
+      "sha256": "24f8faeef19f2c09a435075d7e1a811afa0a91ca096c181cab626cc1f5e759b8",
+      "size": 49358
+    },
+    {
+      "path": "/assets/pearl-mocha-top.webp",
+      "sha256": "6319615ef82af472282cd178f5e58dbec3831ca5cfcdcdebb7853761ff7fccc1",
+      "size": 62284
+    },
+    {
+      "path": "/assets/pearl-onyx-bump.webp",
+      "sha256": "5d1aebe0be86f01a154eb12dc9e953fa667f9776be072fbd725b8b30c5984db2",
+      "size": 31382
+    },
+    {
+      "path": "/assets/pearl-onyx-front.webp",
+      "sha256": "f7027fa27b1e601fcc827eadd65dce3fb249eedbfa06b488255b00fb1d52cf09",
+      "size": 43714
+    },
+    {
+      "path": "/assets/pearl-onyx-top.webp",
+      "sha256": "6d4cc33c9051f98af91100710d8ec7c8ad037702d44b8493c4e36ef9f8c712c8",
+      "size": 51308
+    },
+    {
+      "path": "/assets/pearl-pearl-bump.webp",
+      "sha256": "315d726f212fe3057525c3fefaff21a1ec540363e7c147b64375e6e1c46b22ae",
+      "size": 138596
+    },
+    {
+      "path": "/assets/pearl-pearl-front.webp",
+      "sha256": "83ea9912c33a0f508129dbb1a19da5d97fc0fbbee0b07e419c272e0f317b51ca",
+      "size": 16734
+    },
+    {
+      "path": "/assets/pearl-pearl-top.webp",
+      "sha256": "f8e5e5ea2f2d2cb423a870e174cf2bc7f35855af31f0d39c8862cd4fa4b0781b",
+      "size": 28304
+    },
+    {
+      "path": "/assets/pearl-saddle-bump.webp",
+      "sha256": "05de8018f1e1f691d74707a704cf48d08b43bef9679ec31c8dcefa036173d297",
+      "size": 35028
+    },
+    {
+      "path": "/assets/pearl-saddle-front.webp",
+      "sha256": "b5cdfb3df78ad7c861cd01bf02084f8523baab1d1dc683761dc7357dd18505e7",
+      "size": 55664
+    },
+    {
+      "path": "/assets/pearl-saddle-top.webp",
+      "sha256": "3d9b092d20c20fc27184ad3a2425f952cb3dfe3abdd9506b74dee5522c2afc75",
+      "size": 61366
+    },
+    {
+      "path": "/assets/pearl-whitewash-bump.webp",
+      "sha256": "96678bd02969ca1d3bf65aa820c3dca9a76116a103feb4103c86012fe53cf7c0",
+      "size": 89152
+    },
+    {
+      "path": "/assets/pearl-whitewash-front.webp",
+      "sha256": "0db40a2fdb02c361141f6077ebb16a5717f2ec6d09847bd7db98554ae921d2bc",
+      "size": 28392
+    },
+    {
+      "path": "/assets/pearl-whitewash-top.webp",
+      "sha256": "286b8239001c93af376cfcfff3937b35dbd0c02c45afc32a6c16d1bc1ef45b16",
+      "size": 20318
     }
   ]
 }

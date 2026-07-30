@@ -5,19 +5,29 @@ import {
   getMantelBottom,
   getMantelCenter,
   getMinimumMantelHeight,
+  getHearthWidth,
   inchesLabel,
   normalizeConfiguration,
 } from "@/domain/configuration";
 
 describe("feature wall dimensions", () => {
-  it("uses the 864 manual's fireplace-base datum for an 8-inch mantel", () => {
+  it("uses the 864 manual's fireplace-base datum for the selected mantel depth", () => {
     const configuration = normalizeConfiguration({
       ...DEFAULT_CONFIGURATION,
       mantelHeightAboveBase: -10,
     });
-    expect(configuration.mantelHeightAboveBase).toBe(44.75);
-    expect(getMantelBottom(configuration)).toBe(44.75);
-    expect(getMantelCenter(configuration)).toBe(46.75);
+    expect(configuration.mantelHeightAboveBase).toBe(45.75);
+    expect(getMantelBottom(configuration)).toBe(45.75);
+    expect(getMantelCenter(configuration)).toBe(48.25);
+
+    const linear = normalizeConfiguration({
+      ...configuration,
+      mantelProductId: "linear",
+      mantelWidth: 60,
+      mantelFinishId: "pearl",
+      mantelHeightAboveBase: -10,
+    });
+    expect(linear.mantelHeightAboveBase).toBe(44.75);
   });
 
   it("uses the current 4237 manual's fireplace-base datum", () => {
@@ -28,8 +38,8 @@ describe("feature wall dimensions", () => {
       fireplaceElevation: 6,
       mantelHeightAboveBase: 44,
     });
-    expect(configuration.mantelHeightAboveBase).toBe(57);
-    expect(getMantelBottom(configuration)).toBe(63);
+    expect(configuration.mantelHeightAboveBase).toBe(58);
+    expect(getMantelBottom(configuration)).toBe(64);
     expect(getMinimumMantelHeight("4237-ember-glo-clean-face", 10)).toBe(59);
   });
 
@@ -50,6 +60,18 @@ describe("feature wall dimensions", () => {
     });
     expect(configuration.wallWidth).toBe(180);
     expect(configuration.stoneWidth).toBe(96);
+  });
+
+  it("builds an exact modular hearth and aligns it to a raised fireplace", () => {
+    const configuration = normalizeConfiguration({
+      ...DEFAULT_CONFIGURATION,
+      hearthEnabled: true,
+      hearthStoneCount: 5,
+      fireplaceElevation: 0,
+    });
+    expect(configuration.fireplaceElevation).toBe(1.5);
+    expect(getHearthWidth(configuration)).toBe(90);
+    expect(configuration.stoneWidth).toBeGreaterThanOrEqual(96);
   });
 
   it("clamps every adjustable physical dimension to its approved range", () => {

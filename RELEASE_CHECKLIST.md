@@ -15,17 +15,21 @@ application version, asset version, preview URL, and deployment ID.
       stretch, missing asset, or obvious material repetition.
 - [ ] Startup reaches presentation-ready within 10 seconds after caching.
 - [ ] Control feedback appears within 100 milliseconds.
-- [ ] Diagnostics reports 20 verified assets and an offline-ready cache.
+- [ ] Diagnostics reports 38 verified assets and an offline-ready cache.
 - [ ] Production bundle, memory, texture dimensions, and sustained frame rate
       are recorded.
 
 ## Physical showroom gate
 
 - [ ] A tape-measured screen reference is within 1% for all three fireplace
-      viewing areas and both 60- and 84-inch mantels.
+      viewing areas, every offered mantel length, and the 18 × 20-inch
+      hearthstone modules.
 - [ ] Kentucky and Brown Ledge color and relief match physical showroom samples
       under showroom lighting.
-- [ ] All five Pearl finishes and both shelf lengths match physical samples.
+- [ ] All eight Pearl finishes and every compatible shelf length match physical
+      samples.
+- [ ] The Kentucky and Brown #860 hearth caps match physical samples and remain
+      aligned to the selected fireplace elevation.
 - [ ] Every FPX model and face remains sharp at the maximum supported 4K size.
 - [ ] Cold launch, browser restart, computer restart, internet loss, internet
       restoration, and offline reload all pass.

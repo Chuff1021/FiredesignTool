@@ -437,6 +437,92 @@ select:focus-visible {
   margin-top: 0.25rem;
 }
 
+.toggle-control {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+}
+
+.toggle-control input {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.toggle-control span {
+  background: #171513;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  height: 22px;
+  position: relative;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+  width: 40px;
+}
+
+.toggle-control span::after {
+  background: var(--muted);
+  content: "";
+  height: 14px;
+  left: 3px;
+  position: absolute;
+  top: 3px;
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+  width: 14px;
+}
+
+.toggle-control input:checked + span {
+  background: rgba(184, 145, 91, 0.2);
+  border-color: rgba(217, 184, 139, 0.52);
+}
+
+.toggle-control input:checked + span::after {
+  background: var(--gold);
+  transform: translateX(18px);
+}
+
+.toggle-control input:focus-visible + span {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.section-description {
+  color: var(--muted);
+  font-size: 0.64rem;
+  line-height: 1.55;
+  margin: 0 0 0.8rem;
+}
+
+.hearth-spec {
+  align-items: center;
+  border-top: 1px solid var(--line);
+  display: flex;
+  gap: 0.72rem;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+}
+
+.hearth-spec p,
+.hearth-spec strong,
+.hearth-spec small {
+  display: block;
+  margin: 0;
+}
+
+.hearth-spec strong {
+  font-size: 0.69rem;
+  font-weight: 570;
+}
+
+.hearth-spec small {
+  color: var(--muted);
+  font-size: 0.58rem;
+  margin-top: 0.2rem;
+}
+
 .material-swatch {
   background-position: center;
   background-size: cover;

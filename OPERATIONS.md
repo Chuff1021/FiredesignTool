@@ -5,7 +5,7 @@
 1. Start the showroom computer and open the installed FireDesign app.
 2. Wait for the “Dimensionally calibrated” status.
 3. Press `Shift+D`.
-4. Confirm renderer status is **Showroom ready**, 20 assets are verified,
+4. Confirm renderer status is **Showroom ready**, 38 assets are verified,
    and offline cache is **Ready**.
 5. Confirm the displayed application and asset versions match the current
    release record.

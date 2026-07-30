@@ -10,7 +10,9 @@ test("loads the approved showroom composition without customer-facing errors", a
 }) => {
   await expect(page.getByRole("heading", { name: "FireDesign" })).toBeVisible();
   await expect(
-    page.getByText("864 Clean Face · Clean Face · Kentucky Ledge · Pearl Linear 60″"),
+    page.getByText(
+      "864 Clean Face · Clean Face · Kentucky Ledge · Graywash Zachary Smooth 72″",
+    ),
   ).toBeVisible();
   await expect(page.getByText("The presentation could not start safely.")).toHaveCount(0);
 });
@@ -37,8 +39,9 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   await expect(
     page.getByRole("heading", { name: "4237 Ember-Glo Clean Face Deluxe" }),
   ).toBeVisible();
-  await expect(page.getByLabel("Mantel height")).toHaveValue("57");
+  await expect(page.getByLabel("Mantel height")).toHaveValue("58");
   await page.getByLabel("Centurion stone").selectOption("brown-ledge");
+  await page.getByLabel("Mantel style").selectOption("linear");
   await page.getByRole("button", { name: "84″" }).click();
   await page.getByLabel("Mantel finish").selectOption("onyx");
   await expect(
@@ -50,6 +53,20 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   await expect(
     page.getByText("864 Designer Face · Metropolitan · Black · Brown Ledge · Onyx Linear 84″"),
   ).toBeVisible();
+});
+
+test("adds a height-linked Centurion hearth and exposes exact modular widths", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+  await page.getByLabel("Add raised hearth").evaluate((element: HTMLInputElement) => {
+    element.click();
+  });
+  await expect(page.getByLabel("Add raised hearth")).toBeChecked();
+  await expect(page.getByLabel("Fireplace elevation")).toHaveValue("12");
+  await expect(page.getByText("Centurion #860 hearthstones align to the 12″")).toBeVisible();
+  await page.getByRole("button", { name: "90″" }).click();
+  await expect(page.getByText("5 × 18″ pieces")).toBeVisible();
 });
 
 test("switches view, opens diagnostics, and resets safely", async ({ page }, testInfo) => {
@@ -87,7 +104,7 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("20 / 20 verified")).toBeVisible();
+  await expect(page.getByText("38 / 38 verified")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,
   });

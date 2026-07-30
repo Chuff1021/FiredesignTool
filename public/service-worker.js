@@ -1,38 +1,27 @@
-const CACHE_VERSION = "firedesign-2026.07.30-3";
-const CORE = [
-  "/",
-  "/manifest.webmanifest",
-  "/icon.svg",
-  "/icon-192.png",
-  "/icon-512.png",
-  "/assets/manifest.json",
-  "/assets/fpx-4237-clean-face.png",
-  "/assets/fpx-864-arched-french-country.png",
-  "/assets/fpx-864-classic-arch.png",
-  "/assets/fpx-864-metropolitan.png",
-  "/assets/fpx-864-rectangle-double-door.png",
-  "/assets/fpx-864-trv-31k-clean-face.png",
-  "/assets/centurion-brown-ledge.webp",
-  "/assets/centurion-brown-ledge-bump.webp",
-  "/assets/centurion-kentucky-ledge.webp",
-  "/assets/centurion-kentucky-ledge-bump.webp",
-  "/assets/pearl-linear-graphite.webp",
-  "/assets/pearl-linear-graphite-bump.webp",
-  "/assets/pearl-linear-mocha.webp",
-  "/assets/pearl-linear-mocha-bump.webp",
-  "/assets/pearl-linear-onyx.webp",
-  "/assets/pearl-linear-onyx-bump.webp",
-  "/assets/pearl-linear-pearl.webp",
-  "/assets/pearl-linear-pearl-bump.webp",
-  "/assets/pearl-linear-saddle.webp",
-  "/assets/pearl-linear-saddle-bump.webp",
-];
+const CACHE_VERSION = "firedesign-2026.07.30-4";
+const SHELL = ["/", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
+
+async function cacheApprovedRelease(cache) {
+  const manifestResponse = await fetch("/assets/manifest.json", { cache: "no-store" });
+  if (!manifestResponse.ok) throw new Error("Approved asset manifest is unavailable.");
+  const manifest = await manifestResponse.clone().json();
+  const assetPaths = Array.isArray(manifest.files)
+    ? manifest.files
+        .map((file) => file?.path)
+        .filter(
+          (assetPath) => typeof assetPath === "string" && assetPath.startsWith("/assets/"),
+        )
+    : [];
+  await cache.put("/assets/manifest.json", manifestResponse);
+  await cache.addAll([...SHELL, ...assetPaths]);
+  return new Set([...SHELL, "/assets/manifest.json", ...assetPaths]);
+}
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_VERSION)
-      .then((cache) => cache.addAll(CORE))
+      .then((cache) => cacheApprovedRelease(cache))
       .then(() => self.skipWaiting()),
   );
 });
@@ -92,9 +81,9 @@ self.addEventListener("message", (event) => {
     caches
       .open(CACHE_VERSION)
       .then(async (cache) => {
-        await cache.addAll(CORE);
+        const approvedPaths = await cacheApprovedRelease(cache);
         const additional = [...new Set(urls)].filter(
-          (url) => !CORE.includes(new URL(url, self.location.origin).pathname),
+          (url) => !approvedPaths.has(new URL(url, self.location.origin).pathname),
         );
         await Promise.allSettled(additional.map((url) => cache.add(url)));
       })

@@ -4,15 +4,19 @@ import {
   fireplaceProducts,
   getFaceOption,
   getFireplaceProduct,
+  getHearthstone,
   getMantelFinish,
+  getMantelProduct,
   getMantelSize,
   getStoneProduct,
   mantelFinishes,
-  mantelSizes,
+  mantelProducts,
   stoneProducts,
   type FaceOptionId,
   type FireplaceId,
   type MantelFinishId,
+  type MantelProductId,
+  type MantelWidth,
   type StoneId,
 } from "@/domain/catalog";
 import {
@@ -21,6 +25,7 @@ import {
   STONE_WIDTH_RANGE,
   WALL_HEIGHT_RANGE,
   WALL_WIDTH_RANGE,
+  getHearthWidth,
   getMinimumMantelHeight,
   getMinimumStoneWidth,
   inchesLabel,
@@ -48,8 +53,11 @@ export function ControlPanel({
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const faceOptionId = useConfigurationStore((state) => state.faceOptionId);
   const stoneId = useConfigurationStore((state) => state.stoneId);
+  const mantelProductId = useConfigurationStore((state) => state.mantelProductId);
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
   const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
+  const hearthEnabled = useConfigurationStore((state) => state.hearthEnabled);
+  const hearthStoneCount = useConfigurationStore((state) => state.hearthStoneCount);
   const cameraMode = useConfigurationStore((state) => state.cameraMode);
   const showDimensions = useConfigurationStore((state) => state.showDimensions);
   const setWallWidth = useConfigurationStore((state) => state.setWallWidth);
@@ -62,8 +70,11 @@ export function ControlPanel({
   const setFireplaceId = useConfigurationStore((state) => state.setFireplaceId);
   const setFaceOptionId = useConfigurationStore((state) => state.setFaceOptionId);
   const setStoneId = useConfigurationStore((state) => state.setStoneId);
+  const setMantelProductId = useConfigurationStore((state) => state.setMantelProductId);
   const setMantelWidth = useConfigurationStore((state) => state.setMantelWidth);
   const setMantelFinishId = useConfigurationStore((state) => state.setMantelFinishId);
+  const setHearthEnabled = useConfigurationStore((state) => state.setHearthEnabled);
+  const setHearthStoneCount = useConfigurationStore((state) => state.setHearthStoneCount);
   const setCameraMode = useConfigurationStore((state) => state.setCameraMode);
   const setShowDimensions = useConfigurationStore((state) => state.setShowDimensions);
   const reset = useConfigurationStore((state) => state.reset);
@@ -71,10 +82,39 @@ export function ControlPanel({
   const fireplace = getFireplaceProduct(fireplaceId);
   const face = getFaceOption(fireplaceId, faceOptionId);
   const stone = getStoneProduct(stoneId);
-  const mantelSize = getMantelSize(mantelWidth);
-  const mantelFinish = getMantelFinish(mantelFinishId);
+  const mantelProduct = getMantelProduct(mantelProductId);
+  const mantelSize = getMantelSize(mantelProductId, mantelWidth);
+  const mantelFinish = getMantelFinish(mantelProductId, mantelFinishId);
+  const compatibleMantelFinishes = mantelFinishes.filter((finish) =>
+    finish.compatibleProductIds.includes(mantelProductId),
+  );
+  const hearthstone = getHearthstone(stoneId);
   const minimumMantelHeight = getMinimumMantelHeight(fireplaceId, mantelSize.depth);
-  const minimumStoneWidth = getMinimumStoneWidth(fireplaceId, faceOptionId, mantelWidth);
+  const minimumStoneWidth = getMinimumStoneWidth(
+    fireplaceId,
+    faceOptionId,
+    mantelWidth,
+    hearthEnabled,
+    hearthStoneCount,
+  );
+  const hearthWidth = getHearthWidth({
+    schemaVersion: 3,
+    wallWidth,
+    wallHeight,
+    stoneWidth,
+    fireplaceElevation,
+    mantelHeightAboveBase,
+    fireplaceId,
+    faceOptionId,
+    stoneId,
+    mantelProductId,
+    mantelWidth,
+    mantelFinishId,
+    hearthEnabled,
+    hearthStoneCount,
+    cameraMode,
+    showDimensions,
+  });
 
   return (
     <aside className="control-panel">
@@ -198,7 +238,7 @@ export function ControlPanel({
             description="Fireplace base above finished floor"
             label="Fireplace elevation"
             max={FIREPLACE_ELEVATION_RANGE.max}
-            min={FIREPLACE_ELEVATION_RANGE.min}
+            min={hearthEnabled ? 1.5 : FIREPLACE_ELEVATION_RANGE.min}
             onChange={setFireplaceElevation}
             step={FIREPLACE_ELEVATION_RANGE.step}
             value={fireplaceElevation}
@@ -215,7 +255,8 @@ export function ControlPanel({
           <div className="rule-note">
             <UiIcon name="check" size={15} />
             <span>
-              {fireplace.mantelRule.note}
+              A {inchesLabel(mantelSize.depth)} deep mantel must be at least{" "}
+              {inchesLabel(minimumMantelHeight)} above the base of the fireplace.
               <small>
                 Travis install manual · rev. {fireplace.mantelRule.manualRevision} · p.
                 {fireplace.mantelRule.manualPage} · measured from fireplace base
@@ -246,17 +287,35 @@ export function ControlPanel({
             </select>
           </label>
 
-          <div className="field-label">Pearl Linear shelf length</div>
+          <label className="select-control">
+            <span>Pearl mantel style</span>
+            <select
+              aria-label="Mantel style"
+              onChange={(event) => setMantelProductId(event.target.value as MantelProductId)}
+              value={mantelProductId}
+            >
+              {mantelProducts.map((product) => (
+                <option key={product.id} value={product.id}>
+                  {product.shortLabel}
+                </option>
+              ))}
+            </select>
+            <small>
+              {inchesLabel(mantelSize.height)} high × {inchesLabel(mantelSize.depth)} deep
+            </small>
+          </label>
+
+          <div className="field-label">Mantel length</div>
           <div
             className="segmented-control segmented-control--compact"
             role="group"
             aria-label="Mantel length"
           >
-            {mantelSizes.map((size) => (
+            {mantelProduct.sizes.map((size) => (
               <button
                 aria-pressed={mantelWidth === size.width}
                 key={size.width}
-                onClick={() => setMantelWidth(size.width)}
+                onClick={() => setMantelWidth(size.width as MantelWidth)}
                 type="button"
               >
                 {size.width}″
@@ -271,7 +330,7 @@ export function ControlPanel({
               onChange={(event) => setMantelFinishId(event.target.value as MantelFinishId)}
               value={mantelFinishId}
             >
-              {mantelFinishes.map((finish) => (
+              {compatibleMantelFinishes.map((finish) => (
                 <option key={finish.id} value={finish.id}>
                   {finish.name}
                 </option>
@@ -305,12 +364,69 @@ export function ControlPanel({
                   {mantelFinish.name} · {mantelWidth}″
                 </strong>
                 <small>
-                  Pearl · NCL-{mantelWidth}
-                  {mantelFinish.name}
+                  Pearl · {mantelProduct.shortLabel} · {mantelSize.modelCode}
                 </small>
               </p>
             </div>
           </div>
+        </section>
+
+        <section className="control-section">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Raised installation</p>
+              <h3>Hearth</h3>
+            </div>
+            <label className="toggle-control">
+              <input
+                aria-label="Add raised hearth"
+                checked={hearthEnabled}
+                onChange={(event) => setHearthEnabled(event.target.checked)}
+                type="checkbox"
+              />
+              <span aria-hidden="true" />
+            </label>
+          </div>
+          <p className="section-description">
+            {hearthEnabled
+              ? `Centurion #860 hearthstones align to the ${inchesLabel(fireplaceElevation)} fireplace base.`
+              : "Add a stone riser and matching Centurion hearthstones for a raised fireplace."}
+          </p>
+          {hearthEnabled ? (
+            <>
+              <div className="field-label">Hearth width</div>
+              <div
+                aria-label="Hearth width"
+                className="segmented-control segmented-control--compact"
+                role="group"
+              >
+                {([3, 4, 5] as const).map((count) => (
+                  <button
+                    aria-pressed={hearthStoneCount === count}
+                    key={count}
+                    onClick={() => setHearthStoneCount(count)}
+                    type="button"
+                  >
+                    {count * 18}″
+                  </button>
+                ))}
+              </div>
+              <div className="hearth-spec">
+                <span
+                  className="material-swatch"
+                  style={{
+                    backgroundImage: `url(${hearthstone.assets[0]!.localPath})`,
+                  }}
+                />
+                <p>
+                  <strong>
+                    {hearthstone.colorName} Hearthstone · {inchesLabel(hearthWidth)}
+                  </strong>
+                  <small>{hearthStoneCount} × 18″ pieces · 20″ deep × 1½″ thick</small>
+                </p>
+              </div>
+            </>
+          ) : null}
         </section>
 
         <section className="control-section">

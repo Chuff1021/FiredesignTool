@@ -10,6 +10,10 @@ The current approved catalog contains:
   two rectangular official designer faces
 - Fireplace Xtrordinair 4237 Ember-Glo Clean Face Deluxe (`98500344`)
 - Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
+- Centurion #860 hearthstones in matching Kentucky and Brown colors, assembled
+  in exact 18 × 20 × 1.5-inch modules
+- Pearl Mantels Zachary Smooth shelves in Whitewash and Graywash and Zachary
+  Wood Look in Little River, each in 48-, 60-, 72-, and 84-inch lengths
 - Pearl Mantels Linear non-combustible shelves in the official 60- and 84-inch
   sizes and Pearl, Graphite, Mocha, Onyx, and Saddle finishes
 
@@ -63,12 +67,15 @@ version 1 renderer.
 
 Wall width and centered stone-field width are independent. The stone field is
 automatically kept wide enough for the selected fireplace and mantel.
+An optional raised hearth follows the fireplace elevation and supports three,
+four, or five exact Centurion #860 modules (54, 72, or 90 inches).
 
 Mantel placement is measured from the fireplace base, matching the datum in
 the selected Travis Industries installation manual:
 
 - Both 864 variants: an 8-inch-deep shelf requires a 44-3/4-inch minimum
-  height above the fireplace base.
+  height and a 9-inch-deep shelf requires a 45-3/4-inch minimum above the
+  fireplace base.
 - 4237: an 8-inch-deep shelf requires a 57-inch minimum height above the
   fireplace base.
 

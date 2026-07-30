@@ -1,7 +1,14 @@
 "use client";
 
 import { create } from "zustand";
-import type { FaceOptionId, FireplaceId, MantelFinishId, StoneId } from "@/domain/catalog";
+import type {
+  FaceOptionId,
+  FireplaceId,
+  MantelFinishId,
+  MantelProductId,
+  MantelWidth,
+  StoneId,
+} from "@/domain/catalog";
 import {
   DEFAULT_CONFIGURATION,
   normalizeConfiguration,
@@ -26,8 +33,11 @@ type ConfigurationState = FeatureWallConfiguration & {
   setFireplaceId: (value: FireplaceId) => void;
   setFaceOptionId: (value: FaceOptionId) => void;
   setStoneId: (value: StoneId) => void;
-  setMantelWidth: (value: 60 | 84) => void;
+  setMantelProductId: (value: MantelProductId) => void;
+  setMantelWidth: (value: MantelWidth) => void;
   setMantelFinishId: (value: MantelFinishId) => void;
+  setHearthEnabled: (value: boolean) => void;
+  setHearthStoneCount: (value: 3 | 4 | 5) => void;
   setCameraMode: (value: CameraMode) => void;
   setShowDimensions: (value: boolean) => void;
   reset: () => void;
@@ -35,7 +45,7 @@ type ConfigurationState = FeatureWallConfiguration & {
 
 function pickConfiguration(state: ConfigurationState): FeatureWallConfiguration {
   return {
-    schemaVersion: 2,
+    schemaVersion: 3,
     wallWidth: state.wallWidth,
     wallHeight: state.wallHeight,
     stoneWidth: state.stoneWidth,
@@ -44,8 +54,11 @@ function pickConfiguration(state: ConfigurationState): FeatureWallConfiguration 
     fireplaceId: state.fireplaceId,
     faceOptionId: state.faceOptionId,
     stoneId: state.stoneId,
+    mantelProductId: state.mantelProductId,
     mantelWidth: state.mantelWidth,
     mantelFinishId: state.mantelFinishId,
+    hearthEnabled: state.hearthEnabled,
+    hearthStoneCount: state.hearthStoneCount,
     cameraMode: state.cameraMode,
     showDimensions: state.showDimensions,
   };
@@ -79,8 +92,18 @@ export const useConfigurationStore = create<ConfigurationState>((set) => ({
   setFireplaceId: (value) => set((state) => saveNext(state, { fireplaceId: value })),
   setFaceOptionId: (value) => set((state) => saveNext(state, { faceOptionId: value })),
   setStoneId: (value) => set((state) => saveNext(state, { stoneId: value })),
+  setMantelProductId: (value) => set((state) => saveNext(state, { mantelProductId: value })),
   setMantelWidth: (value) => set((state) => saveNext(state, { mantelWidth: value })),
   setMantelFinishId: (value) => set((state) => saveNext(state, { mantelFinishId: value })),
+  setHearthEnabled: (value) =>
+    set((state) =>
+      saveNext(state, {
+        hearthEnabled: value,
+        fireplaceElevation:
+          value && state.fireplaceElevation < 1.5 ? 12 : state.fireplaceElevation,
+      }),
+    ),
+  setHearthStoneCount: (value) => set((state) => saveNext(state, { hearthStoneCount: value })),
   setCameraMode: (value) => set((state) => saveNext(state, { cameraMode: value })),
   setShowDimensions: (value) => set((state) => saveNext(state, { showDimensions: value })),
   reset: () => {

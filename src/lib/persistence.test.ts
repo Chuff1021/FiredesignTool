@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_CONFIGURATION } from "@/domain/configuration";
 import {
   LEGACY_STORAGE_KEY,
+  LEGACY_V2_STORAGE_KEY,
   STORAGE_KEY,
   readPersistedConfiguration,
   writePersistedConfiguration,
@@ -17,6 +18,20 @@ describe("configuration persistence", () => {
       configuration: saved,
       recovered: false,
     });
+  });
+
+  it("revalidates saved clearances when product depth changes", () => {
+    const saved = {
+      ...DEFAULT_CONFIGURATION,
+      mantelHeightAboveBase: 44.75,
+      mantelProductId: "zachary-smooth",
+      mantelWidth: 72,
+      mantelFinishId: "graywash",
+    };
+    const storage = {
+      getItem: vi.fn((key: string) => (key === STORAGE_KEY ? JSON.stringify(saved) : null)),
+    };
+    expect(readPersistedConfiguration(storage).configuration.mantelHeightAboveBase).toBe(45.75);
   });
 
   it("migrates the original single-combination layout", () => {
@@ -37,11 +52,44 @@ describe("configuration persistence", () => {
     const result = readPersistedConfiguration(storage);
     expect(result.recovered).toBe(false);
     expect(result.configuration).toMatchObject({
-      schemaVersion: 2,
+      schemaVersion: 3,
       wallWidth: 168,
       fireplaceElevation: 4,
       mantelHeightAboveBase: 46.75,
       fireplaceId: "864-trv-31k-clean-face",
+    });
+  });
+
+  it("migrates version-two mantel selections without changing the approved product", () => {
+    const legacy = {
+      schemaVersion: 2,
+      wallWidth: 144,
+      wallHeight: 108,
+      stoneWidth: 96,
+      fireplaceElevation: 0,
+      mantelHeightAboveBase: 44.75,
+      fireplaceId: "864-trv-31k-clean-face",
+      faceOptionId: "clean-face",
+      stoneId: "kentucky-ledge",
+      mantelWidth: 84,
+      mantelFinishId: "onyx",
+      cameraMode: "front",
+      showDimensions: true,
+    };
+    const storage = {
+      getItem: vi.fn((key: string) =>
+        key === LEGACY_V2_STORAGE_KEY ? JSON.stringify(legacy) : null,
+      ),
+    };
+    expect(readPersistedConfiguration(storage)).toMatchObject({
+      configuration: {
+        schemaVersion: 3,
+        mantelProductId: "linear",
+        mantelWidth: 84,
+        mantelFinishId: "onyx",
+        hearthEnabled: false,
+      },
+      recovered: false,
     });
   });
 

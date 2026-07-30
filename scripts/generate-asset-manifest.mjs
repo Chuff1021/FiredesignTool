@@ -23,7 +23,7 @@ for (const name of entries.toSorted()) {
 }
 
 const manifest = {
-  version: "2026.07.30-3",
+  version: "2026.07.30-4",
   generatedAt: "2026-07-30T00:00:00.000Z",
   files,
 };

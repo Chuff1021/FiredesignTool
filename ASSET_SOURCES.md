@@ -62,7 +62,14 @@ application does not alter the logs, flame, ember bed, or face design.
 - Brown swatch:
   `https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp`
 - Specification:
-  `https://www.centurionstone.com/wp-content/uploads/2024/03/Ledgestone-Spec-Sheets.pdf`
+  `https://www.centurionstone.com/wp-content/uploads/2025/03/centurion_stone_cut_sheets_3_27_25_compressed.pdf`
+- Hearth product: #860 Hearthstone, 18 in W × 20 in D × 1.5 in T
+- Architectural accents:
+  `https://www.centurionstone.com/architectural-accents-and-trim/`
+- Kentucky and Brown hearth color swatches:
+  `https://www.centurionstone.com/wp-content/uploads/2024/08/Kentucky.webp`
+  and
+  `https://www.centurionstone.com/wp-content/uploads/2024/08/Brown.webp`
 
 The swatches are edge-cropped and assembled deterministically into a
 4096 × 3072 mural representing 192 × 144 real-world inches. Varied crops and
@@ -72,6 +79,23 @@ Manufacturer photography cannot replace an in-person sample for color
 approval.
 
 ## Pearl Mantels
+
+### Zachary
+
+- Zachary Smooth sizes: 48, 60, 72, and 84 in
+- Published section: 5 in H × 9 in D
+- Smooth finishes: Whitewash and Graywash
+- Zachary Wood Look sizes: 48, 60, 72, and 84 in
+- Published section: 5 in H × 7.87 in D
+- Wood Look finish: Little River
+- Current catalog:
+  `https://pearlmantels.com/images/PearlBro.pdf`
+- Official product pages:
+  `https://www.pearlmantels.com/zacharysmoothwhitewash.html`,
+  `https://pearlmantels.com/zacharysmoothgraywash.html`, and
+  `https://pearlmantels.com/zacharywoodlooklitriv.html`
+
+### Linear
 
 - Product: Linear non-combustible mantel shelf, ASTM E136
 - Official sizes: 60 in and 84 in
@@ -83,9 +107,9 @@ approval.
 - Finish photography:
   `https://www.pearlmantels.com/images/products/linear/{FINISH_ASSET}.jpg`
 
-Model names are generated exactly as `NCL-{60|84}{Finish}`. The shelf geometry
-uses the published dimensions. Official front and detail photographs provide
-the finish map and deterministic surface relief.
+Every shelf geometry uses its published dimensions and weight. Separate
+manufacturer-derived front and top maps prevent studio-background streaks from
+being wrapped around the shelf geometry.
 
 Pearl’s own heat-clearance note directs users to follow the fireplace
 manufacturer’s combustible-shelf requirements. The configurator therefore

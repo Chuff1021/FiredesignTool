@@ -9,25 +9,26 @@ import {
   ClampToEdgeWrapping,
   LinearFilter,
   LinearMipmapLinearFilter,
-  MirroredRepeatWrapping,
   SRGBColorSpace,
   TextureLoader,
   type Group,
   type OrthographicCamera as ThreeOrthographicCamera,
   type PerspectiveCamera as ThreePerspectiveCamera,
   type Texture,
-  type WebGLRenderer,
 } from "three";
 import {
   ALL_ASSET_PATHS,
   getFaceOption,
   getFireplaceProduct,
+  getHearthstone,
   getMantelFinish,
+  getMantelProduct,
   getMantelSize,
   getStoneProduct,
 } from "@/domain/catalog";
 import {
   calculateOrthographicZoom,
+  getHearthWidth,
   getMantelBottom,
   getMantelCenter,
   inchesLabel,
@@ -115,8 +116,8 @@ function CameraRig() {
 
   useEffect(() => {
     if (!perspectiveRef.current) return;
-    perspectiveRef.current.position.set(wallWidth * 0.58, wallHeight * 0.58, wallWidth * 1.55);
-    perspectiveRef.current.lookAt(0, wallHeight * 0.46, 0);
+    perspectiveRef.current.position.set(wallWidth * 0.3, wallHeight * 0.57, wallWidth * 1.8);
+    perspectiveRef.current.lookAt(0, wallHeight * 0.47, 0);
     perspectiveRef.current.updateProjectionMatrix();
   }, [wallHeight, wallWidth]);
 
@@ -125,7 +126,7 @@ function CameraRig() {
       <OrthographicCamera far={1000} makeDefault={mode === "front"} near={0.1} ref={frontRef} />
       <PerspectiveCamera
         far={1200}
-        fov={31}
+        fov={30}
         makeDefault={mode === "perspective"}
         near={0.1}
         ref={perspectiveRef}
@@ -154,7 +155,7 @@ function DimensionLine({
 }
 
 function DimensionGuides({ configuration }: { configuration: FeatureWallConfiguration }) {
-  if (!configuration.showDimensions) return null;
+  if (!configuration.showDimensions || configuration.cameraMode !== "front") return null;
   const face = getFaceOption(configuration.fireplaceId, configuration.faceOptionId);
   const wallLeft = -configuration.wallWidth / 2;
   const stoneLeft = -configuration.stoneWidth / 2;
@@ -216,8 +217,14 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
   const fireplace = getFireplaceProduct(configuration.fireplaceId);
   const face = getFaceOption(configuration.fireplaceId, configuration.faceOptionId);
   const stone = getStoneProduct(configuration.stoneId);
-  const mantelSize = getMantelSize(configuration.mantelWidth);
-  const mantelFinish = getMantelFinish(configuration.mantelFinishId);
+  const mantelProduct = getMantelProduct(configuration.mantelProductId);
+  const mantelSize = getMantelSize(configuration.mantelProductId, configuration.mantelWidth);
+  const mantelFinish = getMantelFinish(
+    configuration.mantelProductId,
+    configuration.mantelFinishId,
+  );
+  const hearthstone = getHearthstone(configuration.stoneId);
+  const hearthWidth = getHearthWidth(configuration);
   const mantelCenter = getMantelCenter(configuration);
 
   const stoneTextures = useMemo(() => {
@@ -235,15 +242,45 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
   }, [configuration.stoneWidth, configuration.wallHeight, stone.assets, textures]);
 
   const mantelTextures = useMemo(() => {
-    const color = requireTexture(textures, mantelFinish.assets[0]!.localPath).clone();
-    const bump = requireTexture(textures, mantelFinish.assets[1]!.localPath).clone();
+    const front = requireTexture(textures, mantelFinish.assets[0]!.localPath).clone();
+    const top = requireTexture(textures, mantelFinish.assets[1]!.localPath).clone();
+    const bump = requireTexture(textures, mantelFinish.assets[2]!.localPath).clone();
+    for (const texture of [front, top, bump]) {
+      texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
+      texture.needsUpdate = true;
+    }
+    return { front, top, bump };
+  }, [mantelFinish.assets, textures]);
+
+  const hearthTextures = useMemo(() => {
+    const colorSource = requireTexture(textures, hearthstone.assets[0]!.localPath);
+    const bumpSource = requireTexture(textures, hearthstone.assets[1]!.localPath);
+    const caps = Array.from({ length: configuration.hearthStoneCount }, (_, index) => {
+      const color = colorSource.clone();
+      const bump = bumpSource.clone();
+      for (const texture of [color, bump]) {
+        texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
+        texture.repeat.set(0.72, 0.72);
+        texture.offset.set(0.05 + ((index * 0.07) % 0.18), 0.06 + ((index * 0.05) % 0.16));
+        texture.needsUpdate = true;
+      }
+      return { color, bump };
+    });
+    return caps;
+  }, [configuration.hearthStoneCount, hearthstone.assets, textures]);
+
+  const hearthRiserTextures = useMemo(() => {
+    const color = requireTexture(textures, stone.assets[0]!.localPath).clone();
+    const bump = requireTexture(textures, stone.assets[1]!.localPath).clone();
+    const riserHeight = Math.max(1, configuration.fireplaceElevation - 1.5);
     for (const texture of [color, bump]) {
-      texture.wrapS = texture.wrapT = MirroredRepeatWrapping;
-      texture.repeat.set(1, 1);
+      texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
+      texture.repeat.set(hearthWidth / 192, riserHeight / 144);
+      texture.offset.set((1 - hearthWidth / 192) / 2, 0.08);
       texture.needsUpdate = true;
     }
     return { color, bump };
-  }, [mantelFinish.assets, textures]);
+  }, [configuration.fireplaceElevation, hearthWidth, stone.assets, textures]);
 
   const fireTexture = requireTexture(textures, face.asset.localPath);
 
@@ -256,10 +293,27 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
   );
   useEffect(
     () => () => {
-      mantelTextures.color.dispose();
+      mantelTextures.front.dispose();
+      mantelTextures.top.dispose();
       mantelTextures.bump.dispose();
     },
     [mantelTextures],
+  );
+  useEffect(
+    () => () => {
+      hearthTextures.forEach(({ color, bump }) => {
+        color.dispose();
+        bump.dispose();
+      });
+    },
+    [hearthTextures],
+  );
+  useEffect(
+    () => () => {
+      hearthRiserTextures.color.dispose();
+      hearthRiserTextures.bump.dispose();
+    },
+    [hearthRiserTextures],
   );
   useEffect(() => () => shadowTexture.dispose(), [shadowTexture]);
 
@@ -288,9 +342,7 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
         position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 0.25]}
         receiveShadow
       >
-        <boxGeometry
-          args={[face.visibleFace.width + 0.5, face.visibleFace.height + 0.5, 1.2]}
-        />
+        <boxGeometry args={[fireplace.viewingArea.width, fireplace.viewingArea.height, 1.2]} />
         <meshStandardMaterial color="#171513" metalness={0.34} roughness={0.38} />
       </mesh>
       <mesh position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 0.9]}>
@@ -299,7 +351,11 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
       </mesh>
 
       <mesh
-        position={[0, configuration.fireplaceElevation + 2, 3.15]}
+        position={[
+          0,
+          configuration.hearthEnabled ? configuration.fireplaceElevation + 0.04 : 0.04,
+          configuration.hearthEnabled ? hearthstone.dimensions.depth / 2 : 3.15,
+        ]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <planeGeometry args={[Math.max(56, face.visibleFace.width + 12), 18]} />
@@ -315,18 +371,132 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
         args={[mantelSize.width, mantelSize.height, mantelSize.depth]}
         castShadow
         position={[0, mantelCenter, mantelSize.depth / 2 + 0.15]}
-        radius={0.42}
+        radius={mantelProduct.id === "linear" ? 0.34 : 0.18}
         receiveShadow
         smoothness={6}
       >
+        <meshStandardMaterial color={mantelFinish.colorHex} metalness={0} roughness={0.66} />
+      </RoundedBox>
+      <mesh position={[0, mantelCenter, mantelSize.depth + 0.17]}>
+        <planeGeometry args={[mantelSize.width - 0.22, mantelSize.height - 0.16]} />
         <meshStandardMaterial
           bumpMap={mantelTextures.bump}
-          bumpScale={0.16}
-          map={mantelTextures.color}
+          bumpScale={0.08}
+          map={mantelTextures.front}
           metalness={0}
-          roughness={0.58}
+          roughness={0.64}
         />
-      </RoundedBox>
+      </mesh>
+      <mesh
+        position={[0, mantelCenter + mantelSize.height / 2 + 0.02, mantelSize.depth / 2 + 0.15]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <planeGeometry args={[mantelSize.width - 0.22, mantelSize.depth - 0.16]} />
+        <meshStandardMaterial
+          bumpMap={mantelTextures.bump}
+          bumpScale={0.05}
+          map={mantelTextures.top}
+          metalness={0}
+          roughness={0.66}
+        />
+      </mesh>
+
+      {configuration.hearthEnabled && configuration.fireplaceElevation >= 1.5 ? (
+        <group name="centurion-hearthstone-860">
+          {configuration.fireplaceElevation > hearthstone.dimensions.thickness ? (
+            <>
+              <mesh
+                position={[
+                  0,
+                  (configuration.fireplaceElevation - hearthstone.dimensions.thickness) / 2,
+                  hearthstone.dimensions.depth / 2,
+                ]}
+                receiveShadow
+              >
+                <boxGeometry
+                  args={[
+                    hearthWidth,
+                    configuration.fireplaceElevation - hearthstone.dimensions.thickness,
+                    hearthstone.dimensions.depth,
+                  ]}
+                />
+                <meshStandardMaterial color="#4b423a" roughness={0.92} />
+              </mesh>
+              <mesh
+                position={[
+                  0,
+                  (configuration.fireplaceElevation - hearthstone.dimensions.thickness) / 2,
+                  hearthstone.dimensions.depth + 0.02,
+                ]}
+              >
+                <planeGeometry
+                  args={[
+                    hearthWidth,
+                    configuration.fireplaceElevation - hearthstone.dimensions.thickness,
+                  ]}
+                />
+                <meshStandardMaterial
+                  bumpMap={hearthRiserTextures.bump}
+                  bumpScale={0.09}
+                  map={hearthRiserTextures.color}
+                  roughness={0.9}
+                />
+              </mesh>
+            </>
+          ) : null}
+          {hearthTextures.map((texture, index) => {
+            const x =
+              (index - (configuration.hearthStoneCount - 1) / 2) * hearthstone.dimensions.width;
+            const bodyColor = hearthstone.colorName === "Kentucky" ? "#817c78" : "#80624f";
+
+            return (
+              <group key={index}>
+                <RoundedBox
+                  args={[
+                    hearthstone.dimensions.width - 0.16,
+                    hearthstone.dimensions.thickness,
+                    hearthstone.dimensions.depth,
+                  ]}
+                  castShadow
+                  position={[
+                    x,
+                    configuration.fireplaceElevation - hearthstone.dimensions.thickness / 2,
+                    hearthstone.dimensions.depth / 2 + 0.05,
+                  ]}
+                  radius={0.24}
+                  receiveShadow
+                  smoothness={4}
+                >
+                  <meshStandardMaterial color={bodyColor} metalness={0} roughness={0.9} />
+                </RoundedBox>
+                <mesh
+                  position={[
+                    x,
+                    configuration.fireplaceElevation + 0.01,
+                    hearthstone.dimensions.depth / 2 + 0.05,
+                  ]}
+                  receiveShadow
+                  rotation={[-Math.PI / 2, 0, 0]}
+                >
+                  <planeGeometry
+                    args={[
+                      hearthstone.dimensions.width - 0.38,
+                      hearthstone.dimensions.depth - 0.38,
+                    ]}
+                  />
+                  <meshStandardMaterial
+                    bumpMap={texture.bump}
+                    bumpScale={0.035}
+                    map={texture.color}
+                    metalness={0}
+                    roughness={0.88}
+                  />
+                </mesh>
+              </group>
+            );
+          })}
+        </group>
+      ) : null}
 
       <mesh position={[0, -1.05, 30]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[configuration.wallWidth * 2.5, 110]} />
@@ -361,9 +531,29 @@ function SceneReady({ onReady }: { onReady: () => void }) {
   return null;
 }
 
-function RendererReady({ onReady }: { onReady: (renderer: WebGLRenderer) => void }) {
+function RendererReady({
+  onRendererStatus,
+}: {
+  onRendererStatus: FeatureWallCanvasProps["onRendererStatus"];
+}) {
   const renderer = useThree((state) => state.gl);
-  useEffect(() => onReady(renderer), [onReady, renderer]);
+  useEffect(() => {
+    const canvas = renderer.domElement;
+    const lost = (event: Event) => {
+      event.preventDefault();
+      onRendererStatus("recovering");
+    };
+    const restored = () => {
+      onRendererStatus("recovering");
+      requestAnimationFrame(() => requestAnimationFrame(() => onRendererStatus("ready")));
+    };
+    canvas.addEventListener("webglcontextlost", lost, false);
+    canvas.addEventListener("webglcontextrestored", restored, false);
+    return () => {
+      canvas.removeEventListener("webglcontextlost", lost, false);
+      canvas.removeEventListener("webglcontextrestored", restored, false);
+    };
+  }, [onRendererStatus, renderer]);
   return null;
 }
 
@@ -377,12 +567,14 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const faceOptionId = useConfigurationStore((state) => state.faceOptionId);
   const stoneId = useConfigurationStore((state) => state.stoneId);
+  const mantelProductId = useConfigurationStore((state) => state.mantelProductId);
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
   const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
+  const hearthEnabled = useConfigurationStore((state) => state.hearthEnabled);
+  const hearthStoneCount = useConfigurationStore((state) => state.hearthStoneCount);
   const showDimensions = useConfigurationStore((state) => state.showDimensions);
-  const rendererRef = useRef<WebGLRenderer | null>(null);
   const configuration: FeatureWallConfiguration = {
-    schemaVersion: 2,
+    schemaVersion: 3,
     wallWidth,
     wallHeight,
     stoneWidth,
@@ -391,29 +583,13 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
     fireplaceId,
     faceOptionId,
     stoneId,
+    mantelProductId,
     mantelWidth,
     mantelFinishId,
+    hearthEnabled,
+    hearthStoneCount,
     cameraMode,
     showDimensions,
-  };
-
-  const handleRendererReady = (renderer: WebGLRenderer) => {
-    if (rendererRef.current === renderer) return;
-    rendererRef.current = renderer;
-    renderer.outputColorSpace = SRGBColorSpace;
-    renderer.toneMapping = ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.03;
-    const canvas = renderer.domElement;
-    const lost = (event: Event) => {
-      event.preventDefault();
-      onRendererStatus("recovering");
-    };
-    const restored = () => {
-      onRendererStatus("recovering");
-      requestAnimationFrame(() => requestAnimationFrame(() => onRendererStatus("ready")));
-    };
-    canvas.addEventListener("webglcontextlost", lost, false);
-    canvas.addEventListener("webglcontextrestored", restored, false);
   };
 
   const fireplace = getFireplaceProduct(fireplaceId);
@@ -428,9 +604,12 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
           alpha: false,
           antialias: true,
           failIfMajorPerformanceCaveat: true,
+          outputColorSpace: SRGBColorSpace,
           powerPreference: "high-performance",
           preserveDrawingBuffer: false,
           stencil: false,
+          toneMapping: ACESFilmicToneMapping,
+          toneMappingExposure: 1.03,
         }}
         shadows="basic"
       >
@@ -453,7 +632,7 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
           <SceneReady onReady={() => onRendererStatus("ready")} />
         </Suspense>
         <FrameRateMonitor onFps={onFps} />
-        <RendererReady onReady={handleRendererReady} />
+        <RendererReady onRendererStatus={onRendererStatus} />
       </Canvas>
 
       {showDimensions && cameraMode === "front" ? (
