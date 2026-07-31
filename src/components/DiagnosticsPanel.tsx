@@ -1,6 +1,7 @@
 "use client";
 
-import { ALL_ASSET_PATHS, APP_VERSION, ASSET_VERSION } from "@/domain/catalog";
+import { APP_VERSION } from "@/domain/catalog";
+import { APPROVED_ASSET_PATHS, catalogRepository } from "@/domain/catalogRepository";
 import type { GraphicsSupport } from "@/lib/readiness";
 import { UiIcon } from "@/components/UiIcon";
 import type { FireboxMediaStatus } from "@/components/FireboxMedia";
@@ -74,11 +75,11 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
 
         <div className="diagnostics-grid">
           <DiagnosticRow label="Application" value={`v${APP_VERSION}`} />
-          <DiagnosticRow label="Asset release" value={ASSET_VERSION} />
+          <DiagnosticRow label="Catalog release" value={catalogRepository.release.version} />
           <DiagnosticRow
             label="Approved assets"
-            tone={data.verifiedAssets === ALL_ASSET_PATHS.length ? "good" : "warn"}
-            value={`${data.verifiedAssets} / ${ALL_ASSET_PATHS.length} verified`}
+            tone={data.verifiedAssets === APPROVED_ASSET_PATHS.length ? "good" : "warn"}
+            value={`${data.verifiedAssets} / ${APPROVED_ASSET_PATHS.length} verified`}
           />
           <DiagnosticRow
             label="Offline cache"

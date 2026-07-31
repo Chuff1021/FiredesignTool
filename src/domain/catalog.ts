@@ -1,6 +1,11 @@
 import { z } from "zod";
 
 const positiveInches = z.number().positive().finite();
+const catalogIdSchema = z
+  .string()
+  .min(2)
+  .max(120)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
 export const assetSourceSchema = z.object({
   localPath: z.string().startsWith("/"),
@@ -9,20 +14,9 @@ export const assetSourceSchema = z.object({
   label: z.string().min(1),
 });
 
-export const fireplaceIdSchema = z.enum([
-  "864-trv-31k-clean-face",
-  "864-trv-31k-deluxe",
-  "4237-ember-glo-clean-face",
-]);
+export const fireplaceIdSchema = catalogIdSchema;
 
-export const faceOptionIdSchema = z.enum([
-  "clean-face",
-  "classic-arch",
-  "arched-french-country",
-  "metropolitan",
-  "rectangle-double-door",
-  "4237-clean-face",
-]);
+export const faceOptionIdSchema = catalogIdSchema;
 
 const faceOptionSchema = z.object({
   id: faceOptionIdSchema,
@@ -71,10 +65,15 @@ export const burnMediaSchema = z.object({
 
 export const fireplaceProductSchema = z.object({
   id: fireplaceIdSchema,
-  manufacturer: z.literal("Fireplace Xtrordinair"),
+  brandId: catalogIdSchema,
+  manufacturer: z.string().min(1),
   model: z.string().min(1),
   shortLabel: z.string().min(1),
   sku: z.string().min(1),
+  status: z.literal("approved"),
+  applianceType: z.enum(["fireplace", "insert"]),
+  fuel: z.enum(["gas", "wood", "electric", "pellet"]),
+  style: z.enum(["traditional", "linear", "portrait", "see-through"]),
   viewingArea: z.object({
     width: positiveInches,
     height: positiveInches,
@@ -85,39 +84,11 @@ export const fireplaceProductSchema = z.object({
   burnMedia: burnMediaSchema,
 });
 
-export const mantelProductIdSchema = z.enum([
-  "zachary-smooth",
-  "zachary-wood",
-  "linear",
-  "tavern",
-  "natural-cut-stone",
-]);
+export const mantelProductIdSchema = catalogIdSchema;
 
-export const mantelFinishIdSchema = z.enum([
-  "whitewash",
-  "graywash",
-  "little-river",
-  "pearl",
-  "graphite",
-  "mocha",
-  "onyx",
-  "saddle",
-  "tavern-fieldstone",
-  "tavern-river-rock",
-  "tavern-toasted-rye",
-  "tavern-wheat",
-  "cut-stone-mist",
-  "cut-stone-dusk",
-  "cut-stone-arctic-blast",
-  "cut-stone-greystone",
-]);
+export const mantelFinishIdSchema = catalogIdSchema;
 
-export const mantelWidthSchema = z.union([
-  z.literal(48),
-  z.literal(60),
-  z.literal(72),
-  z.literal(84),
-]);
+export const mantelWidthSchema = z.number().positive().max(144).finite();
 
 export const mantelSizeSchema = z.object({
   width: mantelWidthSchema,
@@ -129,8 +100,10 @@ export const mantelSizeSchema = z.object({
 
 export const mantelProductSchema = z.object({
   id: mantelProductIdSchema,
-  manufacturer: z.literal("Pearl Mantels"),
-  classification: z.literal("ASTM E136 non-combustible"),
+  brandId: catalogIdSchema,
+  manufacturer: z.string().min(1),
+  classification: z.string().min(1),
+  status: z.literal("approved"),
   name: z.string().min(1),
   shortLabel: z.string().min(1),
   sourceUrl: z.string().url(),
@@ -148,13 +121,15 @@ export const mantelFinishSchema = z.object({
   assets: z.array(assetSourceSchema).length(3),
 });
 
-export const stoneIdSchema = z.enum(["kentucky-ledge", "brown-ledge"]);
+export const stoneIdSchema = catalogIdSchema;
 
 export const stoneProductSchema = z.object({
   id: stoneIdSchema,
-  manufacturer: z.literal("Centurion Stone"),
+  brandId: catalogIdSchema,
+  manufacturer: z.string().min(1),
+  status: z.literal("approved"),
   name: z.string().min(1),
-  patternCode: z.literal("150"),
+  patternCode: z.string().min(1),
   colorCode: z.string().min(1),
   productCode: z.string().min(1),
   pieceRange: z.object({
@@ -165,15 +140,15 @@ export const stoneProductSchema = z.object({
   }),
   assets: z.array(assetSourceSchema).length(2),
   hearthstone: z.object({
-    manufacturer: z.literal("Centurion Stone"),
-    name: z.literal("Hearthstone"),
-    patternCode: z.literal("860"),
+    manufacturer: z.string().min(1),
+    name: z.string().min(1),
+    patternCode: z.string().min(1),
     colorName: z.string().min(1),
     colorCode: z.string().min(1),
     dimensions: z.object({
-      width: z.literal(18),
-      depth: z.literal(20),
-      thickness: z.literal(1.5),
+      width: positiveInches,
+      depth: positiveInches,
+      thickness: positiveInches,
     }),
     assets: z.array(assetSourceSchema).length(2),
   }),
@@ -191,10 +166,15 @@ const officialLayer = (localPath: string, sourceUrl: string, label: string) => (
 export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
   {
     id: "864-trv-31k-clean-face",
+    brandId: "fireplace-xtrordinair",
     manufacturer: "Fireplace Xtrordinair",
     model: "864 TRV 31K Clean Face Deluxe",
     shortLabel: "864 Clean Face",
     sku: "98500187",
+    status: "approved",
+    applianceType: "fireplace",
+    fuel: "gas",
+    style: "traditional",
     viewingArea: { width: 34.25, height: 22.25 },
     defaultFaceOptionId: "clean-face",
     faceOptions: [
@@ -254,10 +234,15 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
   },
   {
     id: "864-trv-31k-deluxe",
+    brandId: "fireplace-xtrordinair",
     manufacturer: "Fireplace Xtrordinair",
     model: "864 TRV 31K Deluxe",
     shortLabel: "864 Designer Face",
     sku: "98500186",
+    status: "approved",
+    applianceType: "fireplace",
+    fuel: "gas",
+    style: "traditional",
     viewingArea: { width: 34.25, height: 22.25 },
     defaultFaceOptionId: "classic-arch",
     faceOptions: [
@@ -406,10 +391,15 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
   },
   {
     id: "4237-ember-glo-clean-face",
+    brandId: "fireplace-xtrordinair",
     manufacturer: "Fireplace Xtrordinair",
     model: "4237 Ember-Glo Clean Face Deluxe",
     shortLabel: "4237 Clean Face",
     sku: "98500344",
+    status: "approved",
+    applianceType: "fireplace",
+    fuel: "gas",
+    style: "traditional",
     viewingArea: { width: 39.875, height: 34.875 },
     defaultFaceOptionId: "4237-clean-face",
     faceOptions: [
@@ -497,8 +487,10 @@ const finishAssets = (
 export const mantelProducts = z.array(mantelProductSchema).parse([
   {
     id: "zachary-smooth",
+    brandId: "pearl-mantels",
     manufacturer: "Pearl Mantels",
     classification: "ASTM E136 non-combustible",
+    status: "approved",
     name: "Zachary Smooth Non-Combustible Shelf",
     shortLabel: "Zachary Smooth",
     sourceUrl: "https://www.pearlmantels.com/zacharysmoothwhitewash.html",
@@ -514,8 +506,10 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
   },
   {
     id: "zachary-wood",
+    brandId: "pearl-mantels",
     manufacturer: "Pearl Mantels",
     classification: "ASTM E136 non-combustible",
+    status: "approved",
     name: "Zachary Wood Texture Non-Combustible Shelf",
     shortLabel: "Zachary Wood Look",
     sourceUrl: "https://pearlmantels.com/zacharywoodlooklitriv.html",
@@ -531,8 +525,10 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
   },
   {
     id: "linear",
+    brandId: "pearl-mantels",
     manufacturer: "Pearl Mantels",
     classification: "ASTM E136 non-combustible",
+    status: "approved",
     name: "Linear Non-Combustible Mantel Shelf",
     shortLabel: "Linear",
     sourceUrl: "https://www.pearlmantels.com/linearpearl.html",
@@ -546,8 +542,10 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
   },
   {
     id: "tavern",
+    brandId: "pearl-mantels",
     manufacturer: "Pearl Mantels",
     classification: "ASTM E136 non-combustible",
+    status: "approved",
     name: "Tavern Timbered Beam Non-Combustible Mantel Shelf",
     shortLabel: "Tavern Timbered Beam",
     sourceUrl: "https://www.pearlmantels.com/tavernfieldstone.html",
@@ -561,8 +559,10 @@ export const mantelProducts = z.array(mantelProductSchema).parse([
   },
   {
     id: "natural-cut-stone",
+    brandId: "pearl-mantels",
     manufacturer: "Pearl Mantels",
     classification: "ASTM E136 non-combustible",
+    status: "approved",
     name: "Natural Cut Stone Non-Combustible Mantel Shelf",
     shortLabel: "Natural Cut Stone",
     sourceUrl: "https://www.pearlmantels.com/cutstonearcticblast.html",
@@ -787,7 +787,9 @@ const ledgePieceRange = {
 export const stoneProducts = z.array(stoneProductSchema).parse([
   {
     id: "kentucky-ledge",
+    brandId: "centurion-stone",
     manufacturer: "Centurion Stone",
+    status: "approved",
     name: "Kentucky Ledge",
     patternCode: "150",
     colorCode: "260",
@@ -828,7 +830,9 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
   {
     id: "brown-ledge",
+    brandId: "centurion-stone",
     manufacturer: "Centurion Stone",
+    status: "approved",
     name: "Brown Ledge",
     patternCode: "150",
     colorCode: "200",
@@ -869,83 +873,7 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export function getFireplaceProduct(id: z.infer<typeof fireplaceIdSchema>) {
-  const product = fireplaceProducts.find((candidate) => candidate.id === id);
-  if (!product) throw new Error(`Unknown approved fireplace: ${id}`);
-  return product;
-}
-
-export function getFaceOption(
-  fireplaceId: z.infer<typeof fireplaceIdSchema>,
-  faceOptionId: z.infer<typeof faceOptionIdSchema>,
-) {
-  const product = getFireplaceProduct(fireplaceId);
-  const selected = product.faceOptions.find((candidate) => candidate.id === faceOptionId);
-  if (selected) return selected;
-  const fallback = product.faceOptions.find(
-    (candidate) => candidate.id === product.defaultFaceOptionId,
-  );
-  if (fallback) return fallback;
-  throw new Error(`Fireplace ${fireplaceId} has no approved face option.`);
-}
-
-export function getStoneProduct(id: z.infer<typeof stoneIdSchema>) {
-  const product = stoneProducts.find((candidate) => candidate.id === id);
-  if (!product) throw new Error(`Unknown approved stone: ${id}`);
-  return product;
-}
-
-export function getMantelProduct(id: z.infer<typeof mantelProductIdSchema>) {
-  const product = mantelProducts.find((candidate) => candidate.id === id);
-  if (!product) throw new Error(`Unknown approved mantel product: ${id}`);
-  return product;
-}
-
-export function getMantelSize(
-  productId: z.infer<typeof mantelProductIdSchema>,
-  width: z.infer<typeof mantelWidthSchema>,
-) {
-  const size = getMantelProduct(productId).sizes.find((candidate) => candidate.width === width);
-  if (!size) throw new Error(`Mantel ${productId} is not offered at ${width} inches.`);
-  return size;
-}
-
-export function getMantelFinish(
-  productId: z.infer<typeof mantelProductIdSchema>,
-  id: z.infer<typeof mantelFinishIdSchema>,
-) {
-  const finish = mantelFinishes.find((candidate) => candidate.id === id);
-  if (!finish || !finish.compatibleProductIds.includes(productId)) {
-    throw new Error(`Mantel finish ${id} is not approved for ${productId}.`);
-  }
-  return finish;
-}
-
-export function getHearthstone(stoneId: z.infer<typeof stoneIdSchema>) {
-  return getStoneProduct(stoneId).hearthstone;
-}
-
-export const ALL_ASSET_PATHS = [
-  ...fireplaceProducts.flatMap((product) =>
-    product.faceOptions.flatMap((option) => [
-      option.asset.localPath,
-      option.overlayAsset.localPath,
-      option.maskAsset.localPath,
-    ]),
-  ),
-  ...fireplaceProducts.flatMap((product) => [
-    product.burnMedia.video.localPath,
-    product.burnMedia.poster.localPath,
-  ]),
-  ...stoneProducts.flatMap((product) => product.assets.map((asset) => asset.localPath)),
-  ...stoneProducts.flatMap((product) =>
-    product.hearthstone.assets.map((asset) => asset.localPath),
-  ),
-  ...mantelFinishes.flatMap((finish) => finish.assets.map((asset) => asset.localPath)),
-].filter((path, index, all) => all.indexOf(path) === index);
-
-export const APP_VERSION = "0.6.0";
-export const ASSET_VERSION = "2026.07.31-5";
+export const APP_VERSION = "0.7.0";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

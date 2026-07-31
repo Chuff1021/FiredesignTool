@@ -1,10 +1,4 @@
-import {
-  getFaceOption,
-  getFireplaceProduct,
-  getMantelFinish,
-  getMantelProduct,
-  getStoneProduct,
-} from "@/domain/catalog";
+import { catalogRepository } from "@/domain/catalogRepository";
 import type { FeatureWallConfiguration } from "@/domain/configuration";
 import type { RoomProject } from "@/domain/roomProject";
 
@@ -53,11 +47,14 @@ export async function createProjectPdf(
     height: imageHeight,
   });
 
-  const fireplace = getFireplaceProduct(configuration.fireplaceId);
-  const face = getFaceOption(configuration.fireplaceId, configuration.faceOptionId);
-  const stone = getStoneProduct(configuration.stoneId);
-  const mantel = getMantelProduct(configuration.mantelProductId);
-  const finish = getMantelFinish(configuration.mantelProductId, configuration.mantelFinishId);
+  const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
+  const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
+  const stone = catalogRepository.getStone(configuration.stoneId);
+  const mantel = catalogRepository.getMantel(configuration.mantelProductId);
+  const finish = catalogRepository.getMantelFinish(
+    configuration.mantelProductId,
+    configuration.mantelFinishId,
+  );
   let y = 506;
   const line = (label: string, value: string) => {
     page.drawText(label.toUpperCase(), { x: 582, y, font: bold, size: 7, color: gold });
@@ -82,7 +79,7 @@ export async function createProjectPdf(
     "Conceptual sales visualization. Verify appliance fit, venting, framing, clearances, materials, and installation onsite using current manufacturer instructions and local code.",
     { x: 34, y: 61, font: regular, size: 7.5, color: muted, maxWidth: 724, lineHeight: 10 },
   );
-  page.drawText(`Generated ${new Date().toLocaleDateString()} · FireDesign v0.6.0`, {
+  page.drawText(`Generated ${new Date().toLocaleDateString()} · FireDesign v0.7.0`, {
     x: 34,
     y: 25,
     font: regular,

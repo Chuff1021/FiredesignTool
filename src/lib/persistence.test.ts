@@ -4,6 +4,7 @@ import {
   LEGACY_STORAGE_KEY,
   LEGACY_V2_STORAGE_KEY,
   LEGACY_V3_STORAGE_KEY,
+  LEGACY_V4_STORAGE_KEY,
   STORAGE_KEY,
   readPersistedConfiguration,
   writePersistedConfiguration,
@@ -50,7 +51,8 @@ describe("configuration persistence", () => {
     };
     const result = readPersistedConfiguration(storage);
     expect(result.configuration).toMatchObject({
-      schemaVersion: 4,
+      schemaVersion: 5,
+      catalogVersion: "2026.07.31-5",
       stoneWidth: 90,
       hearthEnabled: true,
     });
@@ -75,7 +77,7 @@ describe("configuration persistence", () => {
     const result = readPersistedConfiguration(storage);
     expect(result.recovered).toBe(false);
     expect(result.configuration).toMatchObject({
-      schemaVersion: 4,
+      schemaVersion: 5,
       wallWidth: 168,
       fireplaceElevation: 4,
       mantelHeightAboveBase: 46.75,
@@ -106,11 +108,46 @@ describe("configuration persistence", () => {
     };
     expect(readPersistedConfiguration(storage)).toMatchObject({
       configuration: {
-        schemaVersion: 4,
+        schemaVersion: 5,
         mantelProductId: "linear",
         mantelWidth: 84,
         mantelFinishId: "onyx",
         hearthEnabled: false,
+      },
+      recovered: false,
+    });
+  });
+
+  it("attaches the approved catalog release when migrating version four", () => {
+    const legacy = {
+      schemaVersion: 4,
+      wallWidth: 180,
+      wallHeight: 108,
+      stoneWidth: 100,
+      fireplaceElevation: 8,
+      mantelHeightAboveBase: 50,
+      fireplaceId: "864-trv-31k-deluxe",
+      faceOptionId: "metropolitan",
+      stoneId: "brown-ledge",
+      mantelProductId: "linear",
+      mantelWidth: 84,
+      mantelFinishId: "onyx",
+      hearthEnabled: true,
+      cameraMode: "front",
+      showDimensions: true,
+    };
+    const storage = {
+      getItem: vi.fn((key: string) =>
+        key === LEGACY_V4_STORAGE_KEY ? JSON.stringify(legacy) : null,
+      ),
+    };
+    expect(readPersistedConfiguration(storage)).toMatchObject({
+      configuration: {
+        schemaVersion: 5,
+        catalogVersion: "2026.07.31-5",
+        fireplaceId: "864-trv-31k-deluxe",
+        faceOptionId: "metropolitan",
+        stoneId: "brown-ledge",
       },
       recovered: false,
     });

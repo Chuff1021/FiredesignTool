@@ -17,6 +17,11 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Control feedback appears within 100 milliseconds.
 - [ ] Diagnostics reports 77 verified assets, playing official burn media, and
       an offline-ready cache.
+- [ ] The approved catalog release parses through `catalogReleaseSchema`, has
+      unique brand/product/SKU/option IDs, and contains no broken compatibility
+      or default-option references.
+- [ ] Saved configuration migration attaches the current catalog release and
+      safely restores defaults for a retired or unknown product ID.
 - [ ] Both 864 variants, all four designer faces, and the 4237 play their mapped
       muted loop with no black first frame, stretch, face overlap, or loop flash.
 - [ ] Cached MP4 range requests return `206` and both loops replay offline in

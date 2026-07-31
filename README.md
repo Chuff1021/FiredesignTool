@@ -28,7 +28,7 @@ The tool does not generate, invent, or substitute product imagery.
 
 ## Customer Room Designer
 
-Version 0.6 adds a separate customer-room workspace around the same approved
+Version 0.7 includes a separate customer-room workspace around the same approved
 catalog. A salesperson can upload a room photograph, mark the intended wall in
 perspective, enter its measured width, and project the current fireplace,
 stone, mantel, and hearth configuration into the photograph. Insert-only mode
@@ -72,8 +72,13 @@ means the approved visual release changed and requires a fresh review.
 
 ## Architecture
 
-- `src/domain` contains the runtime-validated catalog, product-specific mantel
-  rules, physical constraints, and inch-based calculations.
+- `src/catalog/releases` contains immutable approved catalog snapshots. Adding
+  a manufacturer or product no longer requires extending a TypeScript enum.
+- `src/domain/catalogRepository.ts` validates release integrity and is the only
+  product lookup boundary used by configuration, renderers, controls, and
+  exports.
+- `src/domain` contains product schemas, product-specific mantel rules,
+  physical constraints, and inch-based calculations.
 - `src/lib` owns asset readiness, integrity verification, state migration, and
   persistence, including local customer-project recovery.
 - `src/store` is the validated local configuration boundary.
@@ -128,4 +133,5 @@ CAD/BIM files are supplied**. The software does not disguise that limitation
 with generative enhancement.
 
 See [ASSET_SOURCES.md](./ASSET_SOURCES.md) for provenance and
+[CATALOG.md](./CATALOG.md) for the intake contract, and
 [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) for promotion gates.

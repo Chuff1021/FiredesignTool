@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  ALL_ASSET_PATHS,
   fireplaceProductSchema,
   fireplaceProducts,
   mantelFinishes,
@@ -8,6 +7,7 @@ import {
   stoneProductSchema,
   stoneProducts,
 } from "@/domain/catalog";
+import { APPROVED_ASSET_PATHS } from "@/domain/catalogRepository";
 
 describe("approved product catalog", () => {
   it("validates the expanded manufacturer catalog", () => {
@@ -56,9 +56,9 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(ALL_ASSET_PATHS).toHaveLength(77);
-    expect(new Set(ALL_ASSET_PATHS).size).toBe(ALL_ASSET_PATHS.length);
-    expect(ALL_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(77);
+    expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
+    expect(APPROVED_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });
 
   it("maps each fireplace to an approved local burn loop and matching poster", () => {
@@ -89,7 +89,7 @@ describe("approved product catalog", () => {
   it("rejects unchecked substitutions", () => {
     expect(() => fireplaceProductSchema.parse({ ...fireplaceProducts[0], sku: "" })).toThrow();
     expect(() =>
-      stoneProductSchema.parse({ ...stoneProducts[0], manufacturer: "Generic Stone" }),
+      stoneProductSchema.parse({ ...stoneProducts[0], id: "Not a stable ID" }),
     ).toThrow();
   });
 });

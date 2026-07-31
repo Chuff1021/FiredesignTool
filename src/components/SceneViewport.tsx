@@ -2,13 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { UiIcon } from "@/components/UiIcon";
-import {
-  getFaceOption,
-  getFireplaceProduct,
-  getMantelFinish,
-  getMantelProduct,
-  getStoneProduct,
-} from "@/domain/catalog";
+import { catalogRepository } from "@/domain/catalogRepository";
 import { useConfigurationStore } from "@/store/configurationStore";
 import type { FireboxMediaStatus } from "@/components/FireboxMedia";
 
@@ -48,11 +42,11 @@ export function SceneViewport({
   const mantelProductId = useConfigurationStore((state) => state.mantelProductId);
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
   const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
-  const fireplace = getFireplaceProduct(fireplaceId);
-  const face = getFaceOption(fireplaceId, faceOptionId);
-  const stone = getStoneProduct(stoneId);
-  const mantelProduct = getMantelProduct(mantelProductId);
-  const mantelFinish = getMantelFinish(mantelProductId, mantelFinishId);
+  const fireplace = catalogRepository.getFireplace(fireplaceId);
+  const face = catalogRepository.getFace(fireplaceId, faceOptionId);
+  const stone = catalogRepository.getStone(stoneId);
+  const mantelProduct = catalogRepository.getMantel(mantelProductId);
+  const mantelFinish = catalogRepository.getMantelFinish(mantelProductId, mantelFinishId);
 
   return (
     <section

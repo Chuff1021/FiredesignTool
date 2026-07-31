@@ -1,11 +1,4 @@
-import {
-  getFaceOption,
-  getFireplaceProduct,
-  getHearthstone,
-  getMantelFinish,
-  getMantelSize,
-  getStoneProduct,
-} from "@/domain/catalog";
+import { catalogRepository } from "@/domain/catalogRepository";
 import { getMantelBottom, type FeatureWallConfiguration } from "@/domain/configuration";
 import { imagePoint, type NormalizedPoint, type RoomProject } from "@/domain/roomProject";
 import { loadImage } from "@/lib/roomImage";
@@ -59,15 +52,18 @@ async function createDesignLayer(
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
 
-  const fireplace = getFireplaceProduct(configuration.fireplaceId);
-  const face = getFaceOption(configuration.fireplaceId, configuration.faceOptionId);
-  const stone = getStoneProduct(configuration.stoneId);
-  const mantel = getMantelSize(configuration.mantelProductId, configuration.mantelWidth);
-  const mantelFinish = getMantelFinish(
+  const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
+  const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
+  const stone = catalogRepository.getStone(configuration.stoneId);
+  const mantel = catalogRepository.getMantelSize(
+    configuration.mantelProductId,
+    configuration.mantelWidth,
+  );
+  const mantelFinish = catalogRepository.getMantelFinish(
     configuration.mantelProductId,
     configuration.mantelFinishId,
   );
-  const hearthstone = getHearthstone(configuration.stoneId);
+  const hearthstone = stone.hearthstone;
   const [stoneImage, fireplaceImage, mantelImage, hearthImage] = await Promise.all([
     cachedImage(stone.assets[0]!.localPath),
     cachedImage(face.asset.localPath),

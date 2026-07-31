@@ -9,7 +9,7 @@ import type {
   MantelWidth,
   StoneId,
 } from "@/domain/catalog";
-import { getMantelProduct } from "@/domain/catalog";
+import { catalogRepository } from "@/domain/catalogRepository";
 import {
   DEFAULT_CONFIGURATION,
   normalizeConfiguration,
@@ -45,7 +45,8 @@ type ConfigurationState = FeatureWallConfiguration & {
 
 function pickConfiguration(state: ConfigurationState): FeatureWallConfiguration {
   return {
-    schemaVersion: 4,
+    schemaVersion: 5,
+    catalogVersion: state.catalogVersion,
     wallWidth: state.wallWidth,
     wallHeight: state.wallHeight,
     stoneWidth: state.stoneWidth,
@@ -93,7 +94,7 @@ export const useConfigurationStore = create<ConfigurationState>((set) => ({
   setStoneId: (value) => set((state) => saveNext(state, { stoneId: value })),
   setMantelProductId: (value) =>
     set((state) => {
-      const product = getMantelProduct(value);
+      const product = catalogRepository.getMantel(value);
       return saveNext(state, {
         mantelProductId: value,
         mantelWidth: product.defaultWidth,

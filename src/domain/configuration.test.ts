@@ -53,6 +53,24 @@ describe("feature wall dimensions", () => {
     ).toBe("classic-arch");
   });
 
+  it("recovers unknown catalog IDs without substituting unchecked products", () => {
+    expect(
+      normalizeConfiguration({
+        fireplaceId: "retired-unknown-fireplace",
+        faceOptionId: "unknown-face",
+        stoneId: "unknown-stone",
+        mantelProductId: "unknown-mantel",
+        mantelFinishId: "unknown-finish",
+      }),
+    ).toMatchObject({
+      fireplaceId: DEFAULT_CONFIGURATION.fireplaceId,
+      faceOptionId: DEFAULT_CONFIGURATION.faceOptionId,
+      stoneId: DEFAULT_CONFIGURATION.stoneId,
+      mantelProductId: DEFAULT_CONFIGURATION.mantelProductId,
+      mantelFinishId: DEFAULT_CONFIGURATION.mantelFinishId,
+    });
+  });
+
   it("keeps stone width independent with an exact 50-inch minimum", () => {
     const configuration = normalizeConfiguration({
       wallWidth: 180,

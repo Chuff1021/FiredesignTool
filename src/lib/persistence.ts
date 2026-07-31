@@ -6,10 +6,29 @@ import {
   type FeatureWallConfiguration,
 } from "@/domain/configuration";
 
-export const STORAGE_KEY = "firedesign:feature-wall:v4";
+export const STORAGE_KEY = "firedesign:feature-wall:v5";
+export const LEGACY_V4_STORAGE_KEY = "firedesign:feature-wall:v4";
 export const LEGACY_V3_STORAGE_KEY = "firedesign:feature-wall:v3";
 export const LEGACY_V2_STORAGE_KEY = "firedesign:feature-wall:v2";
 export const LEGACY_STORAGE_KEY = "firedesign:feature-wall:v1";
+
+const legacyV4ConfigurationSchema = z.object({
+  schemaVersion: z.literal(4),
+  wallWidth: z.number().finite(),
+  wallHeight: z.number().finite(),
+  stoneWidth: z.number().finite(),
+  fireplaceElevation: z.number().finite(),
+  mantelHeightAboveBase: z.number().finite(),
+  fireplaceId: z.string(),
+  faceOptionId: z.string(),
+  stoneId: z.string(),
+  mantelProductId: z.string(),
+  mantelWidth: z.number().positive(),
+  mantelFinishId: z.string(),
+  hearthEnabled: z.boolean(),
+  cameraMode: z.enum(["front", "perspective"]),
+  showDimensions: z.boolean(),
+});
 
 const legacyV3ConfigurationSchema = z.object({
   schemaVersion: z.literal(3),
@@ -129,6 +148,25 @@ function migrateV3(raw: string): PersistenceResult {
   }
 }
 
+function migrateV4(raw: string): PersistenceResult {
+  try {
+    const legacy = legacyV4ConfigurationSchema.parse(JSON.parse(raw));
+    return {
+      configuration: normalizeConfiguration({
+        ...legacy,
+        schemaVersion: undefined,
+      }),
+      recovered: false,
+    };
+  } catch {
+    return {
+      configuration: DEFAULT_CONFIGURATION,
+      recovered: true,
+      reason: "Saved layout was invalid and safe defaults were restored.",
+    };
+  }
+}
+
 function migrateV2(raw: string): PersistenceResult {
   try {
     const legacy = legacyV2ConfigurationSchema.parse(JSON.parse(raw));
@@ -179,6 +217,9 @@ export function readPersistedConfiguration(
   const current = storage.getItem(STORAGE_KEY);
   if (current) return parseCurrent(current);
 
+  const legacyV4 = storage.getItem(LEGACY_V4_STORAGE_KEY);
+  if (legacyV4) return migrateV4(legacyV4);
+
   const legacyV3 = storage.getItem(LEGACY_V3_STORAGE_KEY);
   if (legacyV3) return migrateV3(legacyV3);
 
@@ -201,6 +242,7 @@ export function writePersistedConfiguration(
 
 export function clearPersistedConfiguration(storage: Pick<Storage, "removeItem">): void {
   storage.removeItem(STORAGE_KEY);
+  storage.removeItem(LEGACY_V4_STORAGE_KEY);
   storage.removeItem(LEGACY_V3_STORAGE_KEY);
   storage.removeItem(LEGACY_V2_STORAGE_KEY);
   storage.removeItem(LEGACY_STORAGE_KEY);

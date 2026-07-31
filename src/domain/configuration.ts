@@ -2,15 +2,12 @@ import { z } from "zod";
 import {
   faceOptionIdSchema,
   fireplaceIdSchema,
-  getFireplaceProduct,
-  getMantelFinish,
-  getMantelProduct,
-  getMantelSize,
   mantelFinishIdSchema,
   mantelProductIdSchema,
   mantelWidthSchema,
   stoneIdSchema,
 } from "@/domain/catalog";
+import { catalogRepository } from "@/domain/catalogRepository";
 
 export const WALL_WIDTH_RANGE = { min: 120, max: 240, step: 1 } as const;
 export const WALL_HEIGHT_RANGE = { min: 96, max: 144, step: 1 } as const;
@@ -21,7 +18,8 @@ export const MANTEL_HEIGHT_RANGE = { min: 0, max: 84, step: 0.25 } as const;
 export const cameraModeSchema = z.enum(["front", "perspective"]);
 
 export const featureWallConfigurationSchema = z.object({
-  schemaVersion: z.literal(4),
+  schemaVersion: z.literal(5),
+  catalogVersion: z.string().min(1),
   wallWidth: z.number().min(WALL_WIDTH_RANGE.min).max(WALL_WIDTH_RANGE.max).finite(),
   wallHeight: z.number().min(WALL_HEIGHT_RANGE.min).max(WALL_HEIGHT_RANGE.max).finite(),
   stoneWidth: z.number().min(STONE_WIDTH_RANGE.min).max(WALL_WIDTH_RANGE.max).finite(),
@@ -50,7 +48,8 @@ export type FeatureWallConfiguration = z.infer<typeof featureWallConfigurationSc
 export type CameraMode = z.infer<typeof cameraModeSchema>;
 
 export const DEFAULT_CONFIGURATION: FeatureWallConfiguration = Object.freeze({
-  schemaVersion: 4,
+  schemaVersion: 5,
+  catalogVersion: catalogRepository.release.version,
   wallWidth: 144,
   wallHeight: 108,
   stoneWidth: 96,
@@ -76,7 +75,7 @@ export function getMinimumMantelHeight(
   fireplaceId: FeatureWallConfiguration["fireplaceId"],
   mantelDepth: number,
 ): number {
-  const points = getFireplaceProduct(fireplaceId).mantelRule.depthToMinimumHeight;
+  const points = catalogRepository.getFireplace(fireplaceId).mantelRule.depthToMinimumHeight;
   const sorted = [...points].sort((a, b) => a.depth - b.depth);
   const first = sorted[0];
   const last = sorted.at(-1);
@@ -134,20 +133,26 @@ export function getHearthStoneSegments(stoneWidth: number): HearthStoneSegment[]
 export function normalizeConfiguration(
   candidate: Partial<FeatureWallConfiguration>,
 ): FeatureWallConfiguration {
-  const fireplaceId = fireplaceIdSchema
+  const requestedFireplaceId = fireplaceIdSchema
     .catch(DEFAULT_CONFIGURATION.fireplaceId)
     .parse(candidate.fireplaceId);
-  const fireplace = getFireplaceProduct(fireplaceId);
+  const fireplaceId = catalogRepository.hasFireplace(requestedFireplaceId)
+    ? requestedFireplaceId
+    : DEFAULT_CONFIGURATION.fireplaceId;
+  const fireplace = catalogRepository.getFireplace(fireplaceId);
   const requestedFaceId = faceOptionIdSchema
     .catch(fireplace.defaultFaceOptionId)
     .parse(candidate.faceOptionId);
   const faceOptionId = fireplace.faceOptions.some((face) => face.id === requestedFaceId)
     ? requestedFaceId
     : fireplace.defaultFaceOptionId;
-  const mantelProductId = mantelProductIdSchema
+  const requestedMantelProductId = mantelProductIdSchema
     .catch(DEFAULT_CONFIGURATION.mantelProductId)
     .parse(candidate.mantelProductId);
-  const mantelProduct = getMantelProduct(mantelProductId);
+  const mantelProductId = catalogRepository.hasMantel(requestedMantelProductId)
+    ? requestedMantelProductId
+    : DEFAULT_CONFIGURATION.mantelProductId;
+  const mantelProduct = catalogRepository.getMantel(mantelProductId);
   const requestedMantelWidth = mantelWidthSchema
     .catch(mantelProduct.defaultWidth)
     .parse(candidate.mantelWidth);
@@ -179,7 +184,8 @@ export function normalizeConfiguration(
   );
 
   const normalized: FeatureWallConfiguration = {
-    schemaVersion: 4,
+    schemaVersion: 5,
+    catalogVersion: catalogRepository.release.version,
     wallWidth,
     wallHeight: clampToRange(
       candidate.wallHeight ?? DEFAULT_CONFIGURATION.wallHeight,
@@ -193,7 +199,12 @@ export function normalizeConfiguration(
     ),
     fireplaceId,
     faceOptionId,
-    stoneId: stoneIdSchema.catch(DEFAULT_CONFIGURATION.stoneId).parse(candidate.stoneId),
+    stoneId: (() => {
+      const requested = stoneIdSchema
+        .catch(DEFAULT_CONFIGURATION.stoneId)
+        .parse(candidate.stoneId);
+      return catalogRepository.hasStone(requested) ? requested : DEFAULT_CONFIGURATION.stoneId;
+    })(),
     mantelProductId,
     mantelWidth,
     mantelFinishId,
@@ -204,7 +215,7 @@ export function normalizeConfiguration(
     showDimensions: candidate.showDimensions ?? DEFAULT_CONFIGURATION.showDimensions,
   };
 
-  getMantelFinish(normalized.mantelProductId, normalized.mantelFinishId);
+  catalogRepository.getMantelFinish(normalized.mantelProductId, normalized.mantelFinishId);
   return featureWallConfigurationSchema.parse(normalized);
 }
 
@@ -215,7 +226,9 @@ export function getMantelBottom(configuration: FeatureWallConfiguration): number
 export function getMantelCenter(configuration: FeatureWallConfiguration): number {
   return (
     getMantelBottom(configuration) +
-    getMantelSize(configuration.mantelProductId, configuration.mantelWidth).height / 2
+    catalogRepository.getMantelSize(configuration.mantelProductId, configuration.mantelWidth)
+      .height /
+      2
   );
 }
 

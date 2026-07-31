@@ -7,7 +7,7 @@ import { DiagnosticsPanel, type DiagnosticsData } from "@/components/Diagnostics
 import { SceneErrorBoundary } from "@/components/SceneErrorBoundary";
 import { SceneViewport } from "@/components/SceneViewport";
 import { StartupGate } from "@/components/StartupGate";
-import { ALL_ASSET_PATHS } from "@/domain/catalog";
+import { APPROVED_ASSET_PATHS } from "@/domain/catalogRepository";
 import {
   runReadinessChecks,
   type GraphicsSupport,
@@ -45,7 +45,7 @@ export function FireDesignApp() {
   const [startupError, setStartupError] = useState<string | null>(null);
   const [progress, setProgress] = useState({
     complete: 0,
-    total: ALL_ASSET_PATHS.length,
+    total: APPROVED_ASSET_PATHS.length,
   });
   const [isPresentation, setPresentation] = useState(false);
   const [diagnosticsOpen, setDiagnosticsOpen] = useState(false);
@@ -60,7 +60,7 @@ export function FireDesignApp() {
   const checkReadiness = useCallback(async () => {
     setStartupError(null);
     setReadiness(null);
-    setProgress({ complete: 0, total: ALL_ASSET_PATHS.length });
+    setProgress({ complete: 0, total: APPROVED_ASSET_PATHS.length });
     try {
       const result = await runReadinessChecks((complete, total) =>
         setProgress({ complete, total }),

@@ -16,16 +16,7 @@ import {
   type PerspectiveCamera as ThreePerspectiveCamera,
   type Texture,
 } from "three";
-import {
-  ALL_ASSET_PATHS,
-  getFaceOption,
-  getFireplaceProduct,
-  getHearthstone,
-  getMantelFinish,
-  getMantelProduct,
-  getMantelSize,
-  getStoneProduct,
-} from "@/domain/catalog";
+import { APPROVED_ASSET_PATHS, catalogRepository } from "@/domain/catalogRepository";
 import {
   calculateOrthographicZoom,
   getHearthStoneSegments,
@@ -44,7 +35,7 @@ type FeatureWallCanvasProps = {
   onRendererStatus: (status: "ready" | "recovering" | "error") => void;
 };
 
-const TEXTURE_ASSET_PATHS = ALL_ASSET_PATHS.filter((path) => !path.endsWith(".mp4"));
+const TEXTURE_ASSET_PATHS = APPROVED_ASSET_PATHS.filter((path) => !path.endsWith(".mp4"));
 
 function usePreparedTextures() {
   const sources = useLoader(TextureLoader, TEXTURE_ASSET_PATHS) as Texture[];
@@ -161,7 +152,7 @@ function DimensionLine({
 
 function DimensionGuides({ configuration }: { configuration: FeatureWallConfiguration }) {
   if (!configuration.showDimensions || configuration.cameraMode !== "front") return null;
-  const face = getFaceOption(configuration.fireplaceId, configuration.faceOptionId);
+  const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
   const wallLeft = -configuration.wallWidth / 2;
   const stoneLeft = -configuration.stoneWidth / 2;
   const fireplaceRight = face.visibleFace.width / 2;
@@ -225,16 +216,19 @@ function FeatureWall({
   const groupRef = useRef<Group>(null);
   const textures = usePreparedTextures();
   const shadowTexture = useMemo(() => makeShadowTexture(), []);
-  const fireplace = getFireplaceProduct(configuration.fireplaceId);
-  const face = getFaceOption(configuration.fireplaceId, configuration.faceOptionId);
-  const stone = getStoneProduct(configuration.stoneId);
-  const mantelProduct = getMantelProduct(configuration.mantelProductId);
-  const mantelSize = getMantelSize(configuration.mantelProductId, configuration.mantelWidth);
-  const mantelFinish = getMantelFinish(
+  const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
+  const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
+  const stone = catalogRepository.getStone(configuration.stoneId);
+  const mantelProduct = catalogRepository.getMantel(configuration.mantelProductId);
+  const mantelSize = catalogRepository.getMantelSize(
+    configuration.mantelProductId,
+    configuration.mantelWidth,
+  );
+  const mantelFinish = catalogRepository.getMantelFinish(
     configuration.mantelProductId,
     configuration.mantelFinishId,
   );
-  const hearthstone = getHearthstone(configuration.stoneId);
+  const hearthstone = stone.hearthstone;
   const hearthWidth = getHearthWidth(configuration);
   const hearthSegments = useMemo(
     () => getHearthStoneSegments(configuration.stoneWidth),
@@ -627,7 +621,8 @@ export function FeatureWallCanvas({
   const hearthEnabled = useConfigurationStore((state) => state.hearthEnabled);
   const showDimensions = useConfigurationStore((state) => state.showDimensions);
   const configuration: FeatureWallConfiguration = {
-    schemaVersion: 4,
+    schemaVersion: 5,
+    catalogVersion: catalogRepository.release.version,
     wallWidth,
     wallHeight,
     stoneWidth,
@@ -644,7 +639,7 @@ export function FeatureWallCanvas({
     showDimensions,
   };
 
-  const fireplace = getFireplaceProduct(fireplaceId);
+  const fireplace = catalogRepository.getFireplace(fireplaceId);
   const mantelBottom = getMantelBottom(configuration);
 
   return (

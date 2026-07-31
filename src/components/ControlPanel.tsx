@@ -1,17 +1,6 @@
 "use client";
 
 import {
-  fireplaceProducts,
-  getFaceOption,
-  getFireplaceProduct,
-  getHearthstone,
-  getMantelFinish,
-  getMantelProduct,
-  getMantelSize,
-  getStoneProduct,
-  mantelFinishes,
-  mantelProducts,
-  stoneProducts,
   type FaceOptionId,
   type FireplaceId,
   type MantelFinishId,
@@ -19,6 +8,7 @@ import {
   type MantelWidth,
   type StoneId,
 } from "@/domain/catalog";
+import { catalogRepository } from "@/domain/catalogRepository";
 import {
   FIREPLACE_ELEVATION_RANGE,
   MANTEL_HEIGHT_RANGE,
@@ -49,6 +39,10 @@ export function ControlPanel({
   workspace,
   onWorkspaceChange,
 }: ControlPanelProps) {
+  const fireplaceProducts = catalogRepository.listFireplaces();
+  const mantelProducts = catalogRepository.listMantels();
+  const mantelFinishes = catalogRepository.listMantelFinishes();
+  const stoneProducts = catalogRepository.listStones();
   const wallWidth = useConfigurationStore((state) => state.wallWidth);
   const wallHeight = useConfigurationStore((state) => state.wallHeight);
   const stoneWidth = useConfigurationStore((state) => state.stoneWidth);
@@ -81,16 +75,16 @@ export function ControlPanel({
   const setShowDimensions = useConfigurationStore((state) => state.setShowDimensions);
   const reset = useConfigurationStore((state) => state.reset);
 
-  const fireplace = getFireplaceProduct(fireplaceId);
-  const face = getFaceOption(fireplaceId, faceOptionId);
-  const stone = getStoneProduct(stoneId);
-  const mantelProduct = getMantelProduct(mantelProductId);
-  const mantelSize = getMantelSize(mantelProductId, mantelWidth);
-  const mantelFinish = getMantelFinish(mantelProductId, mantelFinishId);
+  const fireplace = catalogRepository.getFireplace(fireplaceId);
+  const face = catalogRepository.getFace(fireplaceId, faceOptionId);
+  const stone = catalogRepository.getStone(stoneId);
+  const mantelProduct = catalogRepository.getMantel(mantelProductId);
+  const mantelSize = catalogRepository.getMantelSize(mantelProductId, mantelWidth);
+  const mantelFinish = catalogRepository.getMantelFinish(mantelProductId, mantelFinishId);
   const compatibleMantelFinishes = mantelFinishes.filter((finish) =>
     finish.compatibleProductIds.includes(mantelProductId),
   );
-  const hearthstone = getHearthstone(stoneId);
+  const hearthstone = stone.hearthstone;
   const minimumMantelHeight = getMinimumMantelHeight(fireplaceId, mantelSize.depth);
   const minimumStoneWidth = getMinimumStoneWidth();
   const hearthWidth = stoneWidth;
