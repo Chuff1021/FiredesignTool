@@ -15,6 +15,7 @@ import {
 } from "@/lib/readiness";
 import { useConfigurationStore } from "@/store/configurationStore";
 import type { FireboxMediaStatus } from "@/components/FireboxMedia";
+import { readStorageHealth, UNAVAILABLE_STORAGE_HEALTH } from "@/lib/storageHealth";
 
 const CustomerRoomViewport = dynamic(
   () =>
@@ -55,6 +56,7 @@ export function FireDesignApp() {
   const [mediaStatus, setMediaStatus] = useState<FireboxMediaStatus>("preparing");
   const [rendererStatus, setRendererStatus] =
     useState<DiagnosticsData["rendererStatus"]>("recovering");
+  const [storageHealth, setStorageHealth] = useState(UNAVAILABLE_STORAGE_HEALTH);
   const [workspace, setWorkspace] = useState<"feature-wall" | "customer-room">("feature-wall");
 
   const checkReadiness = useCallback(async () => {
@@ -67,6 +69,7 @@ export function FireDesignApp() {
       );
       initialize();
       setReadiness(result);
+      void readStorageHealth().then(setStorageHealth);
     } catch (error) {
       setStartupError(
         error instanceof Error
@@ -138,10 +141,18 @@ export function FireDesignApp() {
     };
   }, []);
 
+  useEffect(() => {
+    if (diagnosticsOpen) void readStorageHealth().then(setStorageHealth);
+  }, [diagnosticsOpen]);
+
   const enterPresentation = async () => {
     if (rendererStatus !== "ready") return;
     setPresentation(true);
     await document.documentElement.requestFullscreen?.().catch(() => undefined);
+  };
+
+  const openDiagnostics = () => {
+    setDiagnosticsOpen(true);
   };
 
   const exitPresentation = async () => {
@@ -169,6 +180,7 @@ export function FireDesignApp() {
     online,
     rendererStatus,
     mediaStatus,
+    storage: storageHealth,
     verifiedAssets: readiness.verifiedAssets,
   };
 
@@ -177,7 +189,7 @@ export function FireDesignApp() {
       {!isPresentation ? (
         <ControlPanel
           onEnterPresentation={() => void enterPresentation()}
-          onOpenDiagnostics={() => setDiagnosticsOpen(true)}
+          onOpenDiagnostics={openDiagnostics}
           onWorkspaceChange={setWorkspace}
           presentationReady={workspace === "feature-wall" && rendererStatus === "ready"}
           workspace={workspace}

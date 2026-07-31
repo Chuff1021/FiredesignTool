@@ -46,6 +46,15 @@ import {
 } from "@/lib/roomProjectPersistence";
 import { renderRoomProject } from "@/lib/roomRenderer";
 import { createProjectPdf } from "@/lib/projectExport";
+import {
+  backupFreshness,
+  formatStorageBytes,
+  readRoomProjectBackupRecord,
+  readStorageHealth,
+  UNAVAILABLE_STORAGE_HEALTH,
+  writeRoomProjectBackupRecord,
+  type RoomProjectBackupRecord,
+} from "@/lib/storageHealth";
 import { useConfigurationStore } from "@/store/configurationStore";
 
 type CalibrationTool = "wall" | "measurement" | "opening" | "foreground" | "view";
@@ -91,6 +100,8 @@ export function CustomerRoomViewport() {
   const [rendering, setRendering] = useState(false);
   const [libraryBusy, setLibraryBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [storageHealth, setStorageHealth] = useState(UNAVAILABLE_STORAGE_HEALTH);
+  const [backupRecord, setBackupRecord] = useState<RoomProjectBackupRecord | null>(null);
   const configurationValues = useConfigurationStore(
     useShallow((state) => ({
       wallWidth: state.wallWidth,
@@ -143,7 +154,11 @@ export function CustomerRoomViewport() {
   );
 
   const refreshProjects = useCallback(async () => {
-    setProjects(await listRoomProjects());
+    const [library, health] = await Promise.all([listRoomProjects(), readStorageHealth()]);
+    setProjects(library);
+    setStorageHealth(health);
+    setBackupRecord(readRoomProjectBackupRecord(localStorage));
+    return library;
   }, []);
 
   const activateProject = useCallback(
@@ -175,10 +190,12 @@ export function CustomerRoomViewport() {
 
   useEffect(() => {
     let active = true;
-    void Promise.all([readCurrentRoomProject(), listRoomProjects()])
-      .then(([saved, library]) => {
+    void Promise.all([readCurrentRoomProject(), listRoomProjects(), readStorageHealth()])
+      .then(([saved, library, health]) => {
         if (!active) return;
         setProjects(library);
+        setStorageHealth(health);
+        setBackupRecord(readRoomProjectBackupRecord(localStorage));
         if (saved) activateProject(saved);
       })
       .catch(() => setMessage("The local project library could not be recovered."))
@@ -286,10 +303,12 @@ export function CustomerRoomViewport() {
   const returnToLibrary = async () => {
     const current = projectRef.current;
     if (current) {
+      const configurationChanged =
+        JSON.stringify(current.configuration) !== JSON.stringify(configuration);
       const snapshot = roomProjectSchema.parse({
         ...current,
         configuration,
-        updatedAt: new Date().toISOString(),
+        updatedAt: configurationChanged ? new Date().toISOString() : current.updatedAt,
       });
       await saveRoomProject(snapshot).catch(() =>
         setMessage("The latest project changes could not be saved locally."),
@@ -311,7 +330,8 @@ export function CustomerRoomViewport() {
       const savedProjects = await readAllRoomProjects();
       if (savedProjects.length === 0)
         throw new Error("There are no customer projects to back up.");
-      const backup = await createRoomProjectBackup(savedProjects);
+      const now = new Date();
+      const backup = await createRoomProjectBackup(savedProjects, now);
       const blob = new Blob([serializeRoomProjectBackup(backup)], {
         type: "application/json",
       });
@@ -321,6 +341,14 @@ export function CustomerRoomViewport() {
       link.href = url;
       link.click();
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      try {
+        setBackupRecord(writeRoomProjectBackupRecord(localStorage, savedProjects, now));
+      } catch {
+        setMessage(
+          "The project backup downloaded, but this browser could not remember its backup status.",
+        );
+        return;
+      }
       setMessage(
         `Backed up ${savedProjects.length} project${savedProjects.length === 1 ? "" : "s"}, including room photographs.`,
       );
@@ -514,6 +542,7 @@ export function CustomerRoomViewport() {
   }
 
   if (!project) {
+    const protection = backupFreshness(projects, backupRecord);
     return (
       <section
         className="room-workspace room-workspace--empty"
@@ -556,6 +585,41 @@ export function CustomerRoomViewport() {
                 <UiIcon name="upload" /> Restore backup
               </button>
             </div>
+            {projects.length > 0 ? (
+              <div
+                className="room-library-protection"
+                data-tone={
+                  storageHealth.status === "critical" || protection !== "current"
+                    ? "warn"
+                    : "good"
+                }
+              >
+                <UiIcon
+                  name={
+                    storageHealth.status === "critical" || protection !== "current"
+                      ? "warning"
+                      : "check"
+                  }
+                  size={15}
+                />
+                <span>
+                  <strong>
+                    {protection === "current"
+                      ? "Project backup is current"
+                      : protection === "never"
+                        ? "Project backup recommended"
+                        : "Projects changed since the last backup"}
+                  </strong>
+                  <small>
+                    {storageHealth.availableBytes === null
+                      ? "Browser capacity unavailable · keep a dated backup"
+                      : `${formatStorageBytes(storageHealth.availableBytes)} browser storage available${
+                          storageHealth.persistent ? " · persistent" : " · browser-managed"
+                        }`}
+                  </small>
+                </span>
+              </div>
+            ) : null}
             <small>
               JPEG, PNG, or HEIC · at least 1200 px · preserves up to 4K · processed locally
               <br />

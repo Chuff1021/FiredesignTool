@@ -5,6 +5,7 @@ import { APPROVED_ASSET_PATHS, catalogRepository } from "@/domain/catalogReposit
 import type { GraphicsSupport } from "@/lib/readiness";
 import { UiIcon } from "@/components/UiIcon";
 import type { FireboxMediaStatus } from "@/components/FireboxMedia";
+import { formatStorageBytes, type StorageHealth } from "@/lib/storageHealth";
 
 export type DiagnosticsData = {
   cacheReady: boolean;
@@ -14,6 +15,7 @@ export type DiagnosticsData = {
   rendererStatus: "ready" | "recovering" | "error";
   mediaStatus: FireboxMediaStatus;
   verifiedAssets: number;
+  storage: StorageHealth;
 };
 
 type DiagnosticsPanelProps = {
@@ -85,6 +87,32 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
             label="Offline cache"
             tone={data.cacheReady ? "good" : "warn"}
             value={data.cacheReady ? "Ready" : "Preparing"}
+          />
+          <DiagnosticRow
+            label="Customer project storage"
+            tone={
+              data.storage.status === "ready"
+                ? "good"
+                : data.storage.status === "unavailable"
+                  ? "neutral"
+                  : "warn"
+            }
+            value={
+              data.storage.availableBytes === null
+                ? "Capacity unavailable"
+                : `${formatStorageBytes(data.storage.availableBytes)} available`
+            }
+          />
+          <DiagnosticRow
+            label="Storage protection"
+            tone={data.storage.persistent ? "good" : "warn"}
+            value={
+              data.storage.persistent === true
+                ? "Persistent"
+                : data.storage.persistent === false
+                  ? "Browser-managed · keep backups"
+                  : "Unknown · keep backups"
+            }
           />
           <DiagnosticRow
             label="Network"

@@ -9,6 +9,11 @@ import {
 import { MAX_ROOM_PROJECTS } from "@/domain/roomProjectBackup";
 import { DEFAULT_CONFIGURATION } from "@/domain/configuration";
 import { readPersistedConfiguration } from "@/lib/persistence";
+import {
+  normalizeProjectStorageError,
+  projectImageStorageBytes,
+  requireStorageCapacity,
+} from "@/lib/storageHealth";
 
 const DATABASE_NAME = "firedesign-projects";
 const DATABASE_VERSION = 2;
@@ -63,7 +68,7 @@ function openDatabase(): Promise<IDBDatabase> {
     };
     request.onsuccess = () => resolve(request.result);
     request.onerror = () =>
-      reject(request.error ?? new Error("Project storage is unavailable."));
+      reject(normalizeProjectStorageError(request.error, "Project storage is unavailable."));
     request.onblocked = () => reject(new Error("Project storage is busy in another window."));
   });
 }
@@ -139,6 +144,9 @@ export async function saveRoomProject(project: RoomProject): Promise<void> {
   const imageChanged =
     !persistedProjectImages.has(validated.id) ||
     knownProjectImages.get(validated.id) !== validated.source.dataUrl;
+  if (imageChanged) {
+    await requireStorageCapacity(projectImageStorageBytes([validated.source.dataUrl]));
+  }
   const database = await openDatabase();
   try {
     await new Promise<void>((resolve, reject) => {
@@ -152,9 +160,9 @@ export async function saveRoomProject(project: RoomProject): Promise<void> {
       }
       transaction.oncomplete = () => resolve();
       transaction.onerror = () =>
-        reject(transaction.error ?? new Error("Project save failed."));
+        reject(normalizeProjectStorageError(transaction.error, "Project save failed."));
       transaction.onabort = () =>
-        reject(transaction.error ?? new Error("Project save failed."));
+        reject(normalizeProjectStorageError(transaction.error, "Project save failed."));
     });
   } finally {
     database.close();
@@ -269,6 +277,9 @@ export async function restoreRoomProjectLibrary(
   if (incomingIds.size !== projects.length) {
     throw new Error("The project backup contains duplicate project identifiers.");
   }
+  await requireStorageCapacity(
+    projectImageStorageBytes(projects.map((project) => project.source.dataUrl)),
+  );
   const database = await openDatabase();
   let restoredProjects: RoomProject[] = [];
   let copied = 0;

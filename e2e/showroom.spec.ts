@@ -133,6 +133,12 @@ test("switches view, opens diagnostics, and resets safely", async ({ page }, tes
   );
   await page.keyboard.press("Shift+D");
   await expect(page.getByRole("heading", { name: "System diagnostics" })).toBeVisible();
+  await expect(
+    page.locator(".diagnostic-row").filter({ hasText: "Customer project storage" }),
+  ).toContainText(/available|Capacity unavailable/);
+  await expect(
+    page.locator(".diagnostic-row").filter({ hasText: "Storage protection" }),
+  ).toContainText(/Persistent|Browser-managed|Unknown/);
   await page.getByRole("button", { name: "Return to design" }).click();
   await page.getByRole("button", { name: "Reset design" }).click();
   await expect(page.getByLabel("Wall width")).toHaveValue("144");
@@ -398,6 +404,7 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");
   await page.getByRole("button", { name: "Back to projects" }).click();
   await expect(page.getByRole("button", { name: "Open Smith living room" })).toBeVisible();
+  await expect(page.getByText("Project backup recommended")).toBeVisible();
 
   await page.getByRole("button", { name: "New customer project" }).click();
   await page.getByTestId("room-photo-input").setInputFiles(photo);
@@ -428,10 +435,16 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   expect(backupPath).not.toBeNull();
   if (!backupPath) return;
   await expect(page.getByText(/Backed up 1 project/)).toBeVisible();
+  await expect(page.getByText("Project backup is current")).toBeVisible();
+  await page.reload();
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await expect(page.getByText("Project backup is current")).toBeVisible();
   await page.getByTestId("room-backup-input").setInputFiles(backupPath);
   await expect(page.getByText(/Restored 1 project/)).toBeVisible();
   await expect(page.getByText(/existing project was preserved/)).toBeVisible();
   await expect(page.getByText("2 projects")).toBeVisible();
+  await expect(page.getByText("Projects changed since the last backup")).toBeVisible();
   await page.getByRole("button", { name: "Open Smith living room (restored)" }).click();
   await expect(page.getByLabel("Project name")).toHaveValue("Smith living room (restored)");
   await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");

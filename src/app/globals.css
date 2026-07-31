@@ -230,6 +230,42 @@ select:focus-visible {
   font-size: 0.62rem;
 }
 
+.room-library-protection {
+  align-items: flex-start;
+  border: 1px solid rgba(202, 167, 119, 0.22);
+  color: var(--gold-bright);
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+  max-width: 440px;
+  padding: 0.65rem 0.75rem;
+  width: 100%;
+}
+
+.room-library-protection[data-tone="good"] {
+  border-color: rgba(118, 172, 132, 0.3);
+  color: #9dcbaa;
+}
+
+.room-library-protection span,
+.room-library-protection strong,
+.room-library-protection small {
+  display: block;
+}
+
+.room-library-protection strong {
+  color: var(--ink);
+  font-size: 0.61rem;
+  font-weight: 620;
+}
+
+.room-library-protection small {
+  color: var(--muted-2);
+  font-size: 0.52rem;
+  line-height: 1.4;
+  margin-top: 0.15rem;
+}
+
 .room-project-card {
   background: #171513;
   border: 1px solid var(--line);

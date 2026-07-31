@@ -75,6 +75,13 @@ application version, asset version, preview URL, and deployment ID.
       validates its SHA-256 integrity, restores atomically in Chromium and
       WebKit, rejects damaged files without partial writes, and saves ID
       collisions as named copies without overwriting existing customer work.
+- [ ] The library identifies never-backed-up, current, and subsequently changed
+      project sets; successful backup status survives a browser restart.
+- [ ] Storage quota is checked before new photographs and library restores,
+      maintains the documented safety reserve, translates native quota errors
+      into operator guidance, and never partially writes a rejected project.
+- [ ] Diagnostics reports remaining customer-project capacity and whether the
+      browser grants persistent or browser-managed origin storage.
 - [ ] A confirmed deletion removes only the selected project from IndexedDB and
       leaves every other customer project recoverable.
 

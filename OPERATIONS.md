@@ -7,10 +7,12 @@
 3. Press `Shift+D`.
 4. Confirm renderer status is **Showroom ready**, 77 assets are verified,
    the official burn video is **Playing**, and offline cache is **Ready**.
-5. Confirm the displayed application and asset versions match the current
+5. Confirm **Customer project storage** is not critical. If **Storage
+   protection** is browser-managed, the daily external backup is mandatory.
+6. Confirm the displayed application and asset versions match the current
    release record.
-6. Close diagnostics and enter presentation mode before the first session.
-7. At the end of each showroom day, open **Customer projects**, choose **Back
+7. Close diagnostics and enter presentation mode before the first session.
+8. At the end of each showroom day, open **Customer projects**, choose **Back
    up projects**, and copy the dated `.firedesign` file to the approved secure
    business backup location. The file contains customer room photographs and
    must be handled as customer data.
@@ -31,6 +33,10 @@
   computer, and reopen the last known-good installed release.
 - If saved dimensions appear invalid, use **Reset design**. The application
   also rejects corrupt saved data automatically.
+- If FireDesign reports that browser storage is low or full, do not retry the
+  same photograph repeatedly. Create a complete project backup, confirm the
+  downloaded file is retained, then remove older customer projects until
+  diagnostics shows a safe remaining capacity.
 - If the browser profile or showroom computer is replaced, open **Customer
   projects**, choose **Restore backup**, and select the most recent trusted
   `.firedesign` file. FireDesign verifies its checksum and validates every

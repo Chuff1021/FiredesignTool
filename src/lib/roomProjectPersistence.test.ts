@@ -271,4 +271,20 @@ describe("local customer project library", () => {
       "existing-project",
     ]);
   });
+
+  it("rejects a new photograph before IndexedDB writes when browser capacity is unsafe", async () => {
+    vi.stubGlobal("navigator", {
+      storage: {
+        estimate: async () => ({
+          usage: 1010 * 1024 * 1024,
+          quota: 1024 * 1024 * 1024,
+        }),
+      },
+    });
+    vi.stubGlobal("crypto", { randomUUID: () => "project-no-capacity" });
+    await expect(saveRoomProject(createRoomProject(source("large.png")))).rejects.toThrow(
+      "Not enough browser storage remains",
+    );
+    expect(await listRoomProjects()).toEqual([]);
+  });
 });

@@ -52,6 +52,13 @@ data. Restore verifies SHA-256 integrity before one atomic IndexedDB write;
 existing project IDs are preserved and an imported collision is saved as a
 clearly named copy rather than overwritten.
 
+The library reports whether its last complete backup still matches every saved
+project. Browser quota is checked before any new photograph or restored library
+is written, with a reserved safety margin; insufficient capacity rejects the
+new write without changing existing customer work. Operator diagnostics reports
+remaining project capacity and whether the browser considers origin storage
+persistent or browser-managed.
+
 Measured insert-fit screening is tied to the selected approved catalog product,
 not merely to insert-only photo mode. A built-in fireplace visual therefore
 states that no insert-fit result is available. Once an insert passes the visual
