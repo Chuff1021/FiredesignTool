@@ -637,6 +637,88 @@ select:focus-visible {
   text-align: right;
 }
 
+.room-fit-screen {
+  align-items: center;
+  background: rgba(23, 21, 19, 0.78);
+  border: 1px solid var(--line);
+  display: flex;
+  gap: 1rem;
+  grid-column: 1 / -1;
+  justify-content: space-between;
+  padding: 0.65rem 0.75rem;
+}
+
+.room-fit-screen[data-status="fits-measured-opening"] {
+  border-color: rgba(110, 169, 131, 0.44);
+}
+
+.room-fit-screen[data-status="does-not-fit"] {
+  border-color: rgba(201, 116, 92, 0.48);
+}
+
+.room-fit-screen__heading span,
+.room-fit-screen__heading strong,
+.room-fit-screen__heading small {
+  display: block;
+}
+
+.room-fit-screen__heading span {
+  color: var(--gold-bright);
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.room-fit-screen__heading strong {
+  font-size: 0.64rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.room-fit-screen__heading small {
+  color: var(--muted);
+  font-size: 0.52rem;
+  line-height: 1.35;
+  margin-top: 0.12rem;
+  max-width: 760px;
+}
+
+.room-fit-screen__profiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+}
+
+.room-fit-screen__profiles > span {
+  border: 1px solid var(--line);
+  min-width: 150px;
+  padding: 0.38rem 0.48rem;
+}
+
+.room-fit-screen__profiles > span[data-result="fits-measured-opening"] {
+  border-color: rgba(110, 169, 131, 0.4);
+}
+
+.room-fit-screen__profiles > span[data-result="does-not-fit"] {
+  border-color: rgba(201, 116, 92, 0.42);
+}
+
+.room-fit-screen__profiles strong,
+.room-fit-screen__profiles small {
+  display: block;
+}
+
+.room-fit-screen__profiles strong {
+  font-size: 0.52rem;
+}
+
+.room-fit-screen__profiles small {
+  color: var(--muted);
+  font-size: 0.48rem;
+  margin-top: 0.12rem;
+}
+
 .brand-header {
   align-items: center;
   border-bottom: 1px solid var(--line);

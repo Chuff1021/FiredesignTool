@@ -5,6 +5,7 @@ import {
   listInsertFitProfiles,
   screenInsertFit,
   screenInsertProduct,
+  summarizeInsertFitResults,
 } from "@/domain/insertFit";
 
 function intakeProduct(id: string) {
@@ -85,5 +86,25 @@ describe("insert fit screening", () => {
 
   it("does not expose fit profiles for a non-insert intake product", () => {
     expect(listInsertFitProfiles(intakeProduct("564-trv-25k-clean-face"))).toEqual([]);
+  });
+
+  it("summarizes the safest overall result without hiding failed variants", () => {
+    const complete = screenInsertProduct(
+      { frontWidth: 29, height: 20.625, rearWidth: 18, depth: 16.5 },
+      intakeProduct("32-dvs-deluxe-ember-glo"),
+    );
+    expect(summarizeInsertFitResults(complete)).toEqual({
+      status: "fits-measured-opening",
+      passingProfiles: 3,
+      failedProfiles: 1,
+      pendingProfiles: 0,
+    });
+
+    const incomplete = screenInsertProduct(
+      { frontWidth: 29, height: 20.625, rearWidth: null, depth: null },
+      intakeProduct("32-dvs-deluxe-ember-glo"),
+    );
+    expect(summarizeInsertFitResults(incomplete).status).toBe("needs-measurements");
+    expect(summarizeInsertFitResults([]).status).toBe("unavailable");
   });
 });

@@ -44,6 +44,14 @@ foreground restoration. Foreground outlines preserve original room pixels over
 the projected design for furniture, fireplace tools, décor, or other objects
 that should remain visually in front without generative inpainting.
 
+Measured insert-fit screening is tied to the selected approved catalog product,
+not merely to insert-only photo mode. A built-in fireplace visual therefore
+states that no insert-fit result is available. Once an insert passes the visual
+asset gate and enters the approved catalog, the room workspace compares all of
+its exact manufacturer variants, reports passing, failing, and incomplete
+profiles separately, and carries the conservative result into the PDF handoff.
+No profile can pass while one of its required opening measurements is unknown.
+
 Room photographs preserve up to a 4096-pixel edge and 12 megapixels and are
 stored locally in the browser's IndexedDB. Perspective-projected wall and insert
 layers are rendered at a destination-aware pixel density instead of a fixed

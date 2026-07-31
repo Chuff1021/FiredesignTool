@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { CURRENT_CATALOG_INTAKES, summarizeIntakeRegistry } from "@/catalog/intakeRegistry";
+import {
+  CURRENT_CATALOG_INTAKES,
+  findApprovedIntakeProduct,
+  summarizeIntakeRegistry,
+} from "@/catalog/intakeRegistry";
 import { catalogIntakeRegistrySchema, catalogIntakeSchema } from "@/catalog/intakeSchema";
 import { MAJESTIC_CURRENT_INTAKE } from "@/catalog/intakes/majestic-2026.07.31";
 import { SUPERIOR_CURRENT_INTAKE } from "@/catalog/intakes/superior-2026.07.31";
@@ -22,6 +26,15 @@ describe("manufacturer-neutral catalog intake registry", () => {
         .filter((product) => product.stage !== "approved")
         .every((product) => product.approvedCatalogIds.length === 0),
     ).toBe(true);
+  });
+
+  it("resolves a live catalog product back to its gated manufacturer intake", () => {
+    expect(findApprovedIntakeProduct("864-trv-31k-clean-face")).toMatchObject({
+      id: "864-trv-31k-family",
+      applianceType: "fireplace",
+      stage: "approved",
+    });
+    expect(findApprovedIntakeProduct("32-dvs-deluxe-ember-glo")).toBeUndefined();
   });
 
   it("prioritizes current official insert families for room-design intake", () => {

@@ -41,6 +41,13 @@ export type InsertFitResult = {
   missingMeasurements: InsertFitDimension[];
 };
 
+export type InsertFitSummary = {
+  status: "fits-measured-opening" | "does-not-fit" | "needs-measurements" | "unavailable";
+  passingProfiles: number;
+  failedProfiles: number;
+  pendingProfiles: number;
+};
+
 const dimensionOrder: InsertFitDimension[] = ["frontWidth", "height", "rearWidth", "depth"];
 
 function roundToThousandth(value: number): number {
@@ -111,4 +118,23 @@ export function screenInsertProduct(
   product: CatalogIntakeProduct,
 ): InsertFitResult[] {
   return listInsertFitProfiles(product).map((profile) => screenInsertFit(opening, profile));
+}
+
+export function summarizeInsertFitResults(results: InsertFitResult[]): InsertFitSummary {
+  const passingProfiles = results.filter(
+    (result) => result.status === "fits-measured-opening",
+  ).length;
+  const failedProfiles = results.filter((result) => result.status === "does-not-fit").length;
+  const pendingProfiles = results.filter(
+    (result) => result.status === "needs-measurements",
+  ).length;
+  const status =
+    results.length === 0
+      ? "unavailable"
+      : passingProfiles > 0
+        ? "fits-measured-opening"
+        : pendingProfiles > 0
+          ? "needs-measurements"
+          : "does-not-fit";
+  return { status, passingProfiles, failedProfiles, pendingProfiles };
 }

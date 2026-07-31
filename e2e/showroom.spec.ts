@@ -234,6 +234,8 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
     "aria-pressed",
     "true",
   );
+  await expect(page.getByText(/Fit screening is unavailable for 864 TRV/)).toBeVisible();
+  await expect(page.getByText(/not an insert fit recommendation/)).toBeVisible();
   await expect(page.locator(".room-status")).toContainText(
     "Mark the existing fireplace opening",
   );

@@ -1,5 +1,7 @@
 import { APP_VERSION } from "@/domain/catalog";
 import { catalogRepository } from "@/domain/catalogRepository";
+import { findApprovedIntakeProduct } from "@/catalog/intakeRegistry";
+import { screenInsertProduct, summarizeInsertFitResults } from "@/domain/insertFit";
 import type { FeatureWallConfiguration } from "@/domain/configuration";
 import type { RoomProject } from "@/domain/roomProject";
 
@@ -80,6 +82,30 @@ export async function createProjectPdf(
         ? `${project.openingDepthInches} in depth · ${project.openingRearWidthInches} in rear width`
         : "Depth and rear width not recorded · field verification required",
     );
+    const intakeProduct = findApprovedIntakeProduct(configuration.fireplaceId);
+    if (intakeProduct?.applianceType === "insert") {
+      const fit = summarizeInsertFitResults(
+        screenInsertProduct(
+          {
+            frontWidth: project.openingWidthInches,
+            height: project.openingHeightInches,
+            rearWidth: project.openingRearWidthInches,
+            depth: project.openingDepthInches,
+          },
+          intakeProduct,
+        ),
+      );
+      line(
+        "Measured fit screen",
+        fit.status === "fits-measured-opening"
+          ? `${fit.passingProfiles} manufacturer profile${fit.passingProfiles === 1 ? "" : "s"} pass measured minimums`
+          : fit.status === "needs-measurements"
+            ? "Incomplete · more field measurements required"
+            : "Does not pass any recorded manufacturer profile",
+      );
+    } else {
+      line("Measured fit screen", "Unavailable · selected visual is not an insert");
+    }
   }
 
   page.drawLine({

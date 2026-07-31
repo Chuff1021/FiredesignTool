@@ -16,6 +16,14 @@ import {
   type RoomProject,
 } from "@/domain/roomProject";
 import { normalizeConfiguration, WALL_WIDTH_RANGE } from "@/domain/configuration";
+import { catalogRepository } from "@/domain/catalogRepository";
+import {
+  screenInsertProduct,
+  summarizeInsertFitResults,
+  type InsertFitDimension,
+  type InsertFitResult,
+} from "@/domain/insertFit";
+import { findApprovedIntakeProduct } from "@/catalog/intakeRegistry";
 import { UiIcon } from "@/components/UiIcon";
 import { prepareRoomImage } from "@/lib/roomImage";
 import {
@@ -32,6 +40,33 @@ import { createProjectPdf } from "@/lib/projectExport";
 import { useConfigurationStore } from "@/store/configurationStore";
 
 type CalibrationTool = "wall" | "measurement" | "opening" | "foreground" | "view";
+
+const fitDimensionLabels: Record<InsertFitDimension, string> = {
+  frontWidth: "front width",
+  height: "height",
+  rearWidth: "rear width",
+  depth: "depth",
+};
+
+function fitResultLabel(result: InsertFitResult): string {
+  if (result.status === "fits-measured-opening") return "passes measured minimums";
+  if (result.status === "needs-measurements") {
+    return `needs ${result.missingMeasurements.map((dimension) => fitDimensionLabels[dimension]).join(" and ")}`;
+  }
+  return result.deficits
+    .map(
+      (deficit) =>
+        `${fitDimensionLabels[deficit.dimension]} short ${Math.abs(deficit.margin).toFixed(3).replace(/0+$/, "").replace(/\.$/, "")} in`,
+    )
+    .join(" · ");
+}
+
+function variantLabel(value: string): string {
+  return value
+    .split("-")
+    .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+    .join(" ");
+}
 
 export function CustomerRoomViewport() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -66,6 +101,32 @@ export function CustomerRoomViewport() {
   const configuration = useMemo(
     () => normalizeConfiguration(configurationValues),
     [configurationValues],
+  );
+  const selectedFireplace = useMemo(
+    () => catalogRepository.getFireplace(configuration.fireplaceId),
+    [configuration.fireplaceId],
+  );
+  const selectedIntakeProduct = useMemo(
+    () => findApprovedIntakeProduct(configuration.fireplaceId),
+    [configuration.fireplaceId],
+  );
+  const insertFitResults = useMemo(() => {
+    if (project?.scenario !== "insert" || selectedIntakeProduct?.applianceType !== "insert") {
+      return [];
+    }
+    return screenInsertProduct(
+      {
+        frontWidth: project.openingWidthInches,
+        height: project.openingHeightInches,
+        rearWidth: project.openingRearWidthInches,
+        depth: project.openingDepthInches,
+      },
+      selectedIntakeProduct,
+    );
+  }, [project, selectedIntakeProduct]);
+  const insertFitSummary = useMemo(
+    () => summarizeInsertFitResults(insertFitResults),
+    [insertFitResults],
   );
 
   const refreshProjects = useCallback(async () => {
@@ -822,6 +883,46 @@ export function CustomerRoomViewport() {
           Conceptual sales visualization. Verify fit, venting, framing, clearances, and
           installation onsite.
         </p>
+        {project.scenario === "insert" ? (
+          <div
+            aria-live="polite"
+            className="room-fit-screen"
+            data-status={insertFitSummary.status}
+          >
+            {selectedIntakeProduct?.applianceType === "insert" ? (
+              <>
+                <div className="room-fit-screen__heading">
+                  <span>Measured opening screen</span>
+                  <strong>
+                    {insertFitSummary.status === "fits-measured-opening"
+                      ? `${insertFitSummary.passingProfiles} manufacturer profile${insertFitSummary.passingProfiles === 1 ? "" : "s"} pass`
+                      : insertFitSummary.status === "needs-measurements"
+                        ? "More field measurements required"
+                        : "No recorded profile passes"}
+                  </strong>
+                  <small>{selectedIntakeProduct.model}</small>
+                </div>
+                <div className="room-fit-screen__profiles">
+                  {insertFitResults.map((result) => (
+                    <span data-result={result.status} key={result.profile.variantId}>
+                      <strong>{variantLabel(result.profile.variantId)}</strong>
+                      <small>{fitResultLabel(result)}</small>
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="room-fit-screen__heading">
+                <span>Measured opening screen</span>
+                <strong>Fit screening is unavailable for {selectedFireplace.model}</strong>
+                <small>
+                  The selected visual is a built-in fireplace, not an insert. Use this room
+                  image as a remodeling concept only; it is not an insert fit recommendation.
+                </small>
+              </div>
+            )}
+          </div>
+        ) : null}
       </div>
     </section>
   );

@@ -52,6 +52,9 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Insert opening depth and rear width persist and appear in the PDF handoff;
       missing field measurements remain unknown and are never inferred from the
       photograph.
+- [ ] Insert-fit screening is bound to the selected approved insert and reports
+      each exact manufacturer variant independently. A built-in fireplace visual
+      produces no fit claim, and the same conservative result appears in the PDF.
 - [ ] Version 1 through version 3 customer-room records migrate to the current
       schema with their original photo, calibration, name, comparison, and any
       traced foreground objects intact.
