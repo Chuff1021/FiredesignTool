@@ -269,14 +269,170 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
       "traditional",
       "https://www.fireplacex.com/product/44-elite-nexgen-hybrid/",
     ),
-    indexedProduct(
-      "32-dvs-deluxe-ember-glo",
-      "32 DVS Deluxe Ember-Glo",
-      "insert",
-      "gas",
-      "traditional",
-      "https://www.fireplacex.com/product/32-dvs-deluxe-ember-glo/",
-    ),
+    {
+      ...indexedProduct(
+        "32-dvs-deluxe-ember-glo",
+        "32 DVS Deluxe Ember-Glo",
+        "insert",
+        "gas",
+        "traditional",
+        "https://www.fireplacex.com/product/32-dvs-deluxe-ember-glo/",
+      ),
+      stage: "documents-verified" as const,
+      evidence: {
+        productIdentifiers: [
+          { id: "98400371", kind: "sku" as const },
+          { id: "DVS EG GSR2", kind: "model" as const },
+        ],
+        variants: [
+          {
+            id: "one-piece-panel-standard-face",
+            viewingArea: { width: 24.25, height: 12.75 },
+            minimumOpening: {
+              frontWidth: 29,
+              height: 20.625,
+              rearWidth: 18,
+              depth: 16.375,
+            },
+            surroundForwardExtension: 0,
+          },
+          {
+            id: "one-piece-panel-arched-face",
+            viewingArea: { width: 24.25, height: 12.75 },
+            minimumOpening: {
+              frontWidth: 29,
+              height: 20.625,
+              rearWidth: 18,
+              depth: 16.875,
+            },
+            surroundForwardExtension: 0,
+          },
+          {
+            id: "one-piece-panel-with-trim-standard-face",
+            viewingArea: { width: 24.25, height: 12.75 },
+            minimumOpening: {
+              frontWidth: 26.5,
+              height: 19.5,
+              rearWidth: 18,
+              depth: 15.125,
+            },
+            surroundForwardExtension: 1.25,
+          },
+          {
+            id: "one-piece-panel-with-trim-arched-face",
+            viewingArea: { width: 24.25, height: 12.75 },
+            minimumOpening: {
+              frontWidth: 26.5,
+              height: 19.5,
+              rearWidth: 18,
+              depth: 15.625,
+            },
+            surroundForwardExtension: 1.25,
+          },
+        ],
+        installationManualUrl: "https://www.travisindustries.com/Docs/100-01537.pdf",
+        installationManualRevision: "100-01537, 7/28/2026",
+        dimensionPages: [6, 8],
+        clearanceRulePages: [12],
+        clearanceRules: {
+          mantel: {
+            measurementFrom: "appliance-base" as const,
+            profiles: [
+              {
+                material: "combustible" as const,
+                points: [
+                  { projection: 4, minimumClearance: 33 },
+                  { projection: 12, minimumClearance: 35 },
+                ],
+              },
+              {
+                material: "non-combustible" as const,
+                points: [
+                  { projection: 4, minimumClearance: 33 },
+                  { projection: 12, minimumClearance: 35 },
+                ],
+              },
+            ],
+          },
+          sideWall: {
+            measurementFrom: "appliance-side" as const,
+            minimumClearance: 4.5,
+          },
+          facing: {
+            measurementFrom: "appliance-base" as const,
+            minimumSideExtent: 4.5,
+            minimumTopExtent: 35,
+            topMayTerminateAtMantelBottom: true,
+          },
+          hearth: {
+            measurementFrom: "appliance-base" as const,
+            placementProfiles: [{ applianceElevation: 0, minimumHorizontalExtension: 0 }],
+          },
+        },
+        optionPages: [],
+        visualOptionIds: [
+          "95100053",
+          "95100059",
+          "95300199",
+          "95300412",
+          "95300192",
+          "95300198",
+          "95300243",
+          "95300407",
+          "95300409",
+          "95300406",
+          "95300413",
+          "96100473",
+          "96100473HB",
+          "96100477",
+          "96100478",
+          "96100476",
+          "96100477GS",
+          "96100475",
+          "96100361",
+          "96100362",
+          "96100604",
+          "94500957",
+          "94500956",
+          "94500953",
+          "96500891",
+          "96500892",
+        ],
+        visualSourceUrls: [
+          "https://firebuilder.travisindustries.com/api/product/128/pl/1/cy/1",
+          "https://firebuilder.travisindustries.com/api/product/128/pl/1/accessory",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95300412.png",
+          "https://www.fireplacex.com/wp-content/uploads/32DVSEG_MetroBP.jpg",
+          "https://www.fireplacex.com/wp-content/uploads/32DVSEG_CABP.jpg",
+          "https://www.fireplacex.com/wp-content/uploads/32DVSEG_FCBP.jpg",
+          "https://vimeo.com/465443142",
+        ],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 2400,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "firebuilder-shadowbox-layer",
+              sourceUrl:
+                "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95300412.png",
+              kind: "configurator-layer" as const,
+              width: 960,
+              height: 960,
+              isolated: true,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
+        maximumOfficialLayerPixels: 960,
+        assetQualityGate: "blocked-high-resolution-master" as const,
+      },
+      notes:
+        "Current appliance identity, glass area, standard and arched-face opening profiles, trim projection, base-referenced clearances, live FireBuilder options, official burn source, and visual sources are verified. The largest official isolated layer is 960 px and remains blocked from the 4K visual gate.",
+    },
     {
       ...indexedProduct(
         "430-deluxe-ember-glo",

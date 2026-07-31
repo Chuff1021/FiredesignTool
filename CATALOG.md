@@ -116,15 +116,15 @@ mapped into the live catalog—fails validation.
 The 564 TRV 25K designer-face and clean-face models were the first FPX batch
 to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
 area, current installation manuals, mantel-rule page, and visible option SKUs
-are recorded. The 430, 34 DVL, and 616 Deluxe Ember-Glo inserts have reached the
-same gate. Their manual-published masonry-opening profiles, glass areas,
-surround projections, facing requirements, hearth relationships,
+are recorded. The 32 DVS, 430, 34 DVL, and 616 Deluxe Ember-Glo inserts have
+reached the same gate. Their manual-published masonry-opening profiles, glass
+areas, surround projections, facing requirements, hearth relationships,
 base-referenced mantel curves, and current FireBuilder option SKUs are
-structured for the room designer. The 34 DVL retains separate standard-face and
-arched-face depth requirements for both trimmed and untrimmed installations.
-These products remain blocked from the live catalog because their public
-isolated FireBuilder masters are only 900-960 px and do not pass the 4K visual
-gate.
+structured for the room designer. The 32 DVS and 34 DVL retain separate
+standard-face and arched-face depth requirements for both trimmed and
+untrimmed installations. These products remain blocked from the live catalog
+because their public isolated FireBuilder masters are only 900-960 px and do
+not pass the 4K visual gate.
 
 Superior DRI2000 is the first non-FPX family at `documents-verified`. Its
 current English installation manual is P/N 900787-04, revision H, October 2024.

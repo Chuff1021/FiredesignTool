@@ -62,11 +62,15 @@ geometry needed to render the actual product:
 3. 4237 Ember-Glo Clean Face Deluxe, SKU `98500344`.
 4. 430 Deluxe Ember-Glo insert, SKU `98400113`, including its current faces,
    one-piece panels, firebacks, and Oak/Birch/Driftwood media.
-5. 34 DVL Deluxe Ember-Glo insert, SKU `98400376`, including its current faces,
+5. 32 DVS Deluxe Ember-Glo insert, SKU `98400371`, including its current faces,
    one-piece panels and trim kits, firebacks, and Oak/Birch/Driftwood media.
    Arched faces must remain separately identifiable because they have a distinct
    installation-depth requirement.
-6. 616 Deluxe Ember-Glo insert, SKU `98400120`, including its current faces,
+6. 34 DVL Deluxe Ember-Glo insert, SKU `98400376`, including its current faces,
+   one-piece panels and trim kits, firebacks, and Oak/Birch/Driftwood media.
+   Arched faces must remain separately identifiable because they have a distinct
+   installation-depth requirement.
+7. 616 Deluxe Ember-Glo insert, SKU `98400120`, including its current faces,
    one-piece panels, firebacks, and Oak/Birch/Driftwood media.
 
 Please also restore or replace the BIM and CAD downloads currently linked from

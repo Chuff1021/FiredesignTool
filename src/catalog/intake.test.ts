@@ -14,8 +14,8 @@ describe("FPX catalog intake queue", () => {
       remainingFamilies: 34,
     });
     expect(summary.byStage.approved).toBe(2);
-    expect(summary.byStage["documents-verified"]).toBe(5);
-    expect(summary.byStage["source-indexed"]).toBe(29);
+    expect(summary.byStage["documents-verified"]).toBe(6);
+    expect(summary.byStage["source-indexed"]).toBe(28);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")
@@ -136,6 +136,89 @@ describe("FPX catalog intake queue", () => {
     });
     expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
     expect(evidence.maximumOfficialLayerPixels).toBe(960);
+  });
+
+  it("records the current 32 DVS opening profiles and base-referenced rules", () => {
+    const product = FPX_CURRENT_INTAKE.products.find(
+      (candidate) => candidate.id === "32-dvs-deluxe-ember-glo",
+    );
+    expect(product?.stage).toBe("documents-verified");
+    const evidence = product?.evidence;
+    if (!evidence || !("variants" in evidence)) {
+      throw new Error("32 DVS manufacturer evidence is missing");
+    }
+    expect(evidence.productIdentifiers).toEqual([
+      { id: "98400371", kind: "sku" },
+      { id: "DVS EG GSR2", kind: "model" },
+    ]);
+    expect(evidence.installationManualRevision).toBe("100-01537, 7/28/2026");
+    expect(evidence.variants).toMatchObject([
+      {
+        id: "one-piece-panel-standard-face",
+        viewingArea: { width: 24.25, height: 12.75 },
+        minimumOpening: {
+          frontWidth: 29,
+          height: 20.625,
+          rearWidth: 18,
+          depth: 16.375,
+        },
+        surroundForwardExtension: 0,
+      },
+      {
+        id: "one-piece-panel-arched-face",
+        minimumOpening: { depth: 16.875 },
+      },
+      {
+        id: "one-piece-panel-with-trim-standard-face",
+        minimumOpening: {
+          frontWidth: 26.5,
+          height: 19.5,
+          rearWidth: 18,
+          depth: 15.125,
+        },
+        surroundForwardExtension: 1.25,
+      },
+      {
+        id: "one-piece-panel-with-trim-arched-face",
+        minimumOpening: { depth: 15.625 },
+        surroundForwardExtension: 1.25,
+      },
+    ]);
+    expect(evidence.clearanceRules).toMatchObject({
+      mantel: {
+        measurementFrom: "appliance-base",
+        profiles: [
+          {
+            material: "combustible",
+            points: [
+              { projection: 4, minimumClearance: 33 },
+              { projection: 12, minimumClearance: 35 },
+            ],
+          },
+          {
+            material: "non-combustible",
+            points: [
+              { projection: 4, minimumClearance: 33 },
+              { projection: 12, minimumClearance: 35 },
+            ],
+          },
+        ],
+      },
+      sideWall: { measurementFrom: "appliance-side", minimumClearance: 4.5 },
+      facing: {
+        measurementFrom: "appliance-base",
+        minimumSideExtent: 4.5,
+        minimumTopExtent: 35,
+        topMayTerminateAtMantelBottom: true,
+      },
+      hearth: {
+        placementProfiles: [{ applianceElevation: 0, minimumHorizontalExtension: 0 }],
+      },
+    });
+    expect(evidence.visualOptionIds).toContain("95300192");
+    expect(evidence.visualOptionIds).toContain("94500953");
+    expect(evidence.maximumOfficialLayerPixels).toBe(960);
+    expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
   });
 
   it("records the 430 insert fit profiles and its distinct clearance datum", () => {
