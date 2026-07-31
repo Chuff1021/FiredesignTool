@@ -15,6 +15,32 @@ test("loads the approved showroom composition without customer-facing errors", a
     ),
   ).toBeVisible();
   await expect(page.getByText("The presentation could not start safely.")).toHaveCount(0);
+  await expect(page.locator(".scene-viewport")).toHaveAttribute(
+    "data-media-status",
+    "playing",
+    { timeout: 15_000 },
+  );
+});
+
+test("plays official media behind every approved FPX face", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+  const viewport = page.locator(".scene-viewport");
+  await page.getByLabel("Fireplace model").selectOption("864-trv-31k-deluxe");
+  for (const face of [
+    "classic-arch",
+    "arched-french-country",
+    "metropolitan",
+    "rectangle-double-door",
+  ]) {
+    await page.getByLabel("Face or trim").selectOption(face);
+    await expect(viewport).toHaveAttribute("data-media-status", "playing", {
+      timeout: 15_000,
+    });
+  }
+  await page.getByLabel("Fireplace model").selectOption("4237-ember-glo-clean-face");
+  await expect(viewport).toHaveAttribute("data-media-status", "playing", {
+    timeout: 15_000,
+  });
 });
 
 test("adjusts and persists physical dimensions", async ({ page }, testInfo) => {
@@ -128,7 +154,8 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("62 / 62 verified")).toBeVisible();
+  await expect(page.getByText("72 / 72 verified")).toBeVisible();
+  await expect(page.getByText("Playing · H.264 · muted")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,
   });
@@ -136,6 +163,11 @@ test("preloads the complete release and reloads offline", async ({
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator(".scene-viewport")).toHaveAttribute(
+    "data-media-status",
+    "playing",
+    { timeout: 15_000 },
+  );
   await context.setOffline(false);
 });
 

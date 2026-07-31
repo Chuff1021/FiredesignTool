@@ -1,6 +1,6 @@
 {
-  "version": "2026.07.30-5",
-  "generatedAt": "2026-07-30T00:00:00.000Z",
+  "version": "2026.07.31-1",
+  "generatedAt": "2026-07-31T00:00:00.000Z",
   "files": [
     {
       "path": "/assets/centurion-brown-ledge-bump.webp",
@@ -43,9 +43,29 @@
       "size": 6174196
     },
     {
+      "path": "/assets/fpx-4237-burn-poster.webp",
+      "sha256": "f7678dd55011962fa0cebdb61280ee58fcb4c7ce44678f81891192d40ac895c4",
+      "size": 238172
+    },
+    {
+      "path": "/assets/fpx-4237-burn.mp4",
+      "sha256": "2ca7a86a1b8090ebe38164817d805f4a27df7c72c863c480b8987256969f6f2a",
+      "size": 12696768
+    },
+    {
+      "path": "/assets/fpx-4237-clean-face-overlay.png",
+      "sha256": "ca5c31cc3d20de2b5d9d78ad15b585fe7bd8e1397686e847b2f71e072fd540e4",
+      "size": 55164
+    },
+    {
       "path": "/assets/fpx-4237-clean-face.png",
       "sha256": "f76c0fc2b1fdb24c6766f6dc8ce7fdd4f4fc91727eb5ddf9aa08f5fcb99588fb",
       "size": 495873
+    },
+    {
+      "path": "/assets/fpx-864-arched-french-country-overlay.png",
+      "sha256": "c474b49a7bc9f8226552450823b20b875f878001455e3771a5f381fe88e20baf",
+      "size": 206630
     },
     {
       "path": "/assets/fpx-864-arched-french-country.png",
@@ -53,9 +73,29 @@
       "size": 505162
     },
     {
+      "path": "/assets/fpx-864-burn-poster.webp",
+      "sha256": "6262ea575dca59d36edaee774267a74512d438f55d6a69cd1a9063c4a6cd2261",
+      "size": 177700
+    },
+    {
+      "path": "/assets/fpx-864-burn.mp4",
+      "sha256": "e2ae9d14b56b4bd671181802f16829dacb59e34fcb9468d0627cfcde6fcfe0fa",
+      "size": 12601310
+    },
+    {
+      "path": "/assets/fpx-864-classic-arch-overlay.png",
+      "sha256": "fcf729f47b427ff5c817496f3d92134cb79b331efb7c63c73bfc892dc581c4e1",
+      "size": 236004
+    },
+    {
       "path": "/assets/fpx-864-classic-arch.png",
       "sha256": "44787713f60959c8cea5079a4e578173b00e114998156b871243efeb54f262cb",
       "size": 544418
+    },
+    {
+      "path": "/assets/fpx-864-metropolitan-overlay.png",
+      "sha256": "afa4d7eb33d89a034420ce57bd34fcad1d0437a2c5c7f8e0c6d7c7cc7760fd6b",
+      "size": 278641
     },
     {
       "path": "/assets/fpx-864-metropolitan.png",
@@ -63,9 +103,19 @@
       "size": 591924
     },
     {
+      "path": "/assets/fpx-864-rectangle-double-door-overlay.png",
+      "sha256": "ef0e6971fae5723a330f2bca37b649247fbf0338b8648bfe9e0af5bb2aa31fed",
+      "size": 282231
+    },
+    {
       "path": "/assets/fpx-864-rectangle-double-door.png",
       "sha256": "632f993fd9bf5f141a7e25f91ea5f30e5f8a96411ee2da1c7f6399c2edc86770",
       "size": 625547
+    },
+    {
+      "path": "/assets/fpx-864-trv-31k-clean-face-overlay.png",
+      "sha256": "50de5b804cea7989dc29ff56fcae888be256d2e59188193a1f047d8656408e2d",
+      "size": 106913
     },
     {
       "path": "/assets/fpx-864-trv-31k-clean-face.png",

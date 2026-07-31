@@ -43,6 +43,49 @@ await sharp(path.join(source, "fpx-4237-clean-birch-900.png"))
   .png({ compressionLevel: 9, adaptiveFiltering: true })
   .toFile(path.join(output, "fpx-4237-clean-face.png"));
 
+async function makeFireplaceOverlay({ filename, width, height, openingPath }) {
+  const mask = Buffer.from(
+    `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <mask id="opening"><rect width="100%" height="100%" fill="white"/><path d="${openingPath}" fill="black"/></mask>
+      <rect width="100%" height="100%" fill="white" mask="url(#opening)"/>
+    </svg>`,
+  );
+  await sharp(path.join(output, filename))
+    .ensureAlpha()
+    .composite([{ input: mask, blend: "dest-in" }])
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(path.join(output, filename.replace(".png", "-overlay.png")));
+}
+
+await makeFireplaceOverlay({
+  filename: "fpx-864-trv-31k-clean-face.png",
+  width: 624,
+  height: 468,
+  openingPath: "M51 64 H573 V404 H51 Z",
+});
+for (const filename of ["fpx-864-metropolitan.png", "fpx-864-rectangle-double-door.png"]) {
+  await makeFireplaceOverlay({
+    filename,
+    width: 660,
+    height: 570,
+    openingPath: "M52 106 H608 V464 H52 Z",
+  });
+}
+for (const filename of ["fpx-864-classic-arch.png", "fpx-864-arched-french-country.png"]) {
+  await makeFireplaceOverlay({
+    filename,
+    width: 660,
+    height: 570,
+    openingPath: "M52 464 V238 Q52 106 330 106 Q608 106 608 238 V464 Z",
+  });
+}
+await makeFireplaceOverlay({
+  filename: "fpx-4237-clean-face.png",
+  width: 600,
+  height: 518,
+  openingPath: "M26 27 H574 V491 H26 Z",
+});
+
 const stoneAtlasWidth = 4096;
 const stoneAtlasHeight = 3072;
 const stoneTileWidth = stoneAtlasWidth / 4;

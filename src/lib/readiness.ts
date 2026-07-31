@@ -92,6 +92,50 @@ async function verifyImage(bytes: ArrayBuffer, contentType: string | null): Prom
   });
 }
 
+async function verifyVideo(bytes: ArrayBuffer, contentType: string | null): Promise<void> {
+  if (!contentType?.startsWith("video/")) return;
+  if (bytes.byteLength > 20 * 1024 * 1024) {
+    throw new Error("An approved burn loop exceeds the 20 MB showroom limit.");
+  }
+  const support = document
+    .createElement("video")
+    .canPlayType('video/mp4; codecs="avc1.640028"');
+  if (!support) throw new Error("This browser cannot decode the approved H.264 burn footage.");
+
+  await new Promise<void>((resolve, reject) => {
+    const url = URL.createObjectURL(new Blob([bytes], { type: contentType }));
+    const video = document.createElement("video");
+    const timeout = window.setTimeout(
+      () => finish(new Error("Burn video decode timed out.")),
+      12000,
+    );
+    const finish = (error?: Error) => {
+      window.clearTimeout(timeout);
+      video.removeAttribute("src");
+      video.load();
+      URL.revokeObjectURL(url);
+      if (error) reject(error);
+      else resolve();
+    };
+    video.muted = true;
+    video.preload = "auto";
+    video.onloadeddata = () => {
+      if (
+        video.videoWidth < 1280 ||
+        video.videoHeight < 720 ||
+        !Number.isFinite(video.duration)
+      ) {
+        finish(new Error("Burn video metadata does not meet the approved showroom profile."));
+        return;
+      }
+      finish();
+    };
+    video.onerror = () => finish(new Error("An approved burn video could not be decoded."));
+    video.src = url;
+    video.load();
+  });
+}
+
 export async function runReadinessChecks(
   onProgress?: (completed: number, total: number) => void,
 ): Promise<ReadinessResult> {
@@ -122,6 +166,7 @@ export async function runReadinessChecks(
       throw new Error(`Required showroom asset failed its integrity check: ${file.path}`);
     }
     await verifyImage(bytes, response.headers.get("content-type"));
+    await verifyVideo(bytes, response.headers.get("content-type"));
     verifiedAssets += 1;
     onProgress?.(verifiedAssets, manifest.files.length);
   }

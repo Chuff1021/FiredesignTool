@@ -15,7 +15,12 @@ application version, asset version, preview URL, and deployment ID.
       stretch, missing asset, or obvious material repetition.
 - [ ] Startup reaches presentation-ready within 10 seconds after caching.
 - [ ] Control feedback appears within 100 milliseconds.
-- [ ] Diagnostics reports 62 verified assets and an offline-ready cache.
+- [ ] Diagnostics reports 72 verified assets, playing official burn media, and
+      an offline-ready cache.
+- [ ] Both 864 variants, all four designer faces, and the 4237 play their mapped
+      muted loop with no black first frame, stretch, face overlap, or loop flash.
+- [ ] Cached MP4 range requests return `206` and both loops replay offline in
+      Chromium and WebKit after browser restart.
 - [ ] Production bundle, memory, texture dimensions, and sustained frame rate
       are recorded.
 
@@ -35,7 +40,7 @@ application version, asset version, preview URL, and deployment ID.
       restoration, and offline reload all pass.
 - [ ] WebGL context recovery is tested on the production computer.
 - [ ] Eight-hour soak completes with no uncaught error, progressive memory
-      increase, frame-rate degradation, or rendering failure.
+      increase, video stall, frame-rate degradation, or rendering failure.
 - [ ] Multiple customer-session rehearsals complete using only production
       hardware.
 

@@ -56,9 +56,23 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(ALL_ASSET_PATHS).toHaveLength(62);
+    expect(ALL_ASSET_PATHS).toHaveLength(72);
     expect(new Set(ALL_ASSET_PATHS).size).toBe(ALL_ASSET_PATHS.length);
     expect(ALL_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
+  });
+
+  it("maps each fireplace to an approved local burn loop and matching poster", () => {
+    expect(fireplaceProducts[0]?.burnMedia.video.localPath).toBe(
+      fireplaceProducts[1]?.burnMedia.video.localPath,
+    );
+    expect(fireplaceProducts[2]?.burnMedia.video.localPath).toBe("/assets/fpx-4237-burn.mp4");
+    expect(
+      fireplaceProducts.every(
+        (product) =>
+          product.burnMedia.video.localPath.endsWith(".mp4") &&
+          product.burnMedia.poster.localPath.endsWith(".webp"),
+      ),
+    ).toBe(true);
   });
 
   it("rejects unchecked substitutions", () => {

@@ -36,19 +36,23 @@ import {
   type FeatureWallConfiguration,
 } from "@/domain/configuration";
 import { useConfigurationStore } from "@/store/configurationStore";
+import { FireboxMedia, type FireboxMediaStatus } from "@/components/FireboxMedia";
 
 type FeatureWallCanvasProps = {
   onFps: (fps: number) => void;
+  onMediaStatus: (status: FireboxMediaStatus) => void;
   onRendererStatus: (status: "ready" | "recovering" | "error") => void;
 };
 
+const TEXTURE_ASSET_PATHS = ALL_ASSET_PATHS.filter((path) => !path.endsWith(".mp4"));
+
 function usePreparedTextures() {
-  const sources = useLoader(TextureLoader, ALL_ASSET_PATHS) as Texture[];
+  const sources = useLoader(TextureLoader, TEXTURE_ASSET_PATHS) as Texture[];
   const maxAnisotropy = useThree((state) => state.gl.capabilities.getMaxAnisotropy());
 
   const prepared = useMemo(() => {
     const textures = new Map<string, Texture>();
-    ALL_ASSET_PATHS.forEach((path, index) => {
+    TEXTURE_ASSET_PATHS.forEach((path, index) => {
       const source = sources[index];
       if (!source) throw new Error(`Approved texture source is missing: ${path}`);
       const texture = source.clone();
@@ -211,7 +215,13 @@ function DimensionGuides({ configuration }: { configuration: FeatureWallConfigur
   );
 }
 
-function FeatureWall({ configuration }: { configuration: FeatureWallConfiguration }) {
+function FeatureWall({
+  configuration,
+  onMediaStatus,
+}: {
+  configuration: FeatureWallConfiguration;
+  onMediaStatus: (status: FireboxMediaStatus) => void;
+}) {
   const groupRef = useRef<Group>(null);
   const textures = usePreparedTextures();
   const shadowTexture = useMemo(() => makeShadowTexture(), []);
@@ -288,6 +298,8 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
   }, [configuration.fireplaceElevation, hearthWidth, stone.assets, textures]);
 
   const fireTexture = requireTexture(textures, face.asset.localPath);
+  const faceOverlayTexture = requireTexture(textures, face.overlayAsset.localPath);
+  const burnPosterTexture = requireTexture(textures, fireplace.burnMedia.poster.localPath);
 
   useEffect(
     () => () => {
@@ -353,6 +365,32 @@ function FeatureWall({ configuration }: { configuration: FeatureWallConfiguratio
       <mesh position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 0.9]}>
         <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
         <meshBasicMaterial alphaTest={0.02} map={fireTexture} toneMapped={false} transparent />
+      </mesh>
+      <group
+        position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 0.97]}
+      >
+        <FireboxMedia
+          faceOptionId={face.id}
+          height={fireplace.viewingArea.height}
+          key={fireplace.burnMedia.video.localPath}
+          media={fireplace.burnMedia}
+          onStatus={onMediaStatus}
+          poster={burnPosterTexture}
+          width={fireplace.viewingArea.width}
+        />
+      </group>
+      <mesh
+        position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 1.05]}
+        renderOrder={4}
+      >
+        <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
+        <meshBasicMaterial
+          alphaTest={0.02}
+          depthWrite={false}
+          map={faceOverlayTexture}
+          toneMapped={false}
+          transparent
+        />
       </mesh>
 
       <mesh
@@ -561,7 +599,11 @@ function RendererReady({
   return null;
 }
 
-export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvasProps) {
+export function FeatureWallCanvas({
+  onFps,
+  onMediaStatus,
+  onRendererStatus,
+}: FeatureWallCanvasProps) {
   const wallWidth = useConfigurationStore((state) => state.wallWidth);
   const wallHeight = useConfigurationStore((state) => state.wallHeight);
   const stoneWidth = useConfigurationStore((state) => state.stoneWidth);
@@ -629,7 +671,7 @@ export function FeatureWallCanvas({ onFps, onRendererStatus }: FeatureWallCanvas
           shadow-mapSize-width={2048}
         />
         <Suspense fallback={null}>
-          <FeatureWall configuration={configuration} />
+          <FeatureWall configuration={configuration} onMediaStatus={onMediaStatus} />
           <SceneReady onReady={() => onRendererStatus("ready")} />
         </Suspense>
         <FrameRateMonitor onFps={onFps} />

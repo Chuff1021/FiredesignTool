@@ -34,6 +34,7 @@ const faceOptionSchema = z.object({
     height: positiveInches,
   }),
   asset: assetSourceSchema,
+  overlayAsset: assetSourceSchema,
 });
 
 const mantelRuleSchema = z.object({
@@ -52,6 +53,15 @@ const mantelRuleSchema = z.object({
   note: z.string().min(1),
 });
 
+export const burnMediaSchema = z.object({
+  video: assetSourceSchema,
+  poster: assetSourceSchema,
+  codec: z.literal("H.264/AVC"),
+  durationSeconds: z.number().positive().max(20),
+  logSet: z.string().min(1),
+  sourceTimecode: z.string().min(1),
+});
+
 export const fireplaceProductSchema = z.object({
   id: fireplaceIdSchema,
   manufacturer: z.literal("Fireplace Xtrordinair"),
@@ -65,6 +75,7 @@ export const fireplaceProductSchema = z.object({
   faceOptions: z.array(faceOptionSchema).min(1),
   defaultFaceOptionId: faceOptionIdSchema,
   mantelRule: mantelRuleSchema,
+  burnMedia: burnMediaSchema,
 });
 
 export const mantelProductIdSchema = z.enum([
@@ -191,6 +202,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500187_94500721.png",
           "Official FireBuilder 900 px clean-face layer with Classic Oak logs",
         ),
+        overlayAsset: officialLayer(
+          "/assets/fpx-864-trv-31k-clean-face-overlay.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500187_94500721.png",
+          "Official clean-face layer with the published glass opening isolated",
+        ),
       },
     ],
     mantelRule: {
@@ -205,6 +221,22 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         { depth: 12, minimumHeight: 48.75 },
       ],
       note: "An 8″ deep mantel must be at least 44¾″ above the base of the fireplace.",
+    },
+    burnMedia: {
+      video: officialLayer(
+        "/assets/fpx-864-burn.mp4",
+        "https://vimeo.com/356069122",
+        "Official Travis Industries 864 TRV 31K Classic Oak burn footage",
+      ),
+      poster: officialLayer(
+        "/assets/fpx-864-burn-poster.webp",
+        "https://vimeo.com/356069122",
+        "Poster extracted from the approved 864 burn loop",
+      ),
+      codec: "H.264/AVC",
+      durationSeconds: 12,
+      logSet: "Classic Oak",
+      sourceTimecode: "00:36–00:48",
     },
   },
   {
@@ -227,6 +259,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/99300497.png",
           "Official FireBuilder Classic Arch face composited with the official 864 layer",
         ),
+        overlayAsset: officialLayer(
+          "/assets/fpx-864-classic-arch-overlay.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/99300497.png",
+          "Official Classic Arch face with its glass opening isolated",
+        ),
       },
       {
         id: "arched-french-country",
@@ -238,6 +275,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "/assets/fpx-864-arched-french-country.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800616.png",
           "Official FireBuilder French Country face composited with the official 864 layer",
+        ),
+        overlayAsset: officialLayer(
+          "/assets/fpx-864-arched-french-country-overlay.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800616.png",
+          "Official French Country face with its glass opening isolated",
         ),
       },
       {
@@ -251,6 +293,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800623.png",
           "Official FireBuilder Metropolitan face composited with the official 864 layer",
         ),
+        overlayAsset: officialLayer(
+          "/assets/fpx-864-metropolitan-overlay.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800623.png",
+          "Official Metropolitan face with its glass opening isolated",
+        ),
       },
       {
         id: "rectangle-double-door",
@@ -262,6 +309,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "/assets/fpx-864-rectangle-double-door.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800743.png",
           "Official FireBuilder Rectangle Double Door face composited with the official 864 layer",
+        ),
+        overlayAsset: officialLayer(
+          "/assets/fpx-864-rectangle-double-door-overlay.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800743.png",
+          "Official Double Door face with its glass opening isolated",
         ),
       },
     ],
@@ -277,6 +329,22 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         { depth: 12, minimumHeight: 48.75 },
       ],
       note: "An 8″ deep mantel must be at least 8″ above the fireplace face, equal to 44¾″ above the base.",
+    },
+    burnMedia: {
+      video: officialLayer(
+        "/assets/fpx-864-burn.mp4",
+        "https://vimeo.com/356069122",
+        "Official Travis Industries 864 TRV 31K Classic Oak burn footage",
+      ),
+      poster: officialLayer(
+        "/assets/fpx-864-burn-poster.webp",
+        "https://vimeo.com/356069122",
+        "Poster extracted from the approved 864 burn loop",
+      ),
+      codec: "H.264/AVC",
+      durationSeconds: 12,
+      logSet: "Classic Oak",
+      sourceTimecode: "00:36–00:48",
     },
   },
   {
@@ -299,6 +367,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500344_96100884_94500982.png",
           "Official FireBuilder 4237 clean-face layer with black glass and Birch logs",
         ),
+        overlayAsset: officialLayer(
+          "/assets/fpx-4237-clean-face-overlay.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500344_96100884_94500982.png",
+          "Official 4237 clean-face layer with the published glass opening isolated",
+        ),
       },
     ],
     mantelRule: {
@@ -315,6 +388,22 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         { depth: 12, minimumHeight: 61 },
       ],
       note: "An 8″ deep mantel must be at least 57″ above the base of the fireplace.",
+    },
+    burnMedia: {
+      video: officialLayer(
+        "/assets/fpx-4237-burn.mp4",
+        "https://vimeo.com/639273752",
+        "Official Travis Industries 4237 Ember-Glo burn footage",
+      ),
+      poster: officialLayer(
+        "/assets/fpx-4237-burn-poster.webp",
+        "https://vimeo.com/639273752",
+        "Poster extracted from the approved 4237 burn loop",
+      ),
+      codec: "H.264/AVC",
+      durationSeconds: 12,
+      logSet: "Birch",
+      sourceTimecode: "01:40–01:52",
     },
   },
 ]);
@@ -775,8 +864,15 @@ export function getHearthstone(stoneId: z.infer<typeof stoneIdSchema>) {
 
 export const ALL_ASSET_PATHS = [
   ...fireplaceProducts.flatMap((product) =>
-    product.faceOptions.map((option) => option.asset.localPath),
+    product.faceOptions.flatMap((option) => [
+      option.asset.localPath,
+      option.overlayAsset.localPath,
+    ]),
   ),
+  ...fireplaceProducts.flatMap((product) => [
+    product.burnMedia.video.localPath,
+    product.burnMedia.poster.localPath,
+  ]),
   ...stoneProducts.flatMap((product) => product.assets.map((asset) => asset.localPath)),
   ...stoneProducts.flatMap((product) =>
     product.hearthstone.assets.map((asset) => asset.localPath),
@@ -784,8 +880,8 @@ export const ALL_ASSET_PATHS = [
   ...mantelFinishes.flatMap((finish) => finish.assets.map((asset) => asset.localPath)),
 ].filter((path, index, all) => all.indexOf(path) === index);
 
-export const APP_VERSION = "0.4.0";
-export const ASSET_VERSION = "2026.07.30-5";
+export const APP_VERSION = "0.5.0";
+export const ASSET_VERSION = "2026.07.31-1";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;
@@ -794,5 +890,6 @@ export type MantelProductId = z.infer<typeof mantelProductIdSchema>;
 export type MantelWidth = z.infer<typeof mantelWidthSchema>;
 export type StoneId = z.infer<typeof stoneIdSchema>;
 export type FireplaceProduct = z.infer<typeof fireplaceProductSchema>;
+export type BurnMedia = z.infer<typeof burnMediaSchema>;
 export type MantelProduct = z.infer<typeof mantelProductSchema>;
 export type StoneProduct = z.infer<typeof stoneProductSchema>;

@@ -10,6 +10,7 @@ import {
   getStoneProduct,
 } from "@/domain/catalog";
 import { useConfigurationStore } from "@/store/configurationStore";
+import type { FireboxMediaStatus } from "@/components/FireboxMedia";
 
 const FeatureWallCanvas = dynamic(
   () => import("@/components/FeatureWallCanvas").then((module) => module.FeatureWallCanvas),
@@ -28,6 +29,8 @@ type SceneViewportProps = {
   isPresentation: boolean;
   onExitPresentation: () => void;
   onFps: (fps: number) => void;
+  mediaStatus: FireboxMediaStatus;
+  onMediaStatus: (status: FireboxMediaStatus) => void;
   onRendererStatus: (status: "ready" | "recovering" | "error") => void;
 };
 
@@ -35,6 +38,8 @@ export function SceneViewport({
   isPresentation,
   onExitPresentation,
   onFps,
+  mediaStatus,
+  onMediaStatus,
   onRendererStatus,
 }: SceneViewportProps) {
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
@@ -53,9 +58,14 @@ export function SceneViewport({
     <section
       aria-label="Fireplace design visualization"
       className="scene-viewport"
+      data-media-status={mediaStatus}
       data-presentation={isPresentation}
     >
-      <FeatureWallCanvas onFps={onFps} onRendererStatus={onRendererStatus} />
+      <FeatureWallCanvas
+        onFps={onFps}
+        onMediaStatus={onMediaStatus}
+        onRendererStatus={onRendererStatus}
+      />
       <div className="scene-topbar">
         <div className="scene-status">
           <span aria-hidden="true" />

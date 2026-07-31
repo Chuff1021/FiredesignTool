@@ -1,4 +1,4 @@
-const CACHE_VERSION = "firedesign-2026.07.30-5";
+const CACHE_VERSION = "firedesign-2026.07.31-1";
 const SHELL = ["/", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 async function cacheApprovedRelease(cache) {
@@ -55,6 +55,38 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(async () => (await caches.match(request)) ?? (await caches.match("/"))),
+    );
+    return;
+  }
+
+  const rangeHeader = request.headers.get("range");
+  if (rangeHeader && url.pathname.endsWith(".mp4")) {
+    event.respondWith(
+      caches.match(new Request(request.url)).then(async (cached) => {
+        const fullResponse = cached ?? (await fetch(new Request(request.url)));
+        if (!fullResponse.ok) return fullResponse;
+        const bytes = await fullResponse.arrayBuffer();
+        const match = /^bytes=(\d+)-(\d*)$/.exec(rangeHeader);
+        if (!match) return new Response(null, { status: 416 });
+        const start = Number(match[1]);
+        const requestedEnd = match[2] ? Number(match[2]) : bytes.byteLength - 1;
+        const end = Math.min(requestedEnd, bytes.byteLength - 1);
+        if (start > end || start >= bytes.byteLength) {
+          return new Response(null, {
+            status: 416,
+            headers: { "Content-Range": `bytes */${bytes.byteLength}` },
+          });
+        }
+        return new Response(bytes.slice(start, end + 1), {
+          status: 206,
+          headers: {
+            "Accept-Ranges": "bytes",
+            "Content-Length": String(end - start + 1),
+            "Content-Range": `bytes ${start}-${end}/${bytes.byteLength}`,
+            "Content-Type": fullResponse.headers.get("Content-Type") ?? "video/mp4",
+          },
+        });
+      }),
     );
     return;
   }

@@ -3,6 +3,7 @@
 import { ALL_ASSET_PATHS, APP_VERSION, ASSET_VERSION } from "@/domain/catalog";
 import type { GraphicsSupport } from "@/lib/readiness";
 import { UiIcon } from "@/components/UiIcon";
+import type { FireboxMediaStatus } from "@/components/FireboxMedia";
 
 export type DiagnosticsData = {
   cacheReady: boolean;
@@ -10,6 +11,7 @@ export type DiagnosticsData = {
   graphics: GraphicsSupport;
   online: boolean;
   rendererStatus: "ready" | "recovering" | "error";
+  mediaStatus: FireboxMediaStatus;
   verifiedAssets: number;
 };
 
@@ -92,6 +94,25 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
             label="Frame rate"
             tone={data.fps >= 55 ? "good" : data.fps > 0 ? "warn" : "neutral"}
             value={data.fps > 0 ? `${Math.round(data.fps)} FPS` : "Measuring"}
+          />
+          <DiagnosticRow
+            label="Official burn video"
+            tone={
+              data.mediaStatus === "playing"
+                ? "good"
+                : data.mediaStatus === "fallback"
+                  ? "warn"
+                  : "neutral"
+            }
+            value={
+              data.mediaStatus === "playing"
+                ? "Playing · H.264 · muted"
+                : data.mediaStatus === "fallback"
+                  ? "Approved poster fallback"
+                  : data.mediaStatus === "paused"
+                    ? "Paused while hidden"
+                    : "Decoding first frame"
+            }
           />
           <DiagnosticRow
             label="Graphics API"

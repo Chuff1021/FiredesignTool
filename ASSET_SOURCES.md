@@ -49,8 +49,24 @@ material retrieved on 2026-07-30. No generative image system is used.
 - Mantel rule: revision 2026-06-09, page 35; 8-inch depth requires
   57 inches from fireplace base to mantel bottom
 
-The FireBuilder layers are composited and cropped without resynthesis. The
-application does not alter the logs, flame, ember bed, or face design.
+The FireBuilder layers are composited and cropped without resynthesis. Their
+official face and trim pixels are isolated above the published glass opening.
+
+### Official burn footage
+
+- 864 source: Travis Industries’ official `FireplaceX® 864 TRV 31K Deluxe Gas
+Fireplaces` video, `https://vimeo.com/356069122`
+- 864 approved segment: 00:36–00:48, Classic Oak; center-cropped to the
+  published 34-1/4 × 22-1/4 inch glass ratio and exported at 1920 × 1248
+- 4237 source: Travis Industries’ official `The NEW 4237 Deluxe Gas Fireplace
+ft. Ember-Glo™`, `https://vimeo.com/639273752`
+- 4237 approved segment: 01:40–01:52, Birch; center-cropped to the published
+  39-7/8 × 34-7/8 inch glass ratio and exported at 1600 × 1400
+
+Both 12-second loops contain only manufacturer-recorded frames. Each uses a
+one-second dissolve between real end/start frames, H.264 video without audio,
+and a poster extracted from that exact output. There is no generation, frame
+interpolation, flame reconstruction, color replacement, or synthetic effect.
 
 ## Centurion Stone
 

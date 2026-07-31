@@ -9,6 +9,9 @@ The current approved catalog contains:
 - Fireplace Xtrordinair 864 TRV 31K Deluxe (`98500186`) with two arched and
   two rectangular official designer faces
 - Fireplace Xtrordinair 4237 Ember-Glo Clean Face Deluxe (`98500344`)
+- Muted, automatically looping official Travis Industries burn footage: Classic
+  Oak for both 864 variants and Birch for the 4237, with matching local posters
+  and offline fallback
 - Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
 - Centurion #860 hearthstones in matching Kentucky and Brown colors, laid out
   across the exact selected stone-field width with centered field cuts
@@ -57,6 +60,8 @@ means the approved visual release changed and requires a fresh review.
 - `src/store` is the validated local configuration boundary.
 - `src/components/FeatureWallCanvas.tsx` implements the stable dimensional
   scene. One Three.js unit equals one physical inch.
+- `src/components/FireboxMedia.tsx` owns first-frame-safe video playback,
+  visibility pause/resume, one-shot recovery, and approved-poster fallback.
 - `src/components/FireDesignApp.tsx` owns startup gating, offline readiness,
   fullscreen mode, diagnostics, and recovery.
 - `assets-source` preserves the exact official inputs.

@@ -13,6 +13,7 @@ import {
   type ReadinessResult,
 } from "@/lib/readiness";
 import { useConfigurationStore } from "@/store/configurationStore";
+import type { FireboxMediaStatus } from "@/components/FireboxMedia";
 
 const UNKNOWN_GRAPHICS: GraphicsSupport = {
   supported: false,
@@ -34,6 +35,7 @@ export function FireDesignApp() {
   const [cacheReady, setCacheReady] = useState(false);
   const [online, setOnline] = useState(true);
   const [fps, setFps] = useState(0);
+  const [mediaStatus, setMediaStatus] = useState<FireboxMediaStatus>("preparing");
   const [rendererStatus, setRendererStatus] =
     useState<DiagnosticsData["rendererStatus"]>("recovering");
 
@@ -148,6 +150,7 @@ export function FireDesignApp() {
     graphics: readiness.graphics ?? UNKNOWN_GRAPHICS,
     online,
     rendererStatus,
+    mediaStatus,
     verifiedAssets: readiness.verifiedAssets,
   };
 
@@ -165,6 +168,8 @@ export function FireDesignApp() {
           isPresentation={isPresentation}
           onExitPresentation={() => void exitPresentation()}
           onFps={setFps}
+          mediaStatus={mediaStatus}
+          onMediaStatus={setMediaStatus}
           onRendererStatus={setRendererStatus}
         />
       </SceneErrorBoundary>
