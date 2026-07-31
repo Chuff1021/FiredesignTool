@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "deliveryId": "EXAMPLE-ONLY-travis-864-2026-08-01",
+  "deliveredAt": "2026-08-01T12:00:00.000Z",
+  "deliveredBy": "Manufacturer or authorized dealer name",
+  "permission": {
+    "rightsHolder": "Travis Industries",
+    "writtenApprovalReference": "permissions/offline-showroom-use.pdf",
+    "evidenceFile": "permissions/offline-showroom-use.pdf",
+    "evidenceSha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "offlinePackagingApproved": true,
+    "customerConceptExportApproved": true
+  },
+  "assets": [
+    {
+      "id": "864-clean-face-base",
+      "kind": "raster",
+      "role": "appliance",
+      "file": "raster/864-clean-face-base.png",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sourceReference": "Manufacturer delivery reference",
+      "identity": {
+        "brandId": "fireplace-xtrordinair",
+        "productId": "864-trv-31k-clean-face",
+        "model": "864 TRV 31K Clean Face Deluxe",
+        "skus": ["98500187"]
+      },
+      "registrationGroup": "864-clean-face",
+      "minimumWidth": 2400,
+      "minimumHeight": 1800,
+      "declaredColorSpace": "sRGB",
+      "requireEmbeddedIcc": true,
+      "requireTransparentBackground": true,
+      "opening": {
+        "left": 500,
+        "top": 400,
+        "width": 1400,
+        "height": 900,
+        "minimumTransparentRatio": 0.95
+      }
+    },
+    {
+      "id": "864-metropolitan-face",
+      "kind": "raster",
+      "role": "face",
+      "file": "raster/864-metropolitan-face.png",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "sourceReference": "Manufacturer delivery reference",
+      "identity": {
+        "brandId": "fireplace-xtrordinair",
+        "productId": "864-trv-31k-deluxe",
+        "model": "864 TRV 31K Deluxe",
+        "skus": ["98500186", "95800623"]
+      },
+      "registrationGroup": "864-designer-faces",
+      "minimumWidth": 2400,
+      "minimumHeight": 1800,
+      "declaredColorSpace": "sRGB",
+      "requireEmbeddedIcc": true,
+      "requireTransparentBackground": true,
+      "opening": {
+        "left": 500,
+        "top": 400,
+        "width": 1400,
+        "height": 900,
+        "minimumTransparentRatio": 0.95
+      }
+    },
+    {
+      "id": "864-customer-visible-cad",
+      "kind": "cad-bim",
+      "format": "step",
+      "file": "cad/864-customer-visible.step",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "sourceReference": "Manufacturer engineering export reference",
+      "identity": {
+        "brandId": "fireplace-xtrordinair",
+        "productId": "864-trv-31k-family",
+        "model": "864 TRV 31K Deluxe Collection",
+        "skus": ["98500186", "98500187"]
+      },
+      "nativeUnits": "inches",
+      "frontDirection": "+Y",
+      "productOrigin": "center of appliance base",
+      "installationDatum": "finished appliance base",
+      "visibleObjects": ["face", "glass", "firebox", "logs", "fireback"],
+      "materialsIncluded": true,
+      "texturesIncluded": true
+    }
+  ]
+}

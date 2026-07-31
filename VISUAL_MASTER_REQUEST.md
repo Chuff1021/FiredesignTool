@@ -105,5 +105,11 @@ alpha channel, ICC profile, and at least 95% transparency across the declared
 physical glass opening. Passing preflight does not replace visual or dimensional
 approval.
 
+Multi-file raster and CAD/BIM deliveries should use the versioned package
+manifest and batch preflight in [VISUAL_DELIVERY.md](./VISUAL_DELIVERY.md). This
+also records written offline-packaging and customer-export authority, exact file
+checksums, registered overlay groups, native CAD units, origins, datums, and
+customer-visible object inventories.
+
 Insufficient, perspective, composited-room, visibly upscaled, or unidentified
 files remain in the intake queue and are never exposed to customers.

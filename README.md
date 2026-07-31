@@ -85,6 +85,7 @@ after the first verified load and caches the exact release for offline use.
 
 ```bash
 npm run assets:manifest
+npm run assets:preflight-package -- /path/to/delivery/manifest.json
 npm run catalog:validate
 npm run verify
 npm run test:e2e
@@ -93,6 +94,11 @@ npm run audit:production
 
 `npm run assets:manifest` must leave the worktree clean. Any changed checksum
 means the approved visual release changed and requires a fresh review.
+
+Manufacturer/dealer visual deliveries must first use the package contract in
+[VISUAL_DELIVERY.md](./VISUAL_DELIVERY.md). A passing automated report is intake
+evidence only; it never replaces manual identity, licensing, dimensional, 4K,
+or physical-sample approval.
 
 ## Architecture
 

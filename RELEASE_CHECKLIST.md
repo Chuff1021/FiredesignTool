@@ -8,6 +8,10 @@ application version, asset version, preview URL, and deployment ID.
 
 - [ ] `npm ci` completes from a clean clone.
 - [ ] `npm run assets:manifest` produces no diff.
+- [ ] Every new raster or CAD/BIM delivery has a retained batch-preflight JSON
+      report with exact checksums and written offline/customer-export authority;
+      automated passage is followed by recorded manual identity, dimensional,
+      4K, licensing, and physical-sample review.
 - [ ] `npm run verify` passes.
 - [ ] `npm run audit:production` reports no high or critical production issue.
 - [ ] Playwright passes in desktop Chromium and WebKit.

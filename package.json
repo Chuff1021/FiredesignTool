@@ -21,6 +21,7 @@
     "verify": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run catalog:validate && npm run build",
     "assets:manifest": "node scripts/generate-asset-manifest.mjs",
     "assets:inspect-master": "tsx scripts/inspect-visual-master.mts",
+    "assets:preflight-package": "tsx scripts/preflight-visual-delivery.mts",
     "audit:production": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
