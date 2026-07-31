@@ -46,8 +46,12 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Insert-only mode requires four ordered existing-opening corners plus its
       measured width and height, scales the appliance face from that opening,
       and prevents export until the opening is complete.
-- [ ] Version 1 customer-room records migrate to the opening-aware schema with
-      their original photo, wall calibration, name, and comparison intact.
+- [ ] Insert opening depth and rear width persist and appear in the PDF handoff;
+      missing field measurements remain unknown and are never inferred from the
+      photograph.
+- [ ] Version 1 through version 3 customer-room records migrate to the current
+      schema with their original photo, calibration, name, comparison, and any
+      traced foreground objects intact.
 - [ ] Before/after comparison and high-resolution JPEG export contain no
       calibration markers, loading state, or UI chrome; projected design layers
       are generated at a destination-aware density for the exported photograph.

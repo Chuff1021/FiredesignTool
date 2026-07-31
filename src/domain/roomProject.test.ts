@@ -4,6 +4,7 @@ import {
   createRoomProject,
   faceBoundsWithinOpening,
   isInsertOpeningCalibrated,
+  isInsertOpeningFitMeasured,
   isRoomProjectCalibrated,
   isRoomProjectReady,
   isValidForegroundPolygon,
@@ -25,9 +26,11 @@ describe("customer room projects", () => {
       new Date("2026-07-31T12:00:00.000Z"),
     );
     expect(roomProjectSchema.parse(project).id).toBe("project-1");
-    expect(project.schemaVersion).toBe(3);
+    expect(project.schemaVersion).toBe(4);
     expect(project.scenario).toBe("full-remodel");
     expect(project.openingQuad).toEqual([]);
+    expect(project.openingDepthInches).toBeNull();
+    expect(project.openingRearWidthInches).toBeNull();
     expect(project.foregroundPolygons).toEqual([]);
     vi.unstubAllGlobals();
   });
@@ -52,12 +55,14 @@ describe("customer room projects", () => {
       scenario: "insert",
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 3,
+      schemaVersion: 4,
       id: "legacy-project",
       comparison: 0.75,
       openingQuad: [],
       openingWidthInches: 36,
       openingHeightInches: 30,
+      openingDepthInches: null,
+      openingRearWidthInches: null,
       foregroundPolygons: [],
     });
   });
@@ -85,11 +90,50 @@ describe("customer room projects", () => {
       openingHeightInches: 30,
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 3,
+      schemaVersion: 4,
       id: "version-two-project",
       openingWidthInches: 40,
+      openingDepthInches: null,
+      openingRearWidthInches: null,
       foregroundPolygons: [],
     });
+  });
+
+  it("migrates version 3 foreground projects without inventing fit measurements", () => {
+    const migrated = parseRoomProject({
+      schemaVersion: 3,
+      id: "version-three-project",
+      name: "Foreground insert",
+      createdAt: "2026-07-30T12:00:00.000Z",
+      updatedAt: "2026-07-31T12:00:00.000Z",
+      source: {
+        dataUrl: "data:image/jpeg;base64,AA==",
+        fileName: "insert.jpg",
+        width: 1600,
+        height: 900,
+      },
+      wallQuad: [],
+      referenceSegment: [],
+      referenceInches: 144,
+      comparison: 1,
+      scenario: "insert",
+      openingQuad: [],
+      openingWidthInches: 40,
+      openingHeightInches: 30,
+      foregroundPolygons: [
+        [
+          { x: 0.2, y: 0.2 },
+          { x: 0.4, y: 0.2 },
+          { x: 0.4, y: 0.4 },
+        ],
+      ],
+    });
+    expect(migrated).toMatchObject({
+      schemaVersion: 4,
+      openingDepthInches: null,
+      openingRearWidthInches: null,
+    });
+    expect(migrated.foregroundPolygons).toHaveLength(1);
   });
 
   it("accepts ordered foreground outlines and rejects crossing or tiny masks", () => {
@@ -198,8 +242,12 @@ describe("customer room projects", () => {
       { x: 0.35, y: 0.7 },
     ];
     expect(isInsertOpeningCalibrated(project)).toBe(true);
+    expect(isInsertOpeningFitMeasured(project)).toBe(false);
     expect(isRoomProjectReady(project)).toBe(true);
     expect(calibrationLabel(project)).toBe("Dimensionally scaled");
+    project.openingDepthInches = 16.5;
+    project.openingRearWidthInches = 24;
+    expect(isInsertOpeningFitMeasured(project)).toBe(true);
     vi.unstubAllGlobals();
   });
 

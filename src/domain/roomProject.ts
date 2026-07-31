@@ -86,9 +86,15 @@ const roomProjectV2Schema = roomProjectV1Schema.extend({
   openingHeightInches: z.number().positive().max(120),
 });
 
-export const roomProjectSchema = roomProjectV2Schema.extend({
+const roomProjectV3Schema = roomProjectV2Schema.extend({
   schemaVersion: z.literal(3),
   foregroundPolygons: z.array(foregroundPolygonSchema).max(8),
+});
+
+export const roomProjectSchema = roomProjectV3Schema.extend({
+  schemaVersion: z.literal(4),
+  openingDepthInches: z.number().positive().max(120).nullable(),
+  openingRearWidthInches: z.number().positive().max(240).nullable(),
 });
 
 export type RoomProject = z.infer<typeof roomProjectSchema>;
@@ -99,7 +105,7 @@ export function createRoomProject(
 ): RoomProject {
   const timestamp = now.toISOString();
   return roomProjectSchema.parse({
-    schemaVersion: 3,
+    schemaVersion: 4,
     id: crypto.randomUUID(),
     name: "Customer fireplace concept",
     createdAt: timestamp,
@@ -113,6 +119,8 @@ export function createRoomProject(
     openingQuad: [],
     openingWidthInches: 36,
     openingHeightInches: 30,
+    openingDepthInches: null,
+    openingRearWidthInches: null,
     foregroundPolygons: [],
   });
 }
@@ -120,21 +128,34 @@ export function createRoomProject(
 export function parseRoomProject(candidate: unknown): RoomProject {
   const current = roomProjectSchema.safeParse(candidate);
   if (current.success) return current.data;
+  const versionThree = roomProjectV3Schema.safeParse(candidate);
+  if (versionThree.success) {
+    return roomProjectSchema.parse({
+      ...versionThree.data,
+      schemaVersion: 4,
+      openingDepthInches: null,
+      openingRearWidthInches: null,
+    });
+  }
   const versionTwo = roomProjectV2Schema.safeParse(candidate);
   if (versionTwo.success) {
     return roomProjectSchema.parse({
       ...versionTwo.data,
-      schemaVersion: 3,
+      schemaVersion: 4,
+      openingDepthInches: null,
+      openingRearWidthInches: null,
       foregroundPolygons: [],
     });
   }
   const legacy = roomProjectV1Schema.parse(candidate);
   return roomProjectSchema.parse({
     ...legacy,
-    schemaVersion: 3,
+    schemaVersion: 4,
     openingQuad: [],
     openingWidthInches: 36,
     openingHeightInches: 30,
+    openingDepthInches: null,
+    openingRearWidthInches: null,
     foregroundPolygons: [],
   });
 }
@@ -225,6 +246,15 @@ export function isInsertOpeningCalibrated(project: RoomProject): boolean {
     polygonArea(project.openingQuad) >= 0.0025 &&
     project.openingWidthInches > 0 &&
     project.openingHeightInches > 0
+  );
+}
+
+export function isInsertOpeningFitMeasured(project: RoomProject): boolean {
+  return (
+    project.scenario === "insert" &&
+    isInsertOpeningCalibrated(project) &&
+    project.openingDepthInches !== null &&
+    project.openingRearWidthInches !== null
   );
 }
 

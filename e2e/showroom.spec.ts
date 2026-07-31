@@ -4,7 +4,10 @@ import sharp from "sharp";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+  // A clean CI worker verifies all packaged media before first render. Under the
+  // full parallel browser matrix this can take longer than a cached showroom
+  // launch, so keep the assertion tied to readiness without a brittle 20s cap.
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 60_000 });
 });
 
 test("loads the approved showroom composition without customer-facing errors", async ({
@@ -237,19 +240,23 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   await expect(page.getByRole("button", { name: "Export", exact: true })).toBeDisabled();
   await page.getByLabel("Existing opening width in inches").fill("40");
   await page.getByLabel("Existing opening height in inches").fill("30");
+  await page.getByLabel("Existing opening depth in inches").fill("16.5");
+  await page.getByLabel("Existing opening rear width in inches").fill("24");
   await click(0.36, 0.38);
   await click(0.64, 0.38);
   await click(0.64, 0.72);
   await click(0.36, 0.72);
   await expect(page.getByText("Dimensionally scaled")).toBeVisible();
   await expect(page.getByRole("button", { name: "Export", exact: true })).toBeEnabled();
-  await expect(page.getByText(/40 × 30 in opening/)).toBeVisible();
+  await expect(page.getByText(/40 × 30 in face · 24 in rear · 16.5 in deep/)).toBeVisible();
   await page.reload();
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
   await page.getByRole("button", { name: /Customer room/ }).click();
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("Dimensionally scaled")).toBeVisible();
   await expect(page.getByLabel("Existing opening width in inches")).toHaveValue("40");
+  await expect(page.getByLabel("Existing opening depth in inches")).toHaveValue("16.5");
+  await expect(page.getByLabel("Existing opening rear width in inches")).toHaveValue("24");
 });
 
 test("preserves a true 4K customer photograph", async ({ page }, testInfo) => {

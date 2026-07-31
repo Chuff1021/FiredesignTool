@@ -143,10 +143,19 @@ describe("local customer project library", () => {
   it("migrates a legacy embedded image before metadata overwrites the record", async () => {
     vi.stubGlobal("crypto", { randomUUID: () => "project-legacy" });
     const current = createRoomProject(source("legacy.png"));
-    const { openingQuad, openingWidthInches, openingHeightInches, ...legacyFields } = current;
+    const {
+      openingQuad,
+      openingWidthInches,
+      openingHeightInches,
+      openingDepthInches,
+      openingRearWidthInches,
+      ...legacyFields
+    } = current;
     void openingQuad;
     void openingWidthInches;
     void openingHeightInches;
+    void openingDepthInches;
+    void openingRearWidthInches;
     const legacy = { ...legacyFields, schemaVersion: 1 as const };
     const legacyDatabase = await new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open("firedesign-projects", 1);
@@ -166,11 +175,13 @@ describe("local customer project library", () => {
 
     const recovered = await readCurrentRoomProject();
     expect(recovered).toMatchObject({
-      schemaVersion: 3,
+      schemaVersion: 4,
       source: { dataUrl: legacy.source.dataUrl },
       openingQuad: [],
       openingWidthInches: 36,
       openingHeightInches: 30,
+      openingDepthInches: null,
+      openingRearWidthInches: null,
       foregroundPolygons: [],
     });
     if (!recovered) throw new Error("Legacy project was not recovered.");

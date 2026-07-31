@@ -6,6 +6,7 @@ import {
   calibrationLabel,
   createRoomProject,
   isInsertOpeningCalibrated,
+  isInsertOpeningFitMeasured,
   isRoomProjectCalibrated,
   isRoomProjectReady,
   isValidForegroundPolygon,
@@ -455,6 +456,7 @@ export function CustomerRoomViewport() {
   const scale = pixelsPerInch(project);
   const calibrated = isRoomProjectCalibrated(project);
   const openingCalibrated = isInsertOpeningCalibrated(project);
+  const openingFitMeasured = isInsertOpeningFitMeasured(project);
   const ready = isRoomProjectReady(project);
 
   const setScenario = (scenario: RoomProject["scenario"]) => {
@@ -684,6 +686,50 @@ export function CustomerRoomViewport() {
                   <span>in</span>
                 </div>
               </label>
+              <label>
+                <span>Opening depth</span>
+                <div>
+                  <input
+                    aria-label="Existing opening depth in inches"
+                    max="120"
+                    min="1"
+                    onChange={(event) =>
+                      updateProject({
+                        ...project,
+                        openingDepthInches:
+                          event.target.value === "" ? null : Number(event.target.value),
+                      })
+                    }
+                    placeholder="Measure"
+                    step="0.125"
+                    type="number"
+                    value={project.openingDepthInches ?? ""}
+                  />
+                  <span>in</span>
+                </div>
+              </label>
+              <label>
+                <span>Rear width</span>
+                <div>
+                  <input
+                    aria-label="Existing opening rear width in inches"
+                    max="240"
+                    min="1"
+                    onChange={(event) =>
+                      updateProject({
+                        ...project,
+                        openingRearWidthInches:
+                          event.target.value === "" ? null : Number(event.target.value),
+                      })
+                    }
+                    placeholder="Measure"
+                    step="0.125"
+                    type="number"
+                    value={project.openingRearWidthInches ?? ""}
+                  />
+                  <span>in</span>
+                </div>
+              </label>
             </div>
           ) : null}
         </div>
@@ -769,7 +815,9 @@ export function CustomerRoomViewport() {
         </div>
         <p className="room-disclaimer">
           {project.scenario === "insert" && openingCalibrated
-            ? `${project.openingWidthInches} × ${project.openingHeightInches} in opening · `
+            ? openingFitMeasured
+              ? `${project.openingWidthInches} × ${project.openingHeightInches} in face · ${project.openingRearWidthInches} in rear · ${project.openingDepthInches} in deep · `
+              : `${project.openingWidthInches} × ${project.openingHeightInches} in face · Record depth and rear width for fit screening · `
             : ""}
           Conceptual sales visualization. Verify fit, venting, framing, clearances, and
           installation onsite.

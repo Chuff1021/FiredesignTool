@@ -74,6 +74,12 @@ export async function createProjectPdf(
       "Existing opening",
       `${project.openingWidthInches} × ${project.openingHeightInches} in · four-corner calibrated`,
     );
+    line(
+      "Opening fit measurements",
+      project.openingDepthInches !== null && project.openingRearWidthInches !== null
+        ? `${project.openingDepthInches} in depth · ${project.openingRearWidthInches} in rear width`
+        : "Depth and rear width not recorded · field verification required",
+    );
   }
 
   page.drawLine({

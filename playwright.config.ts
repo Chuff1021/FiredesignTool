@@ -4,7 +4,10 @@ const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 60_000,
+  // Customer-room scenarios exercise image preparation, WebGL startup, and a
+  // full reload. Keep the total budget above the individual readiness timeout
+  // so parallel WebKit workers do not fail after the UI is already usable.
+  timeout: 120_000,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
