@@ -8,6 +8,7 @@ import {
   isInsertOpeningCalibrated,
   isRoomProjectCalibrated,
   isRoomProjectReady,
+  isValidForegroundPolygon,
   pixelsPerInch,
   roomProjectSchema,
   type NormalizedPoint,
@@ -29,7 +30,7 @@ import { renderRoomProject } from "@/lib/roomRenderer";
 import { createProjectPdf } from "@/lib/projectExport";
 import { useConfigurationStore } from "@/store/configurationStore";
 
-type CalibrationTool = "wall" | "measurement" | "opening" | "view";
+type CalibrationTool = "wall" | "measurement" | "opening" | "foreground" | "view";
 
 export function CustomerRoomViewport() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -38,6 +39,7 @@ export function CustomerRoomViewport() {
   const [projects, setProjects] = useState<RoomProjectSummary[]>([]);
   const [deleteCandidate, setDeleteCandidate] = useState<string | null>(null);
   const [tool, setTool] = useState<CalibrationTool>("wall");
+  const [foregroundDraft, setForegroundDraft] = useState<NormalizedPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [rendering, setRendering] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -72,6 +74,7 @@ export function CustomerRoomViewport() {
   const activateProject = useCallback(
     (saved: RoomProject) => {
       setProject(saved);
+      setForegroundDraft([]);
       setWallWidth(saved.referenceInches);
       setTool(
         saved.wallQuad.length < 4
@@ -107,7 +110,8 @@ export function CustomerRoomViewport() {
     setRendering(true);
     void renderRoomProject(canvasRef.current, project, configuration, {
       comparison: project.comparison,
-      markers: tool !== "view",
+      markers: tool !== "view" && tool !== "foreground",
+      foregroundDraft: tool === "foreground" ? foregroundDraft : undefined,
     })
       .catch((error) => {
         if (active)
@@ -119,7 +123,7 @@ export function CustomerRoomViewport() {
     return () => {
       active = false;
     };
-  }, [configuration, project, tool]);
+  }, [configuration, foregroundDraft, project, tool]);
 
   const updateProject = useCallback(
     (next: RoomProject) => {
@@ -212,7 +216,13 @@ export function CustomerRoomViewport() {
       x: Math.min(1, Math.max(0, (event.clientX - bounds.left) / bounds.width)),
       y: Math.min(1, Math.max(0, (event.clientY - bounds.top) / bounds.height)),
     };
-    if (tool === "wall") {
+    if (tool === "foreground") {
+      if (foregroundDraft.length >= 24) {
+        setMessage("A foreground outline can contain up to 24 points.");
+        return;
+      }
+      setForegroundDraft([...foregroundDraft, point]);
+    } else if (tool === "wall") {
       const wallQuad = [...project.wallQuad, point].slice(0, 4);
       updateProject({ ...project, wallQuad });
       if (wallQuad.length === 4) setTool("measurement");
@@ -236,6 +246,36 @@ export function CustomerRoomViewport() {
     setTool("wall");
   };
 
+  const beginForeground = () => {
+    if (!project) return;
+    if (project.foregroundPolygons.length >= 8) {
+      setMessage("This project already has the maximum of eight foreground areas.");
+      return;
+    }
+    setForegroundDraft([]);
+    setTool("foreground");
+  };
+
+  const finishForeground = () => {
+    if (!project || !isValidForegroundPolygon(foregroundDraft)) {
+      setMessage("Use at least three ordered points without crossing the outline.");
+      return;
+    }
+    updateProject({
+      ...project,
+      foregroundPolygons: [...project.foregroundPolygons, foregroundDraft],
+    });
+    setForegroundDraft([]);
+    setTool("view");
+  };
+
+  const clearForeground = () => {
+    if (!project) return;
+    updateProject({ ...project, foregroundPolygons: [] });
+    setForegroundDraft([]);
+    setTool("view");
+  };
+
   const resetOpening = () => {
     if (!project) return;
     updateProject({ ...project, openingQuad: [] });
@@ -244,6 +284,10 @@ export function CustomerRoomViewport() {
 
   const undoPoint = () => {
     if (!project) return;
+    if (tool === "foreground") {
+      setForegroundDraft(foregroundDraft.slice(0, -1));
+      return;
+    }
     if (tool === "opening" || (tool === "view" && project.openingQuad.length > 0)) {
       updateProject({ ...project, openingQuad: project.openingQuad.slice(0, -1) });
       setTool("opening");
@@ -561,6 +605,15 @@ export function CustomerRoomViewport() {
               <span>Click top-left, top-right, bottom-right, then bottom-left.</span>
             </>
           ) : null}
+          {tool === "foreground" ? (
+            <>
+              <strong>Trace an object that stays in front.</strong>
+              <span>
+                Click around its outside edge in order, then finish the outline. Use this for
+                furniture, fireplace tools, or décor that should cover the design.
+              </span>
+            </>
+          ) : null}
           {tool === "view" ? (
             <>
               <strong>Scaled concept ready.</strong>
@@ -679,6 +732,35 @@ export function CustomerRoomViewport() {
           {project.scenario === "insert" && project.openingQuad.length > 0 ? (
             <button onClick={resetOpening} type="button">
               Reset opening
+            </button>
+          ) : null}
+          {tool === "foreground" ? (
+            <>
+              <button
+                disabled={foregroundDraft.length < 3}
+                onClick={finishForeground}
+                type="button"
+              >
+                Finish foreground
+              </button>
+              <button
+                onClick={() => {
+                  setForegroundDraft([]);
+                  setTool("view");
+                }}
+                type="button"
+              >
+                Cancel outline
+              </button>
+            </>
+          ) : (
+            <button disabled={!ready} onClick={beginForeground} type="button">
+              Trace foreground
+            </button>
+          )}
+          {project.foregroundPolygons.length > 0 ? (
+            <button onClick={clearForeground} type="button">
+              Clear foreground ({project.foregroundPolygons.length})
             </button>
           ) : null}
           <button onClick={() => void returnToLibrary()} type="button">

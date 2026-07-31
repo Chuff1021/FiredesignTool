@@ -301,7 +301,11 @@ export async function renderRoomProject(
   canvas: HTMLCanvasElement,
   project: RoomProject,
   configuration: FeatureWallConfiguration,
-  options: { comparison?: number; markers?: boolean } = {},
+  options: {
+    comparison?: number;
+    markers?: boolean;
+    foregroundDraft?: NormalizedPoint[];
+  } = {},
 ): Promise<void> {
   canvas.width = project.source.width;
   canvas.height = project.source.height;
@@ -362,6 +366,24 @@ export async function renderRoomProject(
     projectLayer(context, face.canvas, target);
     context.restore();
   }
+  if (comparison > 0 && project.foregroundPolygons.length > 0) {
+    project.foregroundPolygons.forEach((polygon) => {
+      const pixels = polygon.map((point) =>
+        imagePoint(point, project.source.width, project.source.height),
+      );
+      context.save();
+      context.beginPath();
+      context.rect(0, 0, canvas.width * comparison, canvas.height);
+      context.clip();
+      context.beginPath();
+      context.moveTo(pixels[0]!.x, pixels[0]!.y);
+      pixels.slice(1).forEach((pixel) => context.lineTo(pixel.x, pixel.y));
+      context.closePath();
+      context.clip();
+      context.drawImage(room, 0, 0, canvas.width, canvas.height);
+      context.restore();
+    });
+  }
   if (comparison > 0 && comparison < 1) {
     context.strokeStyle = "rgba(255,255,255,.95)";
     context.lineWidth = Math.max(2, canvas.width / 700);
@@ -371,6 +393,50 @@ export async function renderRoomProject(
     context.stroke();
   }
   if (options.markers) drawCalibrationMarkers(context, project);
+  if (options.foregroundDraft) {
+    drawForegroundMarkers(context, project, options.foregroundDraft);
+  }
+}
+
+function drawForegroundMarkers(
+  context: CanvasRenderingContext2D,
+  project: RoomProject,
+  draft: NormalizedPoint[],
+) {
+  const polygons = [...project.foregroundPolygons, draft].filter(
+    (polygon) => polygon.length > 0,
+  );
+  polygons.forEach((polygon, polygonIndex) => {
+    const pixels = polygon.map((point) =>
+      imagePoint(point, project.source.width, project.source.height),
+    );
+    context.save();
+    context.beginPath();
+    context.strokeStyle = "rgba(240, 174, 105, .98)";
+    context.fillStyle = "rgba(240, 174, 105, .14)";
+    context.lineWidth = Math.max(2, project.source.width / 800);
+    context.setLineDash([Math.max(7, project.source.width / 150), 5]);
+    context.moveTo(pixels[0]!.x, pixels[0]!.y);
+    pixels.slice(1).forEach((pixel) => context.lineTo(pixel.x, pixel.y));
+    if (polygonIndex < project.foregroundPolygons.length) context.closePath();
+    context.fill();
+    context.stroke();
+    context.restore();
+    pixels.forEach((pixel, pointIndex) => {
+      context.beginPath();
+      context.fillStyle = "#f0ae69";
+      context.strokeStyle = "rgba(15,13,11,.9)";
+      context.lineWidth = Math.max(2, project.source.width / 900);
+      context.arc(pixel.x, pixel.y, Math.max(6, project.source.width / 180), 0, Math.PI * 2);
+      context.fill();
+      context.stroke();
+      context.fillStyle = "#17130f";
+      context.font = `600 ${Math.max(10, project.source.width / 125)}px sans-serif`;
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(`${pointIndex + 1}`, pixel.x, pixel.y);
+    });
+  });
 }
 
 function drawCalibrationMarkers(context: CanvasRenderingContext2D, project: RoomProject) {

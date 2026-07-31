@@ -7,6 +7,59 @@ export const normalizedPointSchema = z.object({
 
 export type NormalizedPoint = z.infer<typeof normalizedPointSchema>;
 
+function polygonArea(points: NormalizedPoint[]): number {
+  if (points.length < 3) return 0;
+  return Math.abs(
+    points.reduce((sum, point, index) => {
+      const next = points[(index + 1) % points.length]!;
+      return sum + point.x * next.y - next.x * point.y;
+    }, 0) / 2,
+  );
+}
+
+function segmentsIntersect(
+  firstStart: NormalizedPoint,
+  firstEnd: NormalizedPoint,
+  secondStart: NormalizedPoint,
+  secondEnd: NormalizedPoint,
+): boolean {
+  const cross = (start: NormalizedPoint, end: NormalizedPoint, point: NormalizedPoint) =>
+    (end.x - start.x) * (point.y - start.y) - (end.y - start.y) * (point.x - start.x);
+  const firstA = cross(firstStart, firstEnd, secondStart);
+  const firstB = cross(firstStart, firstEnd, secondEnd);
+  const secondA = cross(secondStart, secondEnd, firstStart);
+  const secondB = cross(secondStart, secondEnd, firstEnd);
+  return firstA * firstB < 0 && secondA * secondB < 0;
+}
+
+export function isValidForegroundPolygon(points: NormalizedPoint[]): boolean {
+  if (points.length < 3 || points.length > 24 || polygonArea(points) < 0.0005) return false;
+  for (let first = 0; first < points.length; first += 1) {
+    const firstNext = (first + 1) % points.length;
+    for (let second = first + 1; second < points.length; second += 1) {
+      const secondNext = (second + 1) % points.length;
+      if (first === second || firstNext === second || secondNext === first) continue;
+      if (
+        segmentsIntersect(
+          points[first]!,
+          points[firstNext]!,
+          points[second]!,
+          points[secondNext]!,
+        )
+      ) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+const foregroundPolygonSchema = z
+  .array(normalizedPointSchema)
+  .min(3)
+  .max(24)
+  .refine(isValidForegroundPolygon, "Foreground outlines must be simple, ordered polygons");
+
 const roomProjectV1Schema = z.object({
   schemaVersion: z.literal(1),
   id: z.string().min(1),
@@ -26,11 +79,16 @@ const roomProjectV1Schema = z.object({
   scenario: z.enum(["full-remodel", "insert"]),
 });
 
-export const roomProjectSchema = roomProjectV1Schema.extend({
+const roomProjectV2Schema = roomProjectV1Schema.extend({
   schemaVersion: z.literal(2),
   openingQuad: z.array(normalizedPointSchema).max(4),
   openingWidthInches: z.number().positive().max(240),
   openingHeightInches: z.number().positive().max(120),
+});
+
+export const roomProjectSchema = roomProjectV2Schema.extend({
+  schemaVersion: z.literal(3),
+  foregroundPolygons: z.array(foregroundPolygonSchema).max(8),
 });
 
 export type RoomProject = z.infer<typeof roomProjectSchema>;
@@ -41,7 +99,7 @@ export function createRoomProject(
 ): RoomProject {
   const timestamp = now.toISOString();
   return roomProjectSchema.parse({
-    schemaVersion: 2,
+    schemaVersion: 3,
     id: crypto.randomUUID(),
     name: "Customer fireplace concept",
     createdAt: timestamp,
@@ -55,19 +113,29 @@ export function createRoomProject(
     openingQuad: [],
     openingWidthInches: 36,
     openingHeightInches: 30,
+    foregroundPolygons: [],
   });
 }
 
 export function parseRoomProject(candidate: unknown): RoomProject {
   const current = roomProjectSchema.safeParse(candidate);
   if (current.success) return current.data;
+  const versionTwo = roomProjectV2Schema.safeParse(candidate);
+  if (versionTwo.success) {
+    return roomProjectSchema.parse({
+      ...versionTwo.data,
+      schemaVersion: 3,
+      foregroundPolygons: [],
+    });
+  }
   const legacy = roomProjectV1Schema.parse(candidate);
   return roomProjectSchema.parse({
     ...legacy,
-    schemaVersion: 2,
+    schemaVersion: 3,
     openingQuad: [],
     openingWidthInches: 36,
     openingHeightInches: 30,
+    foregroundPolygons: [],
   });
 }
 
@@ -150,21 +218,11 @@ export function isRoomProjectCalibrated(project: RoomProject): boolean {
   );
 }
 
-function quadrilateralArea(points: NormalizedPoint[]): number {
-  if (points.length !== 4) return 0;
-  return Math.abs(
-    points.reduce((sum, point, index) => {
-      const next = points[(index + 1) % points.length]!;
-      return sum + point.x * next.y - next.x * point.y;
-    }, 0) / 2,
-  );
-}
-
 export function isInsertOpeningCalibrated(project: RoomProject): boolean {
   return (
     project.openingQuad.length === 4 &&
     isOrderedQuadrilateral(project.openingQuad) &&
-    quadrilateralArea(project.openingQuad) >= 0.0025 &&
+    polygonArea(project.openingQuad) >= 0.0025 &&
     project.openingWidthInches > 0 &&
     project.openingHeightInches > 0
   );

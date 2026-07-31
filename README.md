@@ -28,8 +28,8 @@ The tool does not generate, invent, or substitute product imagery.
 
 ## Customer Room Designer
 
-Version 0.9 includes a separate customer-room workspace around the same approved
-catalog. A salesperson can upload a room photograph, mark the intended wall in
+The current release includes a separate customer-room workspace around the same
+approved catalog. A salesperson can upload a room photograph, mark the intended wall in
 perspective, enter its measured width, and project the current fireplace,
 stone, mantel, and hearth configuration into the photograph. Insert-only mode
 preserves the existing surround; full-remodel mode renders the complete feature
@@ -37,7 +37,10 @@ wall. Insert-only projects add a second four-corner calibration for the actual
 existing firebox opening plus its measured width and height. The appliance face
 is then scaled and perspective-aligned from that opening instead of the overall
 wall. The workspace includes before/after comparison, high-resolution JPEG
-export, and automatic project recovery after a refresh.
+export, automatic project recovery after a refresh, and manually traced
+foreground restoration. Foreground outlines preserve original room pixels over
+the projected design for furniture, fireplace tools, décor, or other objects
+that should remain visually in front without generative inpainting.
 
 Room photographs preserve up to a 4096-pixel edge and 12 megapixels and are
 stored locally in the browser's IndexedDB. Perspective-projected wall and insert
@@ -49,10 +52,10 @@ the project identity, and deletion requires a second explicit confirmation.
 
 The complete measured wall width and a four-corner wall plane are required
 before a full remodel is labeled dimensionally scaled. Insert-only projects
-also require a measured four-corner existing opening. Version 1 customer room
-records migrate automatically to the new schema without losing their photo or
-configuration. This remains a conceptual sales visualization, not an
-installation or fit approval.
+also require a measured four-corner existing opening. Version 1 and version 2
+customer room records migrate automatically to the new schema without losing
+their photo or configuration. This remains a conceptual sales visualization,
+not an installation or fit approval.
 
 ## Run locally
 

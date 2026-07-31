@@ -6,6 +6,7 @@ import {
   isInsertOpeningCalibrated,
   isRoomProjectCalibrated,
   isRoomProjectReady,
+  isValidForegroundPolygon,
   parseRoomProject,
   pixelsPerInch,
   roomProjectSchema,
@@ -24,9 +25,10 @@ describe("customer room projects", () => {
       new Date("2026-07-31T12:00:00.000Z"),
     );
     expect(roomProjectSchema.parse(project).id).toBe("project-1");
-    expect(project.schemaVersion).toBe(2);
+    expect(project.schemaVersion).toBe(3);
     expect(project.scenario).toBe("full-remodel");
     expect(project.openingQuad).toEqual([]);
+    expect(project.foregroundPolygons).toEqual([]);
     vi.unstubAllGlobals();
   });
 
@@ -50,13 +52,70 @@ describe("customer room projects", () => {
       scenario: "insert",
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 2,
+      schemaVersion: 3,
       id: "legacy-project",
       comparison: 0.75,
       openingQuad: [],
       openingWidthInches: 36,
       openingHeightInches: 30,
+      foregroundPolygons: [],
     });
+  });
+
+  it("migrates version 2 projects to empty foreground restoration", () => {
+    const migrated = parseRoomProject({
+      schemaVersion: 2,
+      id: "version-two-project",
+      name: "Measured insert",
+      createdAt: "2026-07-30T12:00:00.000Z",
+      updatedAt: "2026-07-31T12:00:00.000Z",
+      source: {
+        dataUrl: "data:image/jpeg;base64,AA==",
+        fileName: "insert.jpg",
+        width: 1600,
+        height: 900,
+      },
+      wallQuad: [],
+      referenceSegment: [],
+      referenceInches: 144,
+      comparison: 1,
+      scenario: "insert",
+      openingQuad: [],
+      openingWidthInches: 40,
+      openingHeightInches: 30,
+    });
+    expect(migrated).toMatchObject({
+      schemaVersion: 3,
+      id: "version-two-project",
+      openingWidthInches: 40,
+      foregroundPolygons: [],
+    });
+  });
+
+  it("accepts ordered foreground outlines and rejects crossing or tiny masks", () => {
+    expect(
+      isValidForegroundPolygon([
+        { x: 0.2, y: 0.2 },
+        { x: 0.4, y: 0.2 },
+        { x: 0.4, y: 0.5 },
+        { x: 0.2, y: 0.5 },
+      ]),
+    ).toBe(true);
+    expect(
+      isValidForegroundPolygon([
+        { x: 0.2, y: 0.2 },
+        { x: 0.4, y: 0.5 },
+        { x: 0.4, y: 0.2 },
+        { x: 0.2, y: 0.5 },
+      ]),
+    ).toBe(false);
+    expect(
+      isValidForegroundPolygon([
+        { x: 0.2, y: 0.2 },
+        { x: 0.201, y: 0.2 },
+        { x: 0.201, y: 0.201 },
+      ]),
+    ).toBe(false);
   });
 
   it("calculates physical scale only after a complete reference segment", () => {

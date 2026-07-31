@@ -166,11 +166,12 @@ describe("local customer project library", () => {
 
     const recovered = await readCurrentRoomProject();
     expect(recovered).toMatchObject({
-      schemaVersion: 2,
+      schemaVersion: 3,
       source: { dataUrl: legacy.source.dataUrl },
       openingQuad: [],
       openingWidthInches: 36,
       openingHeightInches: 30,
+      foregroundPolygons: [],
     });
     if (!recovered) throw new Error("Legacy project was not recovered.");
     recovered.comparison = 0.4;

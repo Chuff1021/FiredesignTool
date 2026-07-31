@@ -51,6 +51,9 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Before/after comparison and high-resolution JPEG export contain no
       calibration markers, loading state, or UI chrome; projected design layers
       are generated at a destination-aware density for the exported photograph.
+- [ ] Traced foreground polygons restore only original room pixels, remain
+      aligned in preview/comparison/export, survive refresh, and reject crossed
+      or degenerate outlines.
 - [ ] Multiple named customer projects can be created, reopened, renamed, and
       selectively deleted; Back and Replace Photo preserve the intended record.
 - [ ] A confirmed deletion removes only the selected project from IndexedDB and

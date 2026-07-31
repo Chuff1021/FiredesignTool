@@ -285,6 +285,92 @@ test("preserves a true 4K customer photograph", async ({ page }, testInfo) => {
     .toEqual({ width: 3840, height: 2160 });
 });
 
+test("restores and persists a traced foreground object", async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name === "showroom-4k",
+    "Foreground compositing is covered in both desktop browser engines.",
+  );
+  const photograph = await sharp({
+    create: {
+      width: 1600,
+      height: 900,
+      channels: 3,
+      background: { r: 190, g: 181, b: 169 },
+    },
+  })
+    .jpeg({ quality: 94 })
+    .toBuffer();
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "foreground-room.jpg",
+    mimeType: "image/jpeg",
+    buffer: photograph,
+  });
+  const canvas = page.getByTestId("room-canvas");
+  await expect(canvas).toBeVisible({ timeout: 20_000 });
+  const originalCenter = await canvas.evaluate((element) => {
+    const roomCanvas = element as HTMLCanvasElement;
+    return Array.from(
+      roomCanvas
+        .getContext("2d")!
+        .getImageData(roomCanvas.width / 2, roomCanvas.height / 2, 1, 1).data,
+    );
+  });
+  const box = await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  const click = async (x: number, y: number) => {
+    await canvas.click({ position: { x: box.width * x, y: box.height * y } });
+  };
+  await click(0.1, 0.1);
+  await click(0.9, 0.1);
+  await click(0.9, 0.9);
+  await click(0.1, 0.9);
+  await page.getByLabel("Known measurement in inches").fill("144");
+  await click(0.1, 0.75);
+  await click(0.9, 0.75);
+  await expect(page.getByText("Dimensionally scaled")).toBeVisible();
+  await page.getByRole("button", { name: "Trace foreground" }).click();
+  await click(0.42, 0.42);
+  await click(0.58, 0.42);
+  await click(0.58, 0.58);
+  await click(0.42, 0.58);
+  await page.getByRole("button", { name: "Finish foreground" }).click();
+  await expect(page.getByRole("button", { name: "Clear foreground (1)" })).toBeVisible();
+  await expect(page.locator(".room-rendering")).toHaveCount(0);
+  const restoredCenter = await canvas.evaluate((element) => {
+    const roomCanvas = element as HTMLCanvasElement;
+    return Array.from(
+      roomCanvas
+        .getContext("2d")!
+        .getImageData(roomCanvas.width / 2, roomCanvas.height / 2, 1, 1).data,
+    );
+  });
+  expect(restoredCenter).toEqual(originalCenter);
+  const imageDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export", exact: true }).click();
+  const exportedImagePath = await (await imageDownload).path();
+  expect(exportedImagePath).not.toBeNull();
+  if (!exportedImagePath) return;
+  const exportedImage = await sharp(exportedImagePath)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const centerOffset =
+    (Math.floor(exportedImage.info.height / 2) * exportedImage.info.width +
+      Math.floor(exportedImage.info.width / 2)) *
+    exportedImage.info.channels;
+  const exportedCenter = Array.from(
+    exportedImage.data.subarray(centerOffset, centerOffset + 3),
+  );
+  exportedCenter.forEach((channel, index) => {
+    expect(Math.abs(channel - originalCenter[index]!)).toBeLessThanOrEqual(5);
+  });
+  await page.reload();
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await expect(page.getByRole("button", { name: "Clear foreground (1)" })).toBeVisible();
+});
+
 test("keeps multiple named customer projects and returns without deleting", async ({
   page,
 }, testInfo) => {
