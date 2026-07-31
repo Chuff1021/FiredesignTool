@@ -82,3 +82,9 @@ approved release and intake mapping, then independently checks every packaged
 asset against the release manifest, byte size, and SHA-256 checksum. A live
 catalog product missing from the intake snapshot—or an incomplete intake item
 mapped into the live catalog—fails validation.
+
+The 564 TRV 25K designer-face and clean-face models are the first queued batch
+to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
+area, current installation manuals, mantel-rule page, and visible option SKUs
+are recorded. They remain blocked from the live catalog because the public
+isolated FireBuilder masters are only 900 px and do not pass the 4K visual gate.

@@ -14,7 +14,8 @@ describe("FPX catalog intake queue", () => {
       remainingFamilies: 34,
     });
     expect(summary.byStage.approved).toBe(2);
-    expect(summary.byStage["source-indexed"]).toBe(34);
+    expect(summary.byStage["documents-verified"]).toBe(2);
+    expect(summary.byStage["source-indexed"]).toBe(32);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")
@@ -48,5 +49,25 @@ describe("FPX catalog intake queue", () => {
     expect(() => catalogIntakeSchema.parse(premature)).toThrow(
       /Unapproved intake product .* cannot map to a live catalog product/,
     );
+  });
+
+  it("holds verified 564 data behind the high-resolution visual gate", () => {
+    const models = FPX_CURRENT_INTAKE.products.filter((product) =>
+      product.id.startsWith("564-trv-25k"),
+    );
+    expect(models).toHaveLength(2);
+    expect(models.map((product) => product.evidence?.productSku)).toEqual([
+      "98500277",
+      "98500278",
+    ]);
+    expect(
+      models.every(
+        (product) =>
+          product.stage === "documents-verified" &&
+          product.evidence?.viewingArea.width === 29.375 &&
+          product.evidence.viewingArea.height === 16.375 &&
+          product.evidence.assetQualityGate === "blocked-high-resolution-master",
+      ),
+    ).toBe(true);
   });
 });

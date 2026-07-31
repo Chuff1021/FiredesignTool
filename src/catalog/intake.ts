@@ -22,6 +22,23 @@ const intakeProductSchema = z.object({
   officialIndexUrl: z.string().url(),
   sourceCheckedAt: z.string().date(),
   notes: z.string().min(1),
+  evidence: z
+    .object({
+      productSku: z.string().min(1),
+      fireBuilderProductId: z.number().int().positive(),
+      fireBuilderModelId: z.number().int().positive(),
+      viewingArea: z.object({
+        width: z.number().positive(),
+        height: z.number().positive(),
+      }),
+      installationManualUrl: z.string().url(),
+      installationManualRevision: z.string().min(1),
+      mantelRulePage: z.number().int().positive(),
+      visualOptionSkus: z.array(z.string().min(1)).min(1),
+      maximumOfficialLayerPixels: z.number().int().positive(),
+      assetQualityGate: z.enum(["blocked-high-resolution-master", "approved"]),
+    })
+    .optional(),
 });
 
 export const catalogIntakeSchema = z
@@ -54,6 +71,27 @@ export const catalogIntakeSchema = z
           code: "custom",
           message: `Approved intake product ${product.id} has no catalog mapping`,
           path: ["products", index, "approvedCatalogIds"],
+        });
+      }
+      if (
+        product.stage !== "source-indexed" &&
+        product.stage !== "approved" &&
+        !product.evidence
+      ) {
+        context.addIssue({
+          code: "custom",
+          message: `Intake product ${product.id} cannot advance without verified evidence`,
+          path: ["products", index, "evidence"],
+        });
+      }
+      if (
+        (product.stage === "assets-prepared" || product.stage === "visual-qa") &&
+        product.evidence?.assetQualityGate !== "approved"
+      ) {
+        context.addIssue({
+          code: "custom",
+          message: `Intake product ${product.id} cannot advance with a blocked visual master`,
+          path: ["products", index, "evidence", "assetQualityGate"],
         });
       }
       if (product.stage !== "approved" && product.approvedCatalogIds.length > 0) {
@@ -105,6 +143,7 @@ const gasFireplace = (
     stage?: z.infer<typeof intakeStageSchema>;
     approvedCatalogIds?: string[];
     notes?: string;
+    evidence?: z.input<typeof intakeProductSchema>["evidence"];
   } = {},
 ) => ({
   id,
@@ -121,6 +160,7 @@ const gasFireplace = (
   notes:
     options.notes ??
     "Official product family is indexed; manuals, option SKUs, visual layers, and burn media remain gated.",
+  evidence: options.evidence,
 });
 
 const indexedProduct = (
@@ -162,8 +202,56 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
     "https://www.fireplacex.com/products/wood-fireplace-inserts/",
   ],
   products: [
-    gasFireplace("564-trv-25k-deluxe", "564 TRV 25K Deluxe", "traditional"),
-    gasFireplace("564-trv-25k-clean-face", "564 TRV 25K Clean Face Deluxe", "traditional"),
+    gasFireplace("564-trv-25k-deluxe", "564 TRV 25K Deluxe", "traditional", {
+      productUrl: "https://www.fireplacex.com/product/564-trv-25k/",
+      stage: "documents-verified",
+      evidence: {
+        productSku: "98500277",
+        fireBuilderProductId: 103,
+        fireBuilderModelId: 546,
+        viewingArea: { width: 29.375, height: 16.375 },
+        installationManualUrl: "https://www.travisindustries.com/docs/100-01564.pdf",
+        installationManualRevision: "2024-04-02",
+        mantelRulePage: 42,
+        visualOptionSkus: [
+          "95400402",
+          "95400408",
+          "95400443",
+          "95400467",
+          "95400411",
+          "95400442",
+          "95400444",
+          "95400415",
+          "96200808",
+          "96200801",
+          "96200804",
+          "94500626",
+          "94500624",
+        ],
+        maximumOfficialLayerPixels: 900,
+        assetQualityGate: "blocked-high-resolution-master",
+      },
+      notes:
+        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and visual options are verified. The public isolated layer is only 900 px and does not pass the 4K asset gate.",
+    }),
+    gasFireplace("564-trv-25k-clean-face", "564 TRV 25K Clean Face Deluxe", "traditional", {
+      productUrl: "https://www.fireplacex.com/product/564-trv-25k-clean-face/",
+      stage: "documents-verified",
+      evidence: {
+        productSku: "98500278",
+        fireBuilderProductId: 105,
+        fireBuilderModelId: 547,
+        viewingArea: { width: 29.375, height: 16.375 },
+        installationManualUrl: "https://www.travisindustries.com/docs/100-01565.pdf",
+        installationManualRevision: "2024-04-02",
+        mantelRulePage: 42,
+        visualOptionSkus: ["95900370", "95900380", "95900382", "94500626", "94500624"],
+        maximumOfficialLayerPixels: 900,
+        assetQualityGate: "blocked-high-resolution-master",
+      },
+      notes:
+        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and trim/log options are verified. The public isolated layer is only 900 px and does not pass the 4K asset gate.",
+    }),
     gasFireplace("564-tv-35k-deluxe", "564 TV 35K Deluxe", "traditional", {
       productUrl: "https://www.fireplacex.com/product/564-trv-35k-deluxe/",
     }),

@@ -51,5 +51,6 @@ if (failures.length > 0) {
   console.log(`Approved products: ${catalogRepository.listFireplaces().length}`);
   console.log(`FPX indexed families: ${intake.totalFamilies}`);
   console.log(`FPX families awaiting approval: ${intake.remainingFamilies}`);
+  console.log(`FPX document-verified families: ${intake.byStage["documents-verified"]}`);
   console.log(`Packaged assets verified: ${APPROVED_ASSET_PATHS.length}`);
 }
