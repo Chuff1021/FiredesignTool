@@ -74,6 +74,23 @@ describe("FPX catalog intake queue", () => {
           product.evidence.assetQualityGate === "blocked-high-resolution-master",
       ),
     ).toBe(true);
+    expect(
+      models.map((product) =>
+        product.evidence && "maximumOfficialLayerPixels" in product.evidence
+          ? product.evidence.maximumOfficialLayerPixels
+          : undefined,
+      ),
+    ).toEqual([1800, 1800]);
+    expect(
+      models.every(
+        (product) =>
+          product.evidence &&
+          "visualMaster" in product.evidence &&
+          product.evidence.visualMaster.candidates[0]?.sourceUrl.includes(
+            "/fbimages/LayeredImages/",
+          ),
+      ),
+    ).toBe(true);
   });
 
   it("records the 616 insert opening profiles and base-referenced clearance rules", () => {

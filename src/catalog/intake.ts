@@ -77,8 +77,8 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
     "https://www.fireplacex.com/products/gas-fireplaces/",
     electricUrl,
     "https://www.fireplacex.com/products/wood-fireplaces/",
-    "https://www.fireplacex.com/products/gas-fireplace-inserts/",
-    "https://www.fireplacex.com/products/wood-fireplace-inserts/",
+    "https://www.fireplacex.com/gallery/gas-fireplace-inserts-gallery/",
+    "https://www.fireplacex.com/gallery/wood-fireplace-inserts-gallery/",
   ],
   products: [
     gasFireplace("564-trv-25k-deluxe", "564 TRV 25K Deluxe", "traditional", {
@@ -116,21 +116,22 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
           },
           candidates: [
             {
-              id: "firebuilder-900",
-              sourceUrl: "https://firebuilder.travisindustries.com/api/product/103/pl/1/cy/1",
+              id: "firebuilder-raw-face-layer",
+              sourceUrl:
+                "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95400402.png",
               kind: "configurator-layer",
-              width: 900,
-              height: 900,
+              width: 1800,
+              height: 1800,
               isolated: true,
               transparentMediaOpening: false,
             },
           ],
         },
-        maximumOfficialLayerPixels: 900,
+        maximumOfficialLayerPixels: 1800,
         assetQualityGate: "blocked-high-resolution-master",
       },
       notes:
-        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and visual options are verified. The public isolated layer is only 900 px and does not pass the 4K asset gate.",
+        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and visual options are verified. The public isolated layer uses an 1800 px square canvas but remains below the required 2400 px isolated-product width.",
     }),
     gasFireplace("564-trv-25k-clean-face", "564 TRV 25K Clean Face Deluxe", "traditional", {
       productUrl: "https://www.fireplacex.com/product/564-trv-25k-clean-face/",
@@ -153,21 +154,22 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
           },
           candidates: [
             {
-              id: "firebuilder-900",
-              sourceUrl: "https://firebuilder.travisindustries.com/api/product/105/pl/1/cy/1",
+              id: "firebuilder-raw-trim-layer",
+              sourceUrl:
+                "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95900370.png",
               kind: "configurator-layer",
-              width: 900,
-              height: 900,
+              width: 1800,
+              height: 1800,
               isolated: true,
               transparentMediaOpening: false,
             },
           ],
         },
-        maximumOfficialLayerPixels: 900,
+        maximumOfficialLayerPixels: 1800,
         assetQualityGate: "blocked-high-resolution-master",
       },
       notes:
-        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and trim/log options are verified. The public isolated layer is only 900 px and does not pass the 4K asset gate.",
+        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and trim/log options are verified. The public isolated layer uses an 1800 px square canvas but remains below the required 2400 px isolated-product width.",
     }),
     gasFireplace("564-tv-35k-deluxe", "564 TV 35K Deluxe", "traditional", {
       productUrl: "https://www.fireplacex.com/product/564-trv-35k-deluxe/",

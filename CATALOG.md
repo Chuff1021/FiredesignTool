@@ -113,6 +113,13 @@ asset against the release manifest, byte size, and SHA-256 checksum. A live
 catalog product missing from the intake snapshot—or an incomplete intake item
 mapped into the live catalog—fails validation.
 
+Run `npm run catalog:audit-sources` before accepting refreshed manufacturer
+evidence. It checks every approved or document-verified official page, manual,
+image, and configurator endpoint for HTTP success and the expected payload
+type; an HTML error page returned with status 200 still fails. Add `-- --all`
+for the periodic full audit of source-indexed product pages. The network audit
+is intentionally separate from deterministic offline builds.
+
 The 564 TRV 25K designer-face and clean-face models were the first FPX batch
 to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
 area, current installation manuals, mantel-rule page, and visible option SKUs
@@ -123,8 +130,9 @@ base-referenced mantel curves, and current FireBuilder option SKUs are
 structured for the room designer. The 32 DVS and 34 DVL retain separate
 standard-face and arched-face depth requirements for both trimmed and
 untrimmed installations. These products remain blocked from the live catalog
-because their public isolated FireBuilder masters are only 900-960 px and do
-not pass the 4K visual gate.
+because the insert layers are only 960 px and the 564 layers use 1800 px square
+canvases that remain below the required 2400 px isolated-product width. None
+passes the 4K visual gate.
 
 The insert-fit screening domain compares the four measured masonry-opening
 dimensions against each exact manufacturer variant. It reports per-dimension
