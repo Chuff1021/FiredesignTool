@@ -86,6 +86,9 @@ means the approved visual release changed and requires a fresh review.
   manufacturer-neutral pre-release gates. The current queue indexes 85 FPX,
   Superior, and Majestic fireplace/insert families while exposing only three
   fully approved FPX products to customers.
+  Superior DRI2000 is the first non-FPX family with verified model-specific
+  opening, clearance, facade, surround, and manual evidence; it remains hidden
+  until an approved isolated high-resolution visual master is available.
 - `src/domain/catalogRepository.ts` validates release integrity and is the only
   product lookup boundary used by configuration, renderers, controls, and
   exports.

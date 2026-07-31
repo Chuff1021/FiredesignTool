@@ -59,6 +59,7 @@ if (failures.length > 0) {
   console.log(
     `Superior indexed / awaiting: ${superior.totalFamilies} / ${superior.remainingFamilies}`,
   );
+  console.log(`Superior document-verified families: ${superior.byStage["documents-verified"]}`);
   console.log(
     `Majestic indexed / awaiting: ${majestic.totalFamilies} / ${majestic.remainingFamilies}`,
   );

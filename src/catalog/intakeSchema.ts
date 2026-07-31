@@ -40,7 +40,14 @@ const configuratorEvidenceSchema = z.object({
 });
 
 const manufacturerEvidenceSchema = z.object({
-  productSkus: z.array(z.string().min(1)).min(1),
+  productIdentifiers: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        kind: z.enum(["sku", "catalog-number", "model"]),
+      }),
+    )
+    .min(1),
   variants: z
     .array(
       z.object({
@@ -55,13 +62,25 @@ const manufacturerEvidenceSchema = z.object({
             depth: z.number().positive(),
           })
           .optional(),
+        minimumOpening: z
+          .object({
+            frontWidth: z.number().positive(),
+            height: z.number().positive(),
+            rearWidth: z.number().positive(),
+            depth: z.number().positive(),
+            frontWidthRequiredDepth: z.number().positive().optional(),
+          })
+          .optional(),
       }),
     )
     .min(1),
   installationManualUrl: z.string().url(),
   installationManualRevision: z.string().min(1),
+  dimensionPages: z.array(z.number().int().positive()).min(1),
   clearanceRulePages: z.array(z.number().int().positive()).min(1),
+  optionPages: z.array(z.number().int().positive()),
   visualOptionIds: z.array(z.string().min(1)),
+  visualSourceUrls: z.array(z.string().url()).min(1),
   maximumOfficialLayerPixels: z.number().int().positive(),
   assetQualityGate: assetQualityGateSchema,
 });

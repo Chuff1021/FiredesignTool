@@ -38,12 +38,25 @@ describe("manufacturer-neutral catalog intake registry", () => {
       "trilliant-series",
       "ruby-platinum",
     ]);
+    expect(superiorInserts[0]?.stage).toBe("documents-verified");
+    expect(majesticInserts.every((product) => product.stage === "source-indexed")).toBe(true);
     expect(
-      [...superiorInserts, ...majesticInserts].every(
-        (product) =>
-          product.stage === "source-indexed" && product.officialIndexUrl.startsWith("https://"),
+      [...superiorInserts, ...majesticInserts].every((product) =>
+        product.officialIndexUrl.startsWith("https://"),
       ),
     ).toBe(true);
+    const evidence = superiorInserts[0]?.evidence;
+    expect(evidence && "variants" in evidence ? evidence.variants : []).toMatchObject([
+      {
+        id: "DRI2027",
+        minimumOpening: { frontWidth: 27, height: 18, rearWidth: 17, depth: 15 },
+      },
+      {
+        id: "DRI2032TEN",
+        minimumOpening: { frontWidth: 32, height: 19.5, rearWidth: 22, depth: 16 },
+      },
+    ]);
+    expect(evidence?.assetQualityGate).toBe("blocked-high-resolution-master");
   });
 
   it("rejects brand drift and duplicate current snapshots", () => {
@@ -66,7 +79,10 @@ describe("manufacturer-neutral catalog intake registry", () => {
     const dri = verified.products[0]!;
     dri.stage = "documents-verified";
     dri.evidence = {
-      productSkus: ["DRI2027", "DRI2032"],
+      productIdentifiers: [
+        { id: "DRI2027", kind: "model" },
+        { id: "DRI2032", kind: "model" },
+      ],
       variants: [
         {
           id: "DRI2027",
@@ -80,8 +96,13 @@ describe("manufacturer-neutral catalog intake registry", () => {
       installationManualUrl:
         "https://superiorfireplaces.us.com/products/stoves-inserts/dri2000/",
       installationManualRevision: "pending-file-revision-capture",
+      dimensionPages: [13],
       clearanceRulePages: [1],
+      optionPages: [],
       visualOptionIds: [],
+      visualSourceUrls: [
+        "https://superiorfireplaces.us.com/wp-content/uploads/sites/7/2021/05/Superior-dvin-dri2000_PD-1136x852-1.jpg",
+      ],
       maximumOfficialLayerPixels: 701,
       assetQualityGate: "blocked-high-resolution-master",
     };

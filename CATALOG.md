@@ -103,3 +103,12 @@ to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
 area, current installation manuals, mantel-rule page, and visible option SKUs
 are recorded. They remain blocked from the live catalog because the public
 isolated FireBuilder masters are only 900 px and do not pass the 4K visual gate.
+
+Superior DRI2000 is the first non-FPX family at `documents-verified`. Its
+current English installation manual is P/N 900787-04, revision H, October 2024.
+The intake records both DRI2027 and DRI2032TEN identifiers, minimum front/rear
+opening width, height, depth, the required 3-inch front-width depth, combustible
+mantel and hearth-rule page, and every manual-listed full facade and four-sided
+surround. The only public manufacturer photographs are 1136x852 lifestyle
+images rather than isolated product masters, so the family remains blocked at
+the high-resolution asset gate.

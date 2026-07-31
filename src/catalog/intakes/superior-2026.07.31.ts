@@ -39,14 +39,69 @@ export const SUPERIOR_CURRENT_INTAKE = catalogIntakeSchema.parse({
   sourceCheckedAt: checkedAt,
   sourceUrls: [gasIndex, insertIndex, "https://superiorfireplaces.us.com/products/"],
   products: [
-    product(
-      "dri2000",
-      "DRI2000",
-      "traditional",
-      "direct-vent",
-      "https://superiorfireplaces.us.com/products/stoves-inserts/dri2000/",
-      "insert",
-    ),
+    {
+      ...product(
+        "dri2000",
+        "DRI2000",
+        "traditional",
+        "direct-vent",
+        "https://superiorfireplaces.us.com/products/stoves-inserts/dri2000/",
+        "insert",
+      ),
+      stage: "documents-verified",
+      evidence: {
+        productIdentifiers: [
+          { id: "F3407", kind: "catalog-number" },
+          { id: "DRI2027", kind: "model" },
+          { id: "F3026", kind: "catalog-number" },
+          { id: "DRI2032TEN", kind: "model" },
+        ],
+        variants: [
+          {
+            id: "DRI2027",
+            minimumOpening: {
+              frontWidth: 27,
+              height: 18,
+              rearWidth: 17,
+              depth: 15,
+              frontWidthRequiredDepth: 3,
+            },
+          },
+          {
+            id: "DRI2032TEN",
+            minimumOpening: {
+              frontWidth: 32,
+              height: 19.5,
+              rearWidth: 22,
+              depth: 16,
+              frontWidthRequiredDepth: 3,
+            },
+          },
+        ],
+        installationManualUrl:
+          "https://ihp.us.com/wp-content/uploads/2021/09/900787-04_H_SUP_DRI2027-32_DV_Insert_EN_IICO-1.pdf",
+        installationManualRevision: "P/N 900787-04 REV. H 10/2024",
+        dimensionPages: [13],
+        clearanceRulePages: [14],
+        optionPages: [34, 35],
+        visualOptionIds: [
+          "FPMD-BDVI27",
+          "FPLG-BDVI27",
+          "FP3846-4S-MPDVI27",
+          "FP4125-BDVI32",
+          "FP4332-BDVI32",
+          "FP4638-4S-MPDVI32",
+        ],
+        visualSourceUrls: [
+          "https://superiorfireplaces.us.com/wp-content/uploads/sites/7/2021/05/Superior-dvin-dri2000_PD-1136x852-1.jpg",
+          "https://superiorfireplaces.us.com/wp-content/uploads/sites/7/2021/05/Superior-dvin-dri2000_B_PD-1136x852-1.jpg",
+        ],
+        maximumOfficialLayerPixels: 1136,
+        assetQualityGate: "blocked-high-resolution-master",
+      },
+      notes:
+        "Model and catalog identifiers, minimum masonry opening dimensions, current English manual revision, clearance datum, and required facade/surround options are verified. Public imagery is lifestyle photography at 1136 px and does not pass the isolated 4K product-master gate.",
+    },
     product("drt2033", "DRT2033", "traditional", "direct-vent"),
     product("drt2000", "DRT2000", "traditional", "direct-vent"),
     product("drt3000", "DRT3000", "traditional", "direct-vent"),

@@ -25,6 +25,9 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] The intake registry has exactly one current snapshot per brand, contains
       no brand drift or duplicate family IDs, and prevents every source-indexed
       Superior or Majestic product from mapping into the live catalog.
+- [ ] Insert evidence records each model's minimum front/rear opening width,
+      height, depth, any required full-width depth, current manual revision,
+      evidence pages, and compatible facade/surround identifiers.
 - [ ] Saved configuration migration attaches the current catalog release and
       safely restores defaults for a retired or unknown product ID.
 - [ ] Both 864 variants, all four designer faces, and the 4237 play their mapped
