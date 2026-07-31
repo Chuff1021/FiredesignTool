@@ -15,6 +15,13 @@ import {
   type NormalizedPoint,
   type RoomProject,
 } from "@/domain/roomProject";
+import {
+  MAX_ROOM_BACKUP_BYTES,
+  ROOM_PROJECT_BACKUP_EXTENSION,
+  createRoomProjectBackup,
+  parseRoomProjectBackup,
+  serializeRoomProjectBackup,
+} from "@/domain/roomProjectBackup";
 import { normalizeConfiguration, WALL_WIDTH_RANGE } from "@/domain/configuration";
 import { catalogRepository } from "@/domain/catalogRepository";
 import {
@@ -30,7 +37,9 @@ import {
   clearCurrentRoomProject,
   deleteRoomProject,
   listRoomProjects,
+  readAllRoomProjects,
   readCurrentRoomProject,
+  restoreRoomProjectLibrary,
   saveRoomProject,
   selectRoomProject,
   type RoomProjectSummary,
@@ -71,6 +80,8 @@ function variantLabel(value: string): string {
 export function CustomerRoomViewport() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const backupInputRef = useRef<HTMLInputElement>(null);
+  const projectRef = useRef<RoomProject | null>(null);
   const [project, setProject] = useState<RoomProject | null>(null);
   const [projects, setProjects] = useState<RoomProjectSummary[]>([]);
   const [deleteCandidate, setDeleteCandidate] = useState<string | null>(null);
@@ -78,6 +89,7 @@ export function CustomerRoomViewport() {
   const [foregroundDraft, setForegroundDraft] = useState<NormalizedPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [rendering, setRendering] = useState(false);
+  const [libraryBusy, setLibraryBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const configurationValues = useConfigurationStore(
     useShallow((state) => ({
@@ -98,6 +110,7 @@ export function CustomerRoomViewport() {
     })),
   );
   const setWallWidth = useConfigurationStore((state) => state.setWallWidth);
+  const setConfiguration = useConfigurationStore((state) => state.setConfiguration);
   const configuration = useMemo(
     () => normalizeConfiguration(configurationValues),
     [configurationValues],
@@ -135,9 +148,18 @@ export function CustomerRoomViewport() {
 
   const activateProject = useCallback(
     (saved: RoomProject) => {
+      projectRef.current = saved;
       setProject(saved);
       setForegroundDraft([]);
-      setWallWidth(saved.referenceInches);
+      setConfiguration({
+        ...saved.configuration,
+        wallWidth: saved.referenceInches,
+        cameraMode: "front",
+        showDimensions: false,
+      });
+      void saveRoomProject(saved).catch(() =>
+        setMessage("This project could not be upgraded to the current local format."),
+      );
       setTool(
         saved.wallQuad.length < 4
           ? "wall"
@@ -148,7 +170,7 @@ export function CustomerRoomViewport() {
               : "view",
       );
     },
-    [setWallWidth],
+    [setConfiguration],
   );
 
   useEffect(() => {
@@ -193,6 +215,7 @@ export function CustomerRoomViewport() {
         ...next,
         updatedAt: new Date().toISOString(),
       });
+      projectRef.current = validated;
       setProject(validated);
       void saveRoomProject(validated)
         .then(refreshProjects)
@@ -201,13 +224,22 @@ export function CustomerRoomViewport() {
     [refreshProjects],
   );
 
+  useEffect(() => {
+    const current = projectRef.current;
+    if (!current) return;
+    const serializedCurrent = JSON.stringify(current.configuration);
+    const serializedNext = JSON.stringify(configuration);
+    if (serializedCurrent === serializedNext) return;
+    updateProject({ ...current, configuration });
+  }, [configuration, updateProject]);
+
   const handleFile = async (file: File | undefined, replaceCurrent = false) => {
     if (!file) return;
     setLoading(true);
     setMessage(null);
     try {
       const source = await prepareRoomImage(file);
-      const created = createRoomProject(source);
+      const created = createRoomProject(source, new Date(), configuration);
       const fileName = source.fileName.replace(/\.[^.]+$/, "").trim();
       const next = roomProjectSchema.parse(
         replaceCurrent && project
@@ -252,12 +284,80 @@ export function CustomerRoomViewport() {
   };
 
   const returnToLibrary = async () => {
+    const current = projectRef.current;
+    if (current) {
+      const snapshot = roomProjectSchema.parse({
+        ...current,
+        configuration,
+        updatedAt: new Date().toISOString(),
+      });
+      await saveRoomProject(snapshot).catch(() =>
+        setMessage("The latest project changes could not be saved locally."),
+      );
+    }
     clearCurrentRoomProject();
+    projectRef.current = null;
     setProject(null);
     setDeleteCandidate(null);
     await refreshProjects().catch(() =>
       setMessage("The project library could not be refreshed."),
     );
+  };
+
+  const backupProjects = async () => {
+    setLibraryBusy(true);
+    setMessage(null);
+    try {
+      const savedProjects = await readAllRoomProjects();
+      if (savedProjects.length === 0)
+        throw new Error("There are no customer projects to back up.");
+      const backup = await createRoomProjectBackup(savedProjects);
+      const blob = new Blob([serializeRoomProjectBackup(backup)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.download = `firedesign-projects-${new Date().toISOString().slice(0, 10)}${ROOM_PROJECT_BACKUP_EXTENSION}`;
+      link.href = url;
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setMessage(
+        `Backed up ${savedProjects.length} project${savedProjects.length === 1 ? "" : "s"}, including room photographs.`,
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "The project backup could not be created.",
+      );
+    } finally {
+      setLibraryBusy(false);
+    }
+  };
+
+  const restoreProjects = async (file: File | undefined) => {
+    if (!file) return;
+    setLibraryBusy(true);
+    setMessage(null);
+    try {
+      if (file.size > MAX_ROOM_BACKUP_BYTES) {
+        throw new Error("The selected project backup is too large.");
+      }
+      const backup = await parseRoomProjectBackup(await file.text());
+      const result = await restoreRoomProjectLibrary(backup.projects);
+      await refreshProjects();
+      setMessage(
+        `Restored ${result.restored} project${result.restored === 1 ? "" : "s"}${
+          result.copied > 0
+            ? `. ${result.copied} existing project${result.copied === 1 ? " was" : "s were"} preserved and the restored version was saved as a copy.`
+            : "."
+        }`,
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : "The project backup could not be restored.",
+      );
+    } finally {
+      setLibraryBusy(false);
+    }
   };
 
   const removeProject = async (id: string) => {
@@ -432,13 +532,34 @@ export function CustomerRoomViewport() {
             </p>
             <button
               className="primary-action"
+              disabled={libraryBusy}
               onClick={() => fileInputRef.current?.click()}
               type="button"
             >
               <UiIcon name="upload" /> New customer project
             </button>
+            <div className="room-library-actions" aria-label="Project library backup">
+              <button
+                className="secondary-action"
+                disabled={libraryBusy || projects.length === 0}
+                onClick={() => void backupProjects()}
+                type="button"
+              >
+                <UiIcon name="download" /> Back up projects
+              </button>
+              <button
+                className="secondary-action"
+                disabled={libraryBusy}
+                onClick={() => backupInputRef.current?.click()}
+                type="button"
+              >
+                <UiIcon name="upload" /> Restore backup
+              </button>
+            </div>
             <small>
               JPEG, PNG, or HEIC · at least 1200 px · preserves up to 4K · processed locally
+              <br />
+              Backups include photographs, measurements, foregrounds, and selected products.
             </small>
             {message ? (
               <div className="room-message" role="alert">
@@ -503,8 +624,20 @@ export function CustomerRoomViewport() {
             ref={fileInputRef}
             accept="image/jpeg,image/png,image/heic,image/heif"
             className="sr-only"
+            data-testid="room-photo-input"
             onChange={(event) => {
               void handleFile(event.target.files?.[0]);
+              event.target.value = "";
+            }}
+            type="file"
+          />
+          <input
+            ref={backupInputRef}
+            accept={`${ROOM_PROJECT_BACKUP_EXTENSION},application/json`}
+            className="sr-only"
+            data-testid="room-backup-input"
+            onChange={(event) => {
+              void restoreProjects(event.target.files?.[0]);
               event.target.value = "";
             }}
             type="file"
@@ -582,6 +715,7 @@ export function CustomerRoomViewport() {
           ref={fileInputRef}
           accept="image/jpeg,image/png,image/heic,image/heif"
           className="sr-only"
+          data-testid="room-photo-input"
           onChange={(event) => {
             void handleFile(event.target.files?.[0], true);
             event.target.value = "";

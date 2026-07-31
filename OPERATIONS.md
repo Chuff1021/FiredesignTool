@@ -10,6 +10,10 @@
 5. Confirm the displayed application and asset versions match the current
    release record.
 6. Close diagnostics and enter presentation mode before the first session.
+7. At the end of each showroom day, open **Customer projects**, choose **Back
+   up projects**, and copy the dated `.firedesign` file to the approved secure
+   business backup location. The file contains customer room photographs and
+   must be handled as customer data.
 
 ## Recovery
 
@@ -27,6 +31,14 @@
   computer, and reopen the last known-good installed release.
 - If saved dimensions appear invalid, use **Reset design**. The application
   also rejects corrupt saved data automatically.
+- If the browser profile or showroom computer is replaced, open **Customer
+  projects**, choose **Restore backup**, and select the most recent trusted
+  `.firedesign` file. FireDesign verifies its checksum and validates every
+  project before writing anything. Existing projects are never overwritten;
+  matching records are restored as named copies.
+- Do not edit `.firedesign` files or accept them from an untrusted source. Keep
+  the last three dated daily backups until the normal business backup policy
+  has retained them.
 - For an insert concept, measure the masonry opening width and height onsite,
   then mark its four corners in order. **Dimensionally scaled** must appear
   before export. This calibration does not approve appliance fit.

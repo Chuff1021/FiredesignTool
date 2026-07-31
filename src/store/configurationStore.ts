@@ -26,6 +26,7 @@ type ConfigurationState = FeatureWallConfiguration & {
   initialized: boolean;
   recoveredMessage: string | null;
   initialize: () => void;
+  setConfiguration: (value: FeatureWallConfiguration) => void;
   setWallWidth: (value: number) => void;
   setWallHeight: (value: number) => void;
   setStoneWidth: (value: number) => void;
@@ -82,6 +83,12 @@ export const useConfigurationStore = create<ConfigurationState>((set) => ({
       recoveredMessage: result.reason ?? null,
     });
   },
+  setConfiguration: (value) =>
+    set(() => {
+      const configuration = normalizeConfiguration(value);
+      writePersistedConfiguration(window.localStorage, configuration);
+      return configuration;
+    }),
   setWallWidth: (value) => set((state) => saveNext(state, { wallWidth: value })),
   setWallHeight: (value) => set((state) => saveNext(state, { wallHeight: value })),
   setStoneWidth: (value) => set((state) => saveNext(state, { stoneWidth: value })),

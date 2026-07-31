@@ -1,4 +1,10 @@
 import { z } from "zod";
+import {
+  DEFAULT_CONFIGURATION,
+  featureWallConfigurationSchema,
+  normalizeConfiguration,
+  type FeatureWallConfiguration,
+} from "@/domain/configuration";
 
 export const normalizedPointSchema = z.object({
   x: z.number().min(0).max(1).finite(),
@@ -91,10 +97,15 @@ const roomProjectV3Schema = roomProjectV2Schema.extend({
   foregroundPolygons: z.array(foregroundPolygonSchema).max(8),
 });
 
-export const roomProjectSchema = roomProjectV3Schema.extend({
+const roomProjectV4Schema = roomProjectV3Schema.extend({
   schemaVersion: z.literal(4),
   openingDepthInches: z.number().positive().max(120).nullable(),
   openingRearWidthInches: z.number().positive().max(240).nullable(),
+});
+
+export const roomProjectSchema = roomProjectV4Schema.extend({
+  schemaVersion: z.literal(5),
+  configuration: featureWallConfigurationSchema,
 });
 
 export type RoomProject = z.infer<typeof roomProjectSchema>;
@@ -102,10 +113,16 @@ export type RoomProject = z.infer<typeof roomProjectSchema>;
 export function createRoomProject(
   source: RoomProject["source"],
   now = new Date(),
+  configuration: FeatureWallConfiguration = DEFAULT_CONFIGURATION,
 ): RoomProject {
   const timestamp = now.toISOString();
+  const projectConfiguration = normalizeConfiguration({
+    ...configuration,
+    cameraMode: "front",
+    showDimensions: false,
+  });
   return roomProjectSchema.parse({
-    schemaVersion: 4,
+    schemaVersion: 5,
     id: crypto.randomUUID(),
     name: "Customer fireplace concept",
     createdAt: timestamp,
@@ -113,7 +130,7 @@ export function createRoomProject(
     source,
     wallQuad: [],
     referenceSegment: [],
-    referenceInches: 144,
+    referenceInches: projectConfiguration.wallWidth,
     comparison: 1,
     scenario: "full-remodel",
     openingQuad: [],
@@ -122,42 +139,73 @@ export function createRoomProject(
     openingDepthInches: null,
     openingRearWidthInches: null,
     foregroundPolygons: [],
+    configuration: projectConfiguration,
   });
 }
 
-export function parseRoomProject(candidate: unknown): RoomProject {
+function migrateVersionFour(
+  project: z.infer<typeof roomProjectV4Schema>,
+  configuration: FeatureWallConfiguration,
+): RoomProject {
+  return roomProjectSchema.parse({
+    ...project,
+    schemaVersion: 5,
+    configuration: normalizeConfiguration({
+      ...configuration,
+      wallWidth: project.referenceInches,
+      cameraMode: "front",
+      showDimensions: false,
+    }),
+  });
+}
+
+export function parseRoomProject(
+  candidate: unknown,
+  legacyConfiguration: FeatureWallConfiguration = DEFAULT_CONFIGURATION,
+): RoomProject {
   const current = roomProjectSchema.safeParse(candidate);
   if (current.success) return current.data;
+  const versionFour = roomProjectV4Schema.safeParse(candidate);
+  if (versionFour.success) return migrateVersionFour(versionFour.data, legacyConfiguration);
   const versionThree = roomProjectV3Schema.safeParse(candidate);
   if (versionThree.success) {
-    return roomProjectSchema.parse({
-      ...versionThree.data,
-      schemaVersion: 4,
-      openingDepthInches: null,
-      openingRearWidthInches: null,
-    });
+    return migrateVersionFour(
+      roomProjectV4Schema.parse({
+        ...versionThree.data,
+        schemaVersion: 4,
+        openingDepthInches: null,
+        openingRearWidthInches: null,
+      }),
+      legacyConfiguration,
+    );
   }
   const versionTwo = roomProjectV2Schema.safeParse(candidate);
   if (versionTwo.success) {
-    return roomProjectSchema.parse({
-      ...versionTwo.data,
+    return migrateVersionFour(
+      roomProjectV4Schema.parse({
+        ...versionTwo.data,
+        schemaVersion: 4,
+        openingDepthInches: null,
+        openingRearWidthInches: null,
+        foregroundPolygons: [],
+      }),
+      legacyConfiguration,
+    );
+  }
+  const legacy = roomProjectV1Schema.parse(candidate);
+  return migrateVersionFour(
+    roomProjectV4Schema.parse({
+      ...legacy,
       schemaVersion: 4,
+      openingQuad: [],
+      openingWidthInches: 36,
+      openingHeightInches: 30,
       openingDepthInches: null,
       openingRearWidthInches: null,
       foregroundPolygons: [],
-    });
-  }
-  const legacy = roomProjectV1Schema.parse(candidate);
-  return roomProjectSchema.parse({
-    ...legacy,
-    schemaVersion: 4,
-    openingQuad: [],
-    openingWidthInches: 36,
-    openingHeightInches: 30,
-    openingDepthInches: null,
-    openingRearWidthInches: null,
-    foregroundPolygons: [],
-  });
+    }),
+    legacyConfiguration,
+  );
 }
 
 export function imagePoint(

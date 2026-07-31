@@ -1,5 +1,6 @@
-export const MAX_ROOM_IMAGE_EDGE = 4096;
-export const MAX_ROOM_IMAGE_PIXELS = 4096 * 3072;
+import { MAX_ROOM_IMAGE_EDGE, MAX_ROOM_IMAGE_PIXELS } from "@/domain/roomImageConstraints";
+
+export { MAX_ROOM_IMAGE_EDGE, MAX_ROOM_IMAGE_PIXELS };
 
 export function calculateRoomImageDimensions(
   naturalWidth: number,

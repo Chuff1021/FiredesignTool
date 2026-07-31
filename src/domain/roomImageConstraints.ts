@@ -1,0 +1,2 @@
+export const MAX_ROOM_IMAGE_EDGE = 4096;
+export const MAX_ROOM_IMAGE_PIXELS = 4096 * 3072;

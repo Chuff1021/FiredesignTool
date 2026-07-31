@@ -5,10 +5,12 @@ import {
   clearCurrentRoomProject,
   deleteRoomProject,
   listRoomProjects,
+  readAllRoomProjects,
   readCurrentRoomProject,
   readRoomProject,
   saveRoomProject,
   selectRoomProject,
+  restoreRoomProjectLibrary,
 } from "@/lib/roomProjectPersistence";
 
 const source = (fileName: string) => ({
@@ -173,9 +175,10 @@ describe("local customer project library", () => {
     legacyDatabase.close();
     localStorage.setItem("firedesign:current-room-project:v1", legacy.id);
 
+    expect((await readAllRoomProjects())[0]?.source.dataUrl).toBe(legacy.source.dataUrl);
     const recovered = await readCurrentRoomProject();
     expect(recovered).toMatchObject({
-      schemaVersion: 4,
+      schemaVersion: 5,
       source: { dataUrl: legacy.source.dataUrl },
       openingQuad: [],
       openingWidthInches: 36,
@@ -197,5 +200,75 @@ describe("local customer project library", () => {
     expect(metadata.source).not.toHaveProperty("dataUrl");
     expect(image.dataUrl).toBe(legacy.source.dataUrl);
     expect((await readRoomProject(legacy.id))?.comparison).toBe(0.4);
+  });
+
+  it("exports complete projects with their separate photographs and configurations", async () => {
+    vi.stubGlobal("crypto", { randomUUID: () => "project-complete" });
+    const project = createRoomProject(source("complete.png"));
+    project.configuration = {
+      ...project.configuration,
+      fireplaceId: "4237-ember-glo-clean-face",
+      faceOptionId: "4237-clean-face",
+      stoneId: "brown-ledge",
+    };
+    await saveRoomProject(project);
+
+    expect(await readAllRoomProjects()).toMatchObject([
+      {
+        id: "project-complete",
+        source: { dataUrl: source("complete.png").dataUrl },
+        configuration: {
+          fireplaceId: "4237-ember-glo-clean-face",
+          faceOptionId: "4237-clean-face",
+          stoneId: "brown-ledge",
+        },
+      },
+    ]);
+  });
+
+  it("restores atomically and saves ID collisions as clearly named copies", async () => {
+    vi.stubGlobal("crypto", { randomUUID: () => "project-collision" });
+    const existing = createRoomProject(source("existing.png"));
+    existing.name = "Anderson room";
+    await saveRoomProject(existing);
+    const imported = { ...existing, source: source("restored.png") };
+    vi.stubGlobal("crypto", { randomUUID: () => "project-restored-copy" });
+
+    const result = await restoreRoomProjectLibrary(
+      [imported],
+      new Date("2026-08-01T12:00:00.000Z"),
+    );
+    expect(result).toEqual({
+      restored: 1,
+      copied: 1,
+      projectIds: ["project-restored-copy"],
+    });
+    expect(await readRoomProject("project-collision")).toMatchObject({
+      name: "Anderson room",
+      source: { fileName: "existing.png" },
+    });
+    expect(await readRoomProject("project-restored-copy")).toMatchObject({
+      name: "Anderson room (restored)",
+      source: { fileName: "restored.png" },
+      createdAt: "2026-08-01T12:00:00.000Z",
+    });
+  });
+
+  it("rejects an oversized restore before writing any project", async () => {
+    vi.stubGlobal("crypto", { randomUUID: () => "existing-project" });
+    const existing = createRoomProject(source("existing.png"));
+    await saveRoomProject(existing);
+    const incoming = Array.from({ length: 100 }, (_, index) => ({
+      ...existing,
+      id: `incoming-${index}`,
+      name: `Incoming ${index}`,
+    }));
+
+    await expect(restoreRoomProjectLibrary(incoming)).rejects.toThrow(
+      "A maximum of 100 customer projects",
+    );
+    expect((await listRoomProjects()).map((project) => project.id)).toEqual([
+      "existing-project",
+    ]);
   });
 });

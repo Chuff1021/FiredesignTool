@@ -59,9 +59,9 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Insert-fit screening is bound to the selected approved insert and reports
       each exact manufacturer variant independently. A built-in fireplace visual
       produces no fit claim, and the same conservative result appears in the PDF.
-- [ ] Version 1 through version 3 customer-room records migrate to the current
-      schema with their original photo, calibration, name, comparison, and any
-      traced foreground objects intact.
+- [ ] Version 1 through version 4 customer-room records migrate to the current
+      schema with their original photo, calibration, name, comparison, traced
+      foreground objects, and the best available last-known design intact.
 - [ ] Before/after comparison and high-resolution JPEG export contain no
       calibration markers, loading state, or UI chrome; projected design layers
       are generated at a destination-aware density for the exported photograph.
@@ -69,7 +69,12 @@ application version, asset version, preview URL, and deployment ID.
       aligned in preview/comparison/export, survive refresh, and reject crossed
       or degenerate outlines.
 - [ ] Multiple named customer projects can be created, reopened, renamed, and
-      selectively deleted; Back and Replace Photo preserve the intended record.
+      selectively deleted; each reopens with its own exact product/material
+      configuration, and Back and Replace Photo preserve the intended record.
+- [ ] A complete `.firedesign` library backup downloads with all photographs,
+      validates its SHA-256 integrity, restores atomically in Chromium and
+      WebKit, rejects damaged files without partial writes, and saves ID
+      collisions as named copies without overwriting existing customer work.
 - [ ] A confirmed deletion removes only the selected project from IndexedDB and
       leaves every other customer project recoverable.
 

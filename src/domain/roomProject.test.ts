@@ -26,12 +26,18 @@ describe("customer room projects", () => {
       new Date("2026-07-31T12:00:00.000Z"),
     );
     expect(roomProjectSchema.parse(project).id).toBe("project-1");
-    expect(project.schemaVersion).toBe(4);
+    expect(project.schemaVersion).toBe(5);
     expect(project.scenario).toBe("full-remodel");
     expect(project.openingQuad).toEqual([]);
     expect(project.openingDepthInches).toBeNull();
     expect(project.openingRearWidthInches).toBeNull();
     expect(project.foregroundPolygons).toEqual([]);
+    expect(project.configuration).toMatchObject({
+      fireplaceId: "864-trv-31k-clean-face",
+      wallWidth: 144,
+      cameraMode: "front",
+      showDimensions: false,
+    });
     vi.unstubAllGlobals();
   });
 
@@ -55,7 +61,7 @@ describe("customer room projects", () => {
       scenario: "insert",
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 4,
+      schemaVersion: 5,
       id: "legacy-project",
       comparison: 0.75,
       openingQuad: [],
@@ -64,6 +70,7 @@ describe("customer room projects", () => {
       openingDepthInches: null,
       openingRearWidthInches: null,
       foregroundPolygons: [],
+      configuration: { wallWidth: 144 },
     });
   });
 
@@ -90,7 +97,7 @@ describe("customer room projects", () => {
       openingHeightInches: 30,
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 4,
+      schemaVersion: 5,
       id: "version-two-project",
       openingWidthInches: 40,
       openingDepthInches: null,
@@ -129,11 +136,63 @@ describe("customer room projects", () => {
       ],
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 4,
+      schemaVersion: 5,
       openingDepthInches: null,
       openingRearWidthInches: null,
     });
     expect(migrated.foregroundPolygons).toHaveLength(1);
+  });
+
+  it("migrates version 4 projects with the last known design configuration", () => {
+    const migrated = parseRoomProject(
+      {
+        schemaVersion: 4,
+        id: "version-four-project",
+        name: "Configured room",
+        createdAt: "2026-07-30T12:00:00.000Z",
+        updatedAt: "2026-07-31T12:00:00.000Z",
+        source: {
+          dataUrl: "data:image/jpeg;base64,AA==",
+          fileName: "room.jpg",
+          width: 1600,
+          height: 900,
+        },
+        wallQuad: [],
+        referenceSegment: [],
+        referenceInches: 180,
+        comparison: 1,
+        scenario: "full-remodel",
+        openingQuad: [],
+        openingWidthInches: 36,
+        openingHeightInches: 30,
+        openingDepthInches: null,
+        openingRearWidthInches: null,
+        foregroundPolygons: [],
+      },
+      {
+        ...createRoomProject(
+          {
+            dataUrl: "data:image/jpeg;base64,AA==",
+            fileName: "fallback.jpg",
+            width: 1600,
+            height: 900,
+          },
+          new Date("2026-07-31T12:00:00.000Z"),
+        ).configuration,
+        fireplaceId: "4237-ember-glo-clean-face",
+        faceOptionId: "4237-clean-face",
+        stoneId: "brown-ledge",
+      },
+    );
+    expect(migrated).toMatchObject({
+      schemaVersion: 5,
+      configuration: {
+        wallWidth: 180,
+        fireplaceId: "4237-ember-glo-clean-face",
+        faceOptionId: "4237-clean-face",
+        stoneId: "brown-ledge",
+      },
+    });
   });
 
   it("accepts ordered foreground outlines and rejects crossing or tiny masks", () => {

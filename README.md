@@ -44,6 +44,14 @@ foreground restoration. Foreground outlines preserve original room pixels over
 the projected design for furniture, fireplace tools, décor, or other objects
 that should remain visually in front without generative inpainting.
 
+Each customer project stores its own complete fireplace, face, stone, mantel,
+hearth, and dimensional configuration. Opening one project cannot inherit the
+last design used for another customer. The project library can be downloaded as
+a versioned `.firedesign` backup containing the room photographs and all project
+data. Restore verifies SHA-256 integrity before one atomic IndexedDB write;
+existing project IDs are preserved and an imported collision is saved as a
+clearly named copy rather than overwritten.
+
 Measured insert-fit screening is tied to the selected approved catalog product,
 not merely to insert-only photo mode. A built-in fireplace visual therefore
 states that no insert-fit result is available. Once an insert passes the visual
@@ -62,9 +70,9 @@ the project identity, and deletion requires a second explicit confirmation.
 
 The complete measured wall width and a four-corner wall plane are required
 before a full remodel is labeled dimensionally scaled. Insert-only projects
-also require a measured four-corner existing opening. Version 1 and version 2
-and version 3 customer room records migrate automatically to the new schema
-without losing their photo or configuration. Missing depth and rear-width
+also require a measured four-corner existing opening. Version 1 through version
+4 customer room records migrate automatically to the new schema without losing
+their photo or available configuration. Missing depth and rear-width
 measurements remain explicitly unknown. This remains a conceptual sales
 visualization, not an installation or fit approval.
 

@@ -6,6 +6,9 @@ import {
   roomProjectSchema,
   type RoomProject,
 } from "@/domain/roomProject";
+import { MAX_ROOM_PROJECTS } from "@/domain/roomProjectBackup";
+import { DEFAULT_CONFIGURATION } from "@/domain/configuration";
+import { readPersistedConfiguration } from "@/lib/persistence";
 
 const DATABASE_NAME = "firedesign-projects";
 const DATABASE_VERSION = 2;
@@ -104,10 +107,30 @@ function toSummary(project: RoomProject | StoredRoomProject): RoomProjectSummary
 
 function safelyParseRoomProject(candidate: unknown): RoomProject | null {
   try {
-    return parseRoomProject(candidate);
+    const legacyConfiguration =
+      typeof localStorage === "undefined"
+        ? DEFAULT_CONFIGURATION
+        : readPersistedConfiguration(localStorage).configuration;
+    return parseRoomProject(candidate, legacyConfiguration);
   } catch {
     return null;
   }
+}
+
+function hydrateStoredProject(
+  candidate: unknown,
+  images: ReadonlyMap<string, unknown>,
+): RoomProject | null {
+  const embedded = safelyParseRoomProject(candidate);
+  if (embedded) return embedded;
+  const metadata = storedProjectEnvelopeSchema.safeParse(candidate);
+  if (!metadata.success) return null;
+  const image = storedImageSchema.safeParse(images.get(metadata.data.id));
+  if (!image.success || image.data.projectId !== metadata.data.id) return null;
+  return safelyParseRoomProject({
+    ...metadata.data,
+    source: { ...metadata.data.source, dataUrl: image.data.dataUrl },
+  });
 }
 
 export async function saveRoomProject(project: RoomProject): Promise<void> {
@@ -176,6 +199,149 @@ export async function readRoomProject(id: string): Promise<RoomProject | null> {
   knownProjectImages.set(hydrated.id, hydrated.source.dataUrl);
   persistedProjectImages.add(hydrated.id);
   return hydrated;
+}
+
+export async function readAllRoomProjects(): Promise<RoomProject[]> {
+  const database = await openDatabase();
+  let candidates: unknown[];
+  let imageCandidates: unknown[];
+  try {
+    const transaction = database.transaction([STORE_NAME, IMAGE_STORE_NAME]);
+    [candidates, imageCandidates] = await Promise.all([
+      requestResult(
+        transaction.objectStore(STORE_NAME).getAll(),
+        "Project backup recovery failed.",
+      ),
+      requestResult(
+        transaction.objectStore(IMAGE_STORE_NAME).getAll(),
+        "Project image backup recovery failed.",
+      ),
+    ]);
+  } finally {
+    database.close();
+  }
+  const images = new Map<string, unknown>();
+  for (const candidate of imageCandidates) {
+    const parsed = storedImageSchema.safeParse(candidate);
+    if (parsed.success) images.set(parsed.data.projectId, parsed.data);
+  }
+  const projects = candidates.map((candidate) => hydrateStoredProject(candidate, images));
+  if (projects.some((project) => project === null)) {
+    throw new Error(
+      "One or more saved projects are damaged. No incomplete backup was created.",
+    );
+  }
+  return (projects as RoomProject[])
+    .map((project) => {
+      knownProjectImages.set(project.id, project.source.dataUrl);
+      if (images.has(project.id)) persistedProjectImages.add(project.id);
+      else persistedProjectImages.delete(project.id);
+      return project;
+    })
+    .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+}
+
+export type RoomProjectRestoreResult = {
+  restored: number;
+  copied: number;
+  projectIds: string[];
+};
+
+function restoredProjectName(name: string): string {
+  const suffix = " (restored)";
+  return `${name.slice(0, 80 - suffix.length).trimEnd()}${suffix}`;
+}
+
+function uniqueProjectId(reserved: Set<string>): string {
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const candidate = crypto.randomUUID();
+    if (!reserved.has(candidate)) return candidate;
+  }
+  throw new Error("A unique restored project could not be created.");
+}
+
+export async function restoreRoomProjectLibrary(
+  candidates: readonly RoomProject[],
+  now = new Date(),
+): Promise<RoomProjectRestoreResult> {
+  const projects = candidates.map((candidate) => roomProjectSchema.parse(candidate));
+  const incomingIds = new Set(projects.map((project) => project.id));
+  if (incomingIds.size !== projects.length) {
+    throw new Error("The project backup contains duplicate project identifiers.");
+  }
+  const database = await openDatabase();
+  let restoredProjects: RoomProject[] = [];
+  let copied = 0;
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const transaction = database.transaction([STORE_NAME, IMAGE_STORE_NAME], "readwrite");
+      const projectStore = transaction.objectStore(STORE_NAME);
+      const imageStore = transaction.objectStore(IMAGE_STORE_NAME);
+      const keysRequest = projectStore.getAllKeys();
+      let rejected = false;
+      const fail = (error: Error) => {
+        if (rejected) return;
+        rejected = true;
+        reject(error);
+      };
+      keysRequest.onerror = () =>
+        fail(keysRequest.error ?? new Error("The project library could not be restored."));
+      keysRequest.onsuccess = () => {
+        try {
+          const reserved = new Set(keysRequest.result.map(String));
+          if (reserved.size + projects.length > MAX_ROOM_PROJECTS) {
+            throw new Error(
+              `A maximum of ${MAX_ROOM_PROJECTS} customer projects can be stored on this device.`,
+            );
+          }
+          const timestamp = now.toISOString();
+          restoredProjects = projects.map((project) => {
+            if (!reserved.has(project.id)) {
+              reserved.add(project.id);
+              return project;
+            }
+            copied += 1;
+            const id = uniqueProjectId(reserved);
+            reserved.add(id);
+            return roomProjectSchema.parse({
+              ...project,
+              id,
+              name: restoredProjectName(project.name),
+              createdAt: timestamp,
+              updatedAt: timestamp,
+            });
+          });
+          for (const project of restoredProjects) {
+            projectStore.put(toStoredProject(project));
+            imageStore.put({ projectId: project.id, dataUrl: project.source.dataUrl });
+          }
+        } catch (error) {
+          fail(
+            error instanceof Error
+              ? error
+              : new Error("The project library could not be restored."),
+          );
+          transaction.abort();
+        }
+      };
+      transaction.oncomplete = () => resolve();
+      transaction.onerror = () =>
+        fail(transaction.error ?? new Error("The project library could not be restored."));
+      transaction.onabort = () =>
+        fail(transaction.error ?? new Error("The project library could not be restored."));
+    });
+  } finally {
+    database.close();
+  }
+  for (const project of restoredProjects) {
+    knownProjectImages.set(project.id, project.source.dataUrl);
+    persistedProjectImages.add(project.id);
+  }
+  return {
+    restored: restoredProjects.length,
+    copied,
+    projectIds: restoredProjects.map((project) => project.id),
+  };
 }
 
 export async function selectRoomProject(id: string): Promise<RoomProject | null> {

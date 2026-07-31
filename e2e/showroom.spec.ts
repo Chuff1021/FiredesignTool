@@ -205,7 +205,7 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   );
   await page.getByRole("button", { name: /Customer room/ }).click();
   await page
-    .locator('input[type="file"]')
+    .getByTestId("room-photo-input")
     .setInputFiles(path.join(process.cwd(), "assets-source/centurion-kentucky-ledge.jpg"));
   const canvas = page.getByTestId("room-canvas");
   await expect(canvas).toBeVisible({ timeout: 15_000 });
@@ -277,7 +277,7 @@ test("preserves a true 4K customer photograph", async ({ page }, testInfo) => {
     .jpeg({ quality: 90 })
     .toBuffer();
   await page.getByRole("button", { name: /Customer room/ }).click();
-  await page.locator('input[type="file"]').setInputFiles({
+  await page.getByTestId("room-photo-input").setInputFiles({
     name: "customer-room-4k.jpg",
     mimeType: "image/jpeg",
     buffer: photograph,
@@ -310,7 +310,7 @@ test("restores and persists a traced foreground object", async ({ page }, testIn
     .jpeg({ quality: 94 })
     .toBuffer();
   await page.getByRole("button", { name: /Customer room/ }).click();
-  await page.locator('input[type="file"]').setInputFiles({
+  await page.getByTestId("room-photo-input").setInputFiles({
     name: "foreground-room.jpg",
     mimeType: "image/jpeg",
     buffer: photograph,
@@ -389,20 +389,24 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   );
   const photo = path.join(process.cwd(), "assets-source/centurion-kentucky-ledge.jpg");
   await page.getByRole("button", { name: /Customer room/ }).click();
-  await page.locator('input[type="file"]').setInputFiles(photo);
+  await page.getByTestId("room-photo-input").setInputFiles(photo);
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   const firstName = page.getByLabel("Project name");
   await firstName.fill("Smith living room");
   await firstName.blur();
+  await page.getByLabel("Centurion stone").selectOption("brown-ledge");
+  await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");
   await page.getByRole("button", { name: "Back to projects" }).click();
   await expect(page.getByRole("button", { name: "Open Smith living room" })).toBeVisible();
 
   await page.getByRole("button", { name: "New customer project" }).click();
-  await page.locator('input[type="file"]').setInputFiles(photo);
+  await page.getByTestId("room-photo-input").setInputFiles(photo);
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   const secondName = page.getByLabel("Project name");
   await secondName.fill("Jones fireplace");
   await secondName.blur();
+  await page.getByLabel("Centurion stone").selectOption("kentucky-ledge");
+  await expect(page.getByLabel("Centurion stone")).toHaveValue("kentucky-ledge");
   await page.getByRole("button", { name: "Projects", exact: true }).click();
   await expect(page.getByText("2 projects")).toBeVisible();
 
@@ -412,8 +416,23 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   await page.getByRole("button", { name: "Open Smith living room" }).click();
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByLabel("Project name")).toHaveValue("Smith living room");
-  await page.locator('input[type="file"]').setInputFiles(photo);
+  await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");
+  await page.getByTestId("room-photo-input").setInputFiles(photo);
   await expect(page.getByLabel("Project name")).toHaveValue("Smith living room");
   await page.getByRole("button", { name: "Projects", exact: true }).click();
   await expect(page.getByText("1 project")).toBeVisible();
+
+  const backupDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Back up projects" }).click();
+  const backupPath = await (await backupDownload).path();
+  expect(backupPath).not.toBeNull();
+  if (!backupPath) return;
+  await expect(page.getByText(/Backed up 1 project/)).toBeVisible();
+  await page.getByTestId("room-backup-input").setInputFiles(backupPath);
+  await expect(page.getByText(/Restored 1 project/)).toBeVisible();
+  await expect(page.getByText(/existing project was preserved/)).toBeVisible();
+  await expect(page.getByText("2 projects")).toBeVisible();
+  await page.getByRole("button", { name: "Open Smith living room (restored)" }).click();
+  await expect(page.getByLabel("Project name")).toHaveValue("Smith living room (restored)");
+  await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");
 });
