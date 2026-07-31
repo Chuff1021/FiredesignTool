@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import path from "node:path";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
@@ -191,4 +192,47 @@ test("shows a polished startup recovery state when an approved asset is unavaila
   await page.unroute("**/assets/manifest.json");
   await page.getByRole("button", { name: "Run checks again" }).click();
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+});
+
+test("calibrates and persists a customer room concept", async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name === "showroom-4k",
+    "Customer project flow is covered at desktop scale.",
+  );
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await page
+    .locator('input[type="file"]')
+    .setInputFiles(path.join(process.cwd(), "assets-source/centurion-kentucky-ledge.jpg"));
+  const canvas = page.getByTestId("room-canvas");
+  await expect(canvas).toBeVisible({ timeout: 15_000 });
+  const box = await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  const click = async (x: number, y: number) => {
+    await canvas.click({ position: { x: box.width * x, y: box.height * y } });
+  };
+  await click(0.12, 0.08);
+  await click(0.88, 0.08);
+  await click(0.88, 0.92);
+  await click(0.12, 0.92);
+  await page.getByLabel("Known measurement in inches").fill("144");
+  await click(0.12, 0.75);
+  await click(0.88, 0.75);
+  await expect(page.getByText("Dimensionally scaled")).toBeVisible();
+  const pdfDownload = page.waitForEvent("download");
+  await page.getByRole("button", { name: "PDF" }).click();
+  await expect((await pdfDownload).suggestedFilename()).toMatch(/firedesign\.pdf$/);
+  await page
+    .getByLabel("Remodel scenario")
+    .getByRole("button", { name: "Insert only" })
+    .click();
+  await expect(page.getByRole("button", { name: "Insert only" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page.reload();
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByText("Dimensionally scaled")).toBeVisible();
 });

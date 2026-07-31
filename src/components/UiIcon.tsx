@@ -8,7 +8,10 @@ type UiIconName =
   | "dimensions"
   | "expand"
   | "front"
+  | "image"
   | "perspective"
+  | "upload"
+  | "download"
   | "reset"
   | "warning";
 
@@ -50,10 +53,29 @@ const paths: Record<UiIconName, ReactNode> = {
       <rect x="7" y="8" width="10" height="9" rx="1" />
     </>
   ),
+  image: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="8.5" cy="9" r="1.5" />
+      <path d="m4 17 4.5-4.5 3 3 2.5-2.5 6 6" />
+    </>
+  ),
   perspective: (
     <>
       <path d="m4 6 12-3 4 3v12l-12 3-4-3Z" />
       <path d="M8 9v12M8 9l12-3" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M12 16V4M7 9l5-5 5 5" />
+      <path d="M4 15v5h16v-5" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v12M7 11l5 5 5-5" />
+      <path d="M4 15v5h16v-5" />
     </>
   ),
   reset: (

@@ -23,6 +23,16 @@ application version, asset version, preview URL, and deployment ID.
       Chromium and WebKit after browser restart.
 - [ ] Production bundle, memory, texture dimensions, and sustained frame rate
       are recorded.
+- [ ] Customer Room Designer accepts JPEG/PNG/HEIC input, rejects undersized or
+      oversized files, and removes source metadata during local preparation.
+- [ ] Four-corner wall calibration and measured wall width survive refresh and
+      produce a perspective-aligned design within 2% of the marked plane.
+- [ ] Full-remodel and insert-only modes preserve the expected portions of the
+      customer photograph.
+- [ ] Before/after comparison and high-resolution JPEG export contain no
+      calibration markers, loading state, or UI chrome.
+- [ ] Closing a customer project removes it from IndexedDB and the next launch
+      returns to the photo-intake screen.
 
 ## Physical showroom gate
 

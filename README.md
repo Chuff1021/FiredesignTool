@@ -26,6 +26,25 @@ The current approved catalog contains:
 
 The tool does not generate, invent, or substitute product imagery.
 
+## Customer Room Designer
+
+Version 0.6 adds a separate customer-room workspace around the same approved
+catalog. A salesperson can upload a room photograph, mark the intended wall in
+perspective, enter its measured width, and project the current fireplace,
+stone, mantel, and hearth configuration into the photograph. Insert-only mode
+preserves the existing surround; full-remodel mode renders the complete feature
+wall. The workspace includes before/after comparison, high-resolution JPEG
+export, and automatic project recovery after a refresh.
+
+Room photographs are resized to a maximum 2560-pixel edge and stored locally in
+the browser's IndexedDB. They are not uploaded or sent to an external service in
+this release. Use **Close project** to delete the active customer photograph
+from local project storage.
+
+The complete measured wall width and a four-corner wall plane are required
+before the result is labeled dimensionally scaled. This remains a conceptual
+sales visualization, not an installation or fit approval.
+
 ## Run locally
 
 Requirements: Node.js 22 or newer and a WebGL-capable Chromium, Edge, or
@@ -56,7 +75,7 @@ means the approved visual release changed and requires a fresh review.
 - `src/domain` contains the runtime-validated catalog, product-specific mantel
   rules, physical constraints, and inch-based calculations.
 - `src/lib` owns asset readiness, integrity verification, state migration, and
-  persistence.
+  persistence, including local customer-project recovery.
 - `src/store` is the validated local configuration boundary.
 - `src/components/FeatureWallCanvas.tsx` implements the stable dimensional
   scene. One Three.js unit equals one physical inch.
@@ -64,6 +83,10 @@ means the approved visual release changed and requires a fresh review.
   visibility pause/resume, one-shot recovery, and approved-poster fallback.
 - `src/components/FireDesignApp.tsx` owns startup gating, offline readiness,
   fullscreen mode, diagnostics, and recovery.
+- `src/components/CustomerRoomViewport.tsx` owns room-photo intake, guided
+  calibration, before/after presentation, and export.
+- `src/lib/roomRenderer.ts` produces the deterministic, perspective-projected
+  room composite without sending product pixels through a generative service.
 - `assets-source` preserves the exact official inputs.
 - `scripts/prepare-assets.mjs` performs deterministic cropping, compositing,
   texture preparation, and relief-map generation.

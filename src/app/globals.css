@@ -87,13 +87,409 @@ select:focus-visible {
     linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 24%), var(--panel);
   border-right: 1px solid var(--line);
   display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   height: 100dvh;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
   position: relative;
   z-index: 5;
+}
+
+.workspace-switcher {
+  background: #171513;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.55rem;
+}
+
+.workspace-switcher button {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  gap: 0.55rem;
+  min-height: 48px;
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+}
+
+.workspace-switcher button[aria-current="page"] {
+  background: var(--panel-raised);
+  border-color: rgba(202, 167, 119, 0.24);
+  color: var(--ink);
+}
+
+.workspace-switcher span,
+.workspace-switcher small {
+  display: block;
+}
+
+.workspace-switcher span {
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.workspace-switcher small {
+  color: var(--muted);
+  font-size: 0.52rem;
+  font-weight: 450;
+  margin-top: 0.15rem;
+}
+
+.room-workspace {
+  background: #131210;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.room-workspace--empty {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.room-empty {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  padding: 3rem;
+  text-align: center;
+}
+
+.room-empty__icon {
+  align-items: center;
+  border: 1px solid rgba(202, 167, 119, 0.32);
+  color: var(--gold-bright);
+  display: flex;
+  height: 68px;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  width: 68px;
+}
+
+.room-empty h2 {
+  font-size: clamp(1.75rem, 3vw, 3rem);
+  font-weight: 480;
+  letter-spacing: -0.05em;
+  margin: 0;
+}
+
+.room-empty > p:not(.eyebrow) {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 1rem 0 1.6rem;
+}
+
+.room-empty > small {
+  color: var(--muted-2);
+  font-size: 0.62rem;
+  margin-top: 0.8rem;
+}
+
+.primary-action,
+.secondary-action {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.5rem;
+  min-height: 40px;
+  padding: 0 0.9rem;
+}
+
+.primary-action {
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  color: #181512;
+  font-weight: 650;
+}
+
+.secondary-action {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.primary-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.room-toolbar {
+  align-items: center;
+  background: rgba(24, 22, 20, 0.96);
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  min-height: 74px;
+  padding: 0.8rem 1.15rem;
+  position: relative;
+  z-index: 3;
+}
+
+.room-toolbar__identity input {
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 580;
+  max-width: 360px;
+  padding: 0;
+  width: 100%;
+}
+
+.room-toolbar__identity .eyebrow {
+  margin-bottom: 0.22rem;
+}
+
+.room-toolbar__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.room-status {
+  align-items: center;
+  color: var(--gold-bright);
+  display: grid;
+  font-size: 0.66rem;
+  gap: 0.1rem 0.4rem;
+  grid-template-columns: auto 1fr;
+}
+
+.room-status > span {
+  background: currentColor;
+  border-radius: 50%;
+  grid-row: 1 / span 2;
+  height: 7px;
+  width: 7px;
+}
+
+.room-status[data-ready="true"] {
+  color: var(--success);
+}
+
+.room-status small {
+  color: var(--muted);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.52rem;
+}
+
+.room-stage {
+  align-items: center;
+  background: radial-gradient(circle at 50% 46%, #292521 0, #171513 60%, #100f0e 100%);
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  overflow: hidden;
+  padding: 1.2rem;
+  position: relative;
+}
+
+.room-canvas {
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.44);
+  cursor: crosshair;
+  display: block;
+  height: auto;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  width: auto;
+}
+
+.room-rendering {
+  background: rgba(20, 18, 16, 0.88);
+  color: var(--muted);
+  font-size: 0.62rem;
+  padding: 0.45rem 0.65rem;
+  position: absolute;
+  right: 1.8rem;
+  top: 1.8rem;
+}
+
+.room-message {
+  background: rgba(118, 67, 43, 0.22);
+  border: 1px solid rgba(215, 139, 101, 0.38);
+  color: #efc3ad;
+  font-size: 0.66rem;
+  margin-top: 1rem;
+  padding: 0.7rem 0.8rem;
+}
+
+.room-message--floating {
+  bottom: 1.5rem;
+  left: 50%;
+  margin: 0;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+.room-message button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  margin-left: 1rem;
+  text-decoration: underline;
+}
+
+.room-calibration-panel {
+  align-items: center;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 0.8rem 1rem;
+  grid-template-columns: minmax(270px, 1.2fr) minmax(190px, 1fr) auto auto minmax(180px, 0.8fr);
+  padding: 0.85rem 1rem;
+}
+
+.room-stepper {
+  display: grid;
+  gap: 3px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.room-stepper button {
+  align-items: center;
+  background: #171513;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.58rem;
+  gap: 0.35rem;
+  min-height: 36px;
+  padding: 0.35rem 0.45rem;
+}
+
+.room-stepper button[aria-pressed="true"] {
+  border-color: rgba(202, 167, 119, 0.5);
+  color: var(--ink);
+}
+
+.room-stepper button:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.room-stepper button > span {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  display: flex;
+  height: 17px;
+  justify-content: center;
+  width: 17px;
+}
+
+.room-stepper small {
+  color: var(--muted-2);
+  margin-left: auto;
+}
+
+.room-instruction strong,
+.room-instruction span {
+  display: block;
+}
+
+.room-instruction strong {
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.room-instruction span {
+  color: var(--muted);
+  font-size: 0.55rem;
+  line-height: 1.35;
+  margin-top: 0.15rem;
+}
+
+.room-measurement > span {
+  color: var(--muted);
+  display: block;
+  font-size: 0.55rem;
+  margin-bottom: 0.25rem;
+}
+
+.room-measurement > div {
+  align-items: center;
+  background: #171513;
+  border: 1px solid var(--line);
+  display: flex;
+  min-height: 36px;
+  padding: 0 0.55rem;
+}
+
+.room-measurement input {
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  min-width: 55px;
+  width: 55px;
+}
+
+.room-measurement div span {
+  color: var(--muted);
+  font-size: 0.6rem;
+}
+
+.room-scenario {
+  min-width: 190px;
+}
+
+.room-comparison {
+  align-items: center;
+  display: grid;
+  gap: 0.4rem;
+  grid-template-columns: auto 1fr auto;
+}
+
+.room-comparison span {
+  color: var(--muted);
+  font-size: 0.54rem;
+}
+
+.room-comparison input {
+  accent-color: var(--gold-bright);
+  min-width: 80px;
+}
+
+.room-calibration-actions {
+  display: flex;
+  gap: 0.65rem;
+  grid-column: 1 / span 4;
+}
+
+.room-calibration-actions button {
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.55rem;
+  padding: 0;
+}
+
+.room-calibration-actions .danger-link {
+  color: #c98d78;
+}
+
+.room-disclaimer {
+  color: var(--muted-2);
+  font-size: 0.5rem;
+  grid-column: 5;
+  line-height: 1.35;
+  margin: 0;
+  text-align: right;
 }
 
 .brand-header {
@@ -593,6 +989,33 @@ select:focus-visible {
   background: rgba(13, 12, 11, 0.45);
   border-top: 1px solid var(--line);
   padding: 1rem 1.55rem 1.2rem;
+}
+
+.room-mode-note {
+  align-items: center;
+  border: 1px solid rgba(140, 183, 142, 0.2);
+  color: var(--success);
+  display: flex;
+  gap: 0.7rem;
+  min-height: 54px;
+  padding: 0 0.9rem;
+}
+
+.room-mode-note span,
+.room-mode-note small {
+  display: block;
+}
+
+.room-mode-note span {
+  font-size: 0.69rem;
+  font-weight: 620;
+}
+
+.room-mode-note small {
+  color: var(--muted);
+  font-size: 0.55rem;
+  font-weight: 450;
+  margin-top: 0.15rem;
 }
 
 .presentation-button {

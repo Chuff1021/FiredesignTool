@@ -38,12 +38,16 @@ type ControlPanelProps = {
   onEnterPresentation: () => void;
   onOpenDiagnostics: () => void;
   presentationReady: boolean;
+  workspace: "feature-wall" | "customer-room";
+  onWorkspaceChange: (workspace: "feature-wall" | "customer-room") => void;
 };
 
 export function ControlPanel({
   onEnterPresentation,
   onOpenDiagnostics,
   presentationReady,
+  workspace,
+  onWorkspaceChange,
 }: ControlPanelProps) {
   const wallWidth = useConfigurationStore((state) => state.wallWidth);
   const wallHeight = useConfigurationStore((state) => state.wallHeight);
@@ -103,6 +107,29 @@ export function ControlPanel({
           <h1>FireDesign</h1>
         </div>
       </header>
+
+      <nav className="workspace-switcher" aria-label="Design workspace">
+        <button
+          aria-current={workspace === "feature-wall" ? "page" : undefined}
+          onClick={() => onWorkspaceChange("feature-wall")}
+          type="button"
+        >
+          <UiIcon name="front" />
+          <span>
+            Feature wall<small>Dimensional elevation</small>
+          </span>
+        </button>
+        <button
+          aria-current={workspace === "customer-room" ? "page" : undefined}
+          onClick={() => onWorkspaceChange("customer-room")}
+          type="button"
+        >
+          <UiIcon name="image" />
+          <span>
+            Customer room<small>Place in a photograph</small>
+          </span>
+        </button>
+      </nav>
 
       <section className="product-summary">
         <div className="product-summary__visual">
@@ -431,20 +458,30 @@ export function ControlPanel({
       </div>
 
       <footer className="control-panel__footer">
-        <button
-          className="presentation-button"
-          disabled={!presentationReady}
-          onClick={onEnterPresentation}
-          type="button"
-        >
-          <span>
-            {presentationReady ? "Present design" : "Preparing display"}
-            <small>
-              {presentationReady ? "Clean fullscreen view" : "Loading approved materials"}
-            </small>
-          </span>
-          <UiIcon name="expand" />
-        </button>
+        {workspace === "customer-room" ? (
+          <div className="room-mode-note">
+            <UiIcon name="check" />
+            <span>
+              Room design active
+              <small>Calibrate and present from the photo workspace</small>
+            </span>
+          </div>
+        ) : (
+          <button
+            className="presentation-button"
+            disabled={!presentationReady}
+            onClick={onEnterPresentation}
+            type="button"
+          >
+            <span>
+              {presentationReady ? "Present design" : "Preparing display"}
+              <small>
+                {presentationReady ? "Clean fullscreen view" : "Loading approved materials"}
+              </small>
+            </span>
+            <UiIcon name="expand" />
+          </button>
+        )}
       </footer>
     </aside>
   );

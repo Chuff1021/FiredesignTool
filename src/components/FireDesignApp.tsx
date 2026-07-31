@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { ControlPanel } from "@/components/ControlPanel";
 import { DiagnosticsPanel, type DiagnosticsData } from "@/components/DiagnosticsPanel";
 import { SceneErrorBoundary } from "@/components/SceneErrorBoundary";
@@ -14,6 +15,22 @@ import {
 } from "@/lib/readiness";
 import { useConfigurationStore } from "@/store/configurationStore";
 import type { FireboxMediaStatus } from "@/components/FireboxMedia";
+
+const CustomerRoomViewport = dynamic(
+  () =>
+    import("@/components/CustomerRoomViewport").then((module) => module.CustomerRoomViewport),
+  {
+    ssr: false,
+    loading: () => (
+      <section className="room-workspace room-workspace--empty">
+        <div className="room-empty">
+          <span className="scene-loading__mark" />
+          <h2>Preparing customer projects</h2>
+        </div>
+      </section>
+    ),
+  },
+);
 
 const UNKNOWN_GRAPHICS: GraphicsSupport = {
   supported: false,
@@ -38,6 +55,7 @@ export function FireDesignApp() {
   const [mediaStatus, setMediaStatus] = useState<FireboxMediaStatus>("preparing");
   const [rendererStatus, setRendererStatus] =
     useState<DiagnosticsData["rendererStatus"]>("recovering");
+  const [workspace, setWorkspace] = useState<"feature-wall" | "customer-room">("feature-wall");
 
   const checkReadiness = useCallback(async () => {
     setStartupError(null);
@@ -160,19 +178,25 @@ export function FireDesignApp() {
         <ControlPanel
           onEnterPresentation={() => void enterPresentation()}
           onOpenDiagnostics={() => setDiagnosticsOpen(true)}
-          presentationReady={rendererStatus === "ready"}
+          onWorkspaceChange={setWorkspace}
+          presentationReady={workspace === "feature-wall" && rendererStatus === "ready"}
+          workspace={workspace}
         />
       ) : null}
-      <SceneErrorBoundary onError={() => setRendererStatus("error")}>
-        <SceneViewport
-          isPresentation={isPresentation}
-          onExitPresentation={() => void exitPresentation()}
-          onFps={setFps}
-          mediaStatus={mediaStatus}
-          onMediaStatus={setMediaStatus}
-          onRendererStatus={setRendererStatus}
-        />
-      </SceneErrorBoundary>
+      {workspace === "customer-room" && !isPresentation ? (
+        <CustomerRoomViewport />
+      ) : (
+        <SceneErrorBoundary onError={() => setRendererStatus("error")}>
+          <SceneViewport
+            isPresentation={isPresentation}
+            onExitPresentation={() => void exitPresentation()}
+            onFps={setFps}
+            mediaStatus={mediaStatus}
+            onMediaStatus={setMediaStatus}
+            onRendererStatus={setRendererStatus}
+          />
+        </SceneErrorBoundary>
+      )}
       {diagnosticsOpen ? (
         <DiagnosticsPanel
           data={diagnostics}
