@@ -20,6 +20,8 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] The approved catalog release parses through `catalogReleaseSchema`, has
       unique brand/product/SKU/option IDs, and contains no broken compatibility
       or default-option references.
+- [ ] `npm run catalog:validate` maps every live product to the dated intake
+      snapshot and verifies every packaged asset byte-for-byte.
 - [ ] Saved configuration migration attaches the current catalog release and
       safely restores defaults for a retired or unknown product ID.
 - [ ] Both 864 variants, all four designer faces, and the 4237 play their mapped

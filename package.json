@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "verify": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run build",
+    "catalog:validate": "tsx scripts/validate-catalog.mts",
+    "verify": "npm run format:check && npm run typecheck && npm run lint && npm run test && npm run catalog:validate && npm run build",
     "assets:manifest": "node scripts/generate-asset-manifest.mjs",
     "audit:production": "npm audit --omit=dev --audit-level=high"
   },
@@ -46,6 +47,7 @@
     "jsdom": "28.1.0",
     "prettier": "3.8.1",
     "sharp": "0.35.3",
+    "tsx": "4.23.1",
     "typescript": "5.9.3",
     "vitest": "4.1.10"
   },

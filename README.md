@@ -62,6 +62,7 @@ after the first verified load and caches the exact release for offline use.
 
 ```bash
 npm run assets:manifest
+npm run catalog:validate
 npm run verify
 npm run test:e2e
 npm run audit:production

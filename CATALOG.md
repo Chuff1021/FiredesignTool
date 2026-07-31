@@ -69,3 +69,16 @@ complete unique asset list used by readiness checks and the offline cache.
 
 Models lacking sufficient official imagery, current manuals, or asset rights do
 not enter an approved release.
+
+## Current FPX intake queue
+
+`src/catalog/intake.ts` is a dated inventory of the current official Fireplace
+Xtrordinair appliance families. It intentionally separates discovery from
+approval: an indexed product never appears in the showroom until its manuals,
+dimensions, options, local visual assets, and 4K visual review have passed.
+
+Run `npm run catalog:validate` before every preview. The command validates the
+approved release and intake mapping, then independently checks every packaged
+asset against the release manifest, byte size, and SHA-256 checksum. A live
+catalog product missing from the intake snapshot—or an incomplete intake item
+mapped into the live catalog—fails validation.
