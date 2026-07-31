@@ -56,7 +56,7 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(ALL_ASSET_PATHS).toHaveLength(72);
+    expect(ALL_ASSET_PATHS).toHaveLength(77);
     expect(new Set(ALL_ASSET_PATHS).size).toBe(ALL_ASSET_PATHS.length);
     expect(ALL_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });
@@ -73,6 +73,17 @@ describe("approved product catalog", () => {
           product.burnMedia.poster.localPath.endsWith(".webp"),
       ),
     ).toBe(true);
+    expect(
+      fireplaceProducts.every((product) =>
+        product.faceOptions.every(
+          (face) =>
+            face.maskAsset.localPath.endsWith(".png") &&
+            face.mediaWindow.width <= face.visibleFace.width &&
+            face.mediaWindow.height <= face.visibleFace.height,
+        ),
+      ),
+    ).toBe(true);
+    expect(fireplaceProducts[2]?.burnMedia.sourceTimecode).toBe("01:42–01:54");
   });
 
   it("rejects unchecked substitutions", () => {

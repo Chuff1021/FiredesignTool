@@ -1,5 +1,5 @@
 {
-  "version": "2026.07.31-1",
+  "version": "2026.07.31-2",
   "generatedAt": "2026-07-31T00:00:00.000Z",
   "files": [
     {
@@ -43,14 +43,19 @@
       "size": 6174196
     },
     {
+      "path": "/assets/firebox-media-mask-rect.png",
+      "sha256": "0a99709a43bf077cd1033ec3b656601a885706df92418b2ffcf0f70274ddcdf5",
+      "size": 98
+    },
+    {
       "path": "/assets/fpx-4237-burn-poster.webp",
-      "sha256": "f7678dd55011962fa0cebdb61280ee58fcb4c7ce44678f81891192d40ac895c4",
-      "size": 238172
+      "sha256": "346331fc9a4828652959be6d282a09dda30a4cbcf1c2836df165840ce770f3f7",
+      "size": 161900
     },
     {
       "path": "/assets/fpx-4237-burn.mp4",
-      "sha256": "2ca7a86a1b8090ebe38164817d805f4a27df7c72c863c480b8987256969f6f2a",
-      "size": 12696768
+      "sha256": "1112c9435ed2f7eee200e7a92bf77bba3d78a0da77939b1d5ab92a0c1026ac78",
+      "size": 7145592
     },
     {
       "path": "/assets/fpx-4237-clean-face-overlay.png",
@@ -63,9 +68,14 @@
       "size": 495873
     },
     {
+      "path": "/assets/fpx-864-arched-french-country-media-mask.png",
+      "sha256": "54030624e2005e1204f5966ca667a0d722693a4030e049e0cff43f98aafdd9bf",
+      "size": 1274
+    },
+    {
       "path": "/assets/fpx-864-arched-french-country-overlay.png",
-      "sha256": "c474b49a7bc9f8226552450823b20b875f878001455e3771a5f381fe88e20baf",
-      "size": 206630
+      "sha256": "30d6a72302fc6043cd937073406f9f603a29bd55f69016fdff5fcf8742c4a3b3",
+      "size": 236562
     },
     {
       "path": "/assets/fpx-864-arched-french-country.png",
@@ -83,9 +93,14 @@
       "size": 12601310
     },
     {
+      "path": "/assets/fpx-864-classic-arch-media-mask.png",
+      "sha256": "7bb861d59882b60de2d03a543c758e4eb14c1add04c85963b22b6a2957f7ac99",
+      "size": 1191
+    },
+    {
       "path": "/assets/fpx-864-classic-arch-overlay.png",
-      "sha256": "fcf729f47b427ff5c817496f3d92134cb79b331efb7c63c73bfc892dc581c4e1",
-      "size": 236004
+      "sha256": "f09fd2a076f0b5a02ca9a61560da2ff2fef9e13304389397fda42f94ccda1649",
+      "size": 291905
     },
     {
       "path": "/assets/fpx-864-classic-arch.png",
@@ -93,9 +108,14 @@
       "size": 544418
     },
     {
+      "path": "/assets/fpx-864-metropolitan-media-mask.png",
+      "sha256": "a4c093b48e67bc0f4d09b77fd3ae5146e3b732c710eea3f81de32e58da23e2a2",
+      "size": 1078
+    },
+    {
       "path": "/assets/fpx-864-metropolitan-overlay.png",
-      "sha256": "afa4d7eb33d89a034420ce57bd34fcad1d0437a2c5c7f8e0c6d7c7cc7760fd6b",
-      "size": 278641
+      "sha256": "99d517a3459e023c53dc4655a53a3a7b6d92da9d9ee79665392c9da29c70edf7",
+      "size": 311561
     },
     {
       "path": "/assets/fpx-864-metropolitan.png",
@@ -103,9 +123,14 @@
       "size": 591924
     },
     {
+      "path": "/assets/fpx-864-rectangle-double-door-media-mask.png",
+      "sha256": "750cd76b4364747c71a2becf11fe36f7c6602a1770ee257d08029bfd2381d0a8",
+      "size": 1072
+    },
+    {
       "path": "/assets/fpx-864-rectangle-double-door-overlay.png",
-      "sha256": "ef0e6971fae5723a330f2bca37b649247fbf0338b8648bfe9e0af5bb2aa31fed",
-      "size": 282231
+      "sha256": "a3ebe6726fe20358340b8e82a934b4ef96adf07f2e4864c21388d69d76bda7d2",
+      "size": 376919
     },
     {
       "path": "/assets/fpx-864-rectangle-double-door.png",

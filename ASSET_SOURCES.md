@@ -60,13 +60,18 @@ Fireplaces` video, `https://vimeo.com/356069122`
   published 34-1/4 × 22-1/4 inch glass ratio and exported at 1920 × 1248
 - 4237 source: Travis Industries’ official `The NEW 4237 Deluxe Gas Fireplace
 ft. Ember-Glo™`, `https://vimeo.com/639273752`
-- 4237 approved segment: 01:40–01:52, Birch; center-cropped to the published
-  39-7/8 × 34-7/8 inch glass ratio and exported at 1600 × 1400
+- 4237 approved segment: 01:42–01:54, Birch; the complete clean burn frame is
+  fitted at its original aspect ratio into the published 39-7/8 × 34-7/8 inch
+  glass area, with the natural black upper firebox retained, and exported at
+  1600 × 1400
 
 Both 12-second loops contain only manufacturer-recorded frames. Each uses a
 one-second dissolve between real end/start frames, H.264 video without audio,
 and a poster extracted from that exact output. There is no generation, frame
 interpolation, flame reconstruction, color replacement, or synthetic effect.
+The 864 designer faces use the complete official transparent face layers. Their
+media masks and offsets are extracted deterministically from the enclosed glass
+openings in those exact layers, so the video cannot crop or overwrite the face.
 
 ## Centurion Stone
 

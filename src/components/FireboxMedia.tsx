@@ -16,6 +16,7 @@ export type FireboxMediaStatus = "preparing" | "playing" | "paused" | "fallback"
 type FireboxMediaProps = {
   faceOptionId: FaceOptionId;
   height: number;
+  mask: Texture;
   media: BurnMedia;
   onStatus: (status: FireboxMediaStatus) => void;
   poster: Texture;
@@ -25,6 +26,7 @@ type FireboxMediaProps = {
 export function FireboxMedia({
   faceOptionId,
   height,
+  mask,
   media,
   onStatus,
   poster,
@@ -130,18 +132,26 @@ export function FireboxMedia({
     if (posterMaterial.current) posterMaterial.current.opacity = 1 - fade.current;
   });
 
-  // The official designer-face layer is rendered above this surface. Keeping
-  // the burn inside the published glass rectangle also prevents it touching
-  // the outer product silhouette in perspective view.
+  // The complete official face is rendered above this surface. Its exact
+  // enclosed-opening mask keeps moving footage out of face and door pixels.
   return (
     <group name={`burn-media-${faceOptionId}`}>
       <mesh renderOrder={2}>
         <planeGeometry args={[width, height]} />
-        <meshBasicMaterial map={poster} ref={posterMaterial} toneMapped={false} transparent />
+        <meshBasicMaterial
+          alphaMap={mask}
+          alphaTest={0.01}
+          map={poster}
+          ref={posterMaterial}
+          toneMapped={false}
+          transparent
+        />
       </mesh>
       <mesh renderOrder={3}>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial
+          alphaMap={mask}
+          alphaTest={0.01}
           depthWrite={false}
           map={playback.texture}
           opacity={0}

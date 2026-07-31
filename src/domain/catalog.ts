@@ -33,8 +33,15 @@ const faceOptionSchema = z.object({
     width: positiveInches,
     height: positiveInches,
   }),
+  mediaWindow: z.object({
+    width: positiveInches,
+    height: positiveInches,
+    offsetX: z.number().finite(),
+    offsetY: z.number().finite(),
+  }),
   asset: assetSourceSchema,
   overlayAsset: assetSourceSchema,
+  maskAsset: assetSourceSchema,
 });
 
 const mantelRuleSchema = z.object({
@@ -197,6 +204,7 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         shape: "clean",
         sku: "98500187",
         visibleFace: { width: 41, height: 30.75 },
+        mediaWindow: { width: 34.25, height: 22.25, offsetX: 0, offsetY: 0 },
         asset: officialLayer(
           "/assets/fpx-864-trv-31k-clean-face.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500187_94500721.png",
@@ -206,6 +214,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "/assets/fpx-864-trv-31k-clean-face-overlay.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500187_94500721.png",
           "Official clean-face layer with the published glass opening isolated",
+        ),
+        maskAsset: officialLayer(
+          "/assets/firebox-media-mask-rect.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500187_94500721.png",
+          "Rectangular mask calibrated to the official clean-face glass opening",
         ),
       },
     ],
@@ -254,6 +267,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         shape: "arched",
         sku: "99300497",
         visibleFace: { width: 40.75, height: 35.5 },
+        mediaWindow: {
+          width: 30.37,
+          height: 20.06,
+          offsetX: -0.03,
+          offsetY: -1.65,
+        },
         asset: officialLayer(
           "/assets/fpx-864-classic-arch.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/99300497.png",
@@ -262,7 +281,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         overlayAsset: officialLayer(
           "/assets/fpx-864-classic-arch-overlay.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/99300497.png",
-          "Official Classic Arch face with its glass opening isolated",
+          "Complete official Classic Arch face layer without inferred cropping",
+        ),
+        maskAsset: officialLayer(
+          "/assets/fpx-864-classic-arch-media-mask.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/99300497.png",
+          "Glass mask extracted from the enclosed opening in the official Classic Arch layer",
         ),
       },
       {
@@ -271,6 +295,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         shape: "arched",
         sku: "95800616",
         visibleFace: { width: 40.75, height: 35.5 },
+        mediaWindow: {
+          width: 31.74,
+          height: 21.18,
+          offsetX: -0.03,
+          offsetY: -1.53,
+        },
         asset: officialLayer(
           "/assets/fpx-864-arched-french-country.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800616.png",
@@ -279,7 +309,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         overlayAsset: officialLayer(
           "/assets/fpx-864-arched-french-country-overlay.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800616.png",
-          "Official French Country face with its glass opening isolated",
+          "Complete official French Country face layer without inferred cropping",
+        ),
+        maskAsset: officialLayer(
+          "/assets/fpx-864-arched-french-country-media-mask.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800616.png",
+          "Glass mask extracted from the enclosed opening in the official French Country layer",
         ),
       },
       {
@@ -288,6 +323,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         shape: "rectangular",
         sku: "95800623",
         visibleFace: { width: 40.875, height: 35.625 },
+        mediaWindow: {
+          width: 32.63,
+          height: 21.06,
+          offsetX: 0.25,
+          offsetY: -0.31,
+        },
         asset: officialLayer(
           "/assets/fpx-864-metropolitan.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800623.png",
@@ -296,7 +337,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         overlayAsset: officialLayer(
           "/assets/fpx-864-metropolitan-overlay.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800623.png",
-          "Official Metropolitan face with its glass opening isolated",
+          "Complete official Metropolitan face layer without inferred cropping",
+        ),
+        maskAsset: officialLayer(
+          "/assets/fpx-864-metropolitan-media-mask.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800623.png",
+          "Glass mask extracted from the enclosed opening in the official Metropolitan layer",
         ),
       },
       {
@@ -305,6 +351,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         shape: "rectangular",
         sku: "95800743",
         visibleFace: { width: 40.875, height: 35.625 },
+        mediaWindow: {
+          width: 34.26,
+          height: 19.24,
+          offsetX: 0.06,
+          offsetY: -1.59,
+        },
         asset: officialLayer(
           "/assets/fpx-864-rectangle-double-door.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800743.png",
@@ -313,7 +365,12 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         overlayAsset: officialLayer(
           "/assets/fpx-864-rectangle-double-door-overlay.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800743.png",
-          "Official Double Door face with its glass opening isolated",
+          "Complete official Double Door face layer without inferred cropping",
+        ),
+        maskAsset: officialLayer(
+          "/assets/fpx-864-rectangle-double-door-media-mask.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/95800743.png",
+          "Four-panel glass mask extracted from the official Double Door layer",
         ),
       },
     ],
@@ -362,6 +419,7 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         shape: "clean",
         sku: "98500344",
         visibleFace: { width: 43.75, height: 39 },
+        mediaWindow: { width: 39.875, height: 34.875, offsetX: 0, offsetY: 0 },
         asset: officialLayer(
           "/assets/fpx-4237-clean-face.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500344_96100884_94500982.png",
@@ -371,6 +429,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
           "/assets/fpx-4237-clean-face-overlay.png",
           "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500344_96100884_94500982.png",
           "Official 4237 clean-face layer with the published glass opening isolated",
+        ),
+        maskAsset: officialLayer(
+          "/assets/firebox-media-mask-rect.png",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/98500344_96100884_94500982.png",
+          "Rectangular mask calibrated to the official 4237 glass opening",
         ),
       },
     ],
@@ -403,7 +466,7 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
       codec: "H.264/AVC",
       durationSeconds: 12,
       logSet: "Birch",
-      sourceTimecode: "01:40–01:52",
+      sourceTimecode: "01:42–01:54",
     },
   },
 ]);
@@ -867,6 +930,7 @@ export const ALL_ASSET_PATHS = [
     product.faceOptions.flatMap((option) => [
       option.asset.localPath,
       option.overlayAsset.localPath,
+      option.maskAsset.localPath,
     ]),
   ),
   ...fireplaceProducts.flatMap((product) => [
@@ -880,8 +944,8 @@ export const ALL_ASSET_PATHS = [
   ...mantelFinishes.flatMap((finish) => finish.assets.map((asset) => asset.localPath)),
 ].filter((path, index, all) => all.indexOf(path) === index);
 
-export const APP_VERSION = "0.5.0";
-export const ASSET_VERSION = "2026.07.31-1";
+export const APP_VERSION = "0.5.1";
+export const ASSET_VERSION = "2026.07.31-2";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

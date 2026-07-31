@@ -299,6 +299,7 @@ function FeatureWall({
 
   const fireTexture = requireTexture(textures, face.asset.localPath);
   const faceOverlayTexture = requireTexture(textures, face.overlayAsset.localPath);
+  const fireboxMaskTexture = requireTexture(textures, face.maskAsset.localPath);
   const burnPosterTexture = requireTexture(textures, fireplace.burnMedia.poster.localPath);
 
   useEffect(
@@ -367,16 +368,23 @@ function FeatureWall({
         <meshBasicMaterial alphaTest={0.02} map={fireTexture} toneMapped={false} transparent />
       </mesh>
       <group
-        position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 0.97]}
+        position={[
+          face.mediaWindow.offsetX,
+          configuration.fireplaceElevation +
+            face.visibleFace.height / 2 +
+            face.mediaWindow.offsetY,
+          0.97,
+        ]}
       >
         <FireboxMedia
           faceOptionId={face.id}
-          height={fireplace.viewingArea.height}
+          height={face.mediaWindow.height}
           key={fireplace.burnMedia.video.localPath}
+          mask={fireboxMaskTexture}
           media={fireplace.burnMedia}
           onStatus={onMediaStatus}
           poster={burnPosterTexture}
-          width={fireplace.viewingArea.width}
+          width={face.mediaWindow.width}
         />
       </group>
       <mesh

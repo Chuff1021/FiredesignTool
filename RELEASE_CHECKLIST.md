@@ -15,7 +15,7 @@ application version, asset version, preview URL, and deployment ID.
       stretch, missing asset, or obvious material repetition.
 - [ ] Startup reaches presentation-ready within 10 seconds after caching.
 - [ ] Control feedback appears within 100 milliseconds.
-- [ ] Diagnostics reports 72 verified assets, playing official burn media, and
+- [ ] Diagnostics reports 77 verified assets, playing official burn media, and
       an offline-ready cache.
 - [ ] Both 864 variants, all four designer faces, and the 4237 play their mapped
       muted loop with no black first frame, stretch, face overlap, or loop flash.

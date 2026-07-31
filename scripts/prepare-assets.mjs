@@ -27,6 +27,88 @@ const standardFaces = [
   ["95800743", "fpx-864-rectangle-double-door.png"],
 ];
 
+async function makeExactDesignerFace(sku, filename) {
+  const face = await sharp(path.join(source, `fpx-face-${sku}-900.png`))
+    .extract({ left: 120, top: 155, width: 660, height: 570 })
+    .ensureAlpha()
+    .png()
+    .toBuffer();
+
+  await sharp(face)
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(path.join(output, filename.replace(".png", "-overlay.png")));
+
+  const { data, info } = await sharp(face)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const pixelCount = info.width * info.height;
+  const visited = new Uint8Array(pixelCount);
+  const openingPixels = [];
+  const components = [];
+
+  for (let start = 0; start < pixelCount; start += 1) {
+    if (visited[start] || data[start * 4 + 3] > 16) continue;
+    const stack = [start];
+    const pixels = [];
+    visited[start] = 1;
+    let touchesBorder = false;
+    let minX = info.width;
+    let minY = info.height;
+    let maxX = 0;
+    let maxY = 0;
+
+    while (stack.length > 0) {
+      const pixel = stack.pop();
+      if (pixel === undefined) continue;
+      const x = pixel % info.width;
+      const y = Math.floor(pixel / info.width);
+      pixels.push(pixel);
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+      if (x === 0 || y === 0 || x === info.width - 1 || y === info.height - 1) {
+        touchesBorder = true;
+      }
+
+      for (const neighbor of [pixel - 1, pixel + 1, pixel - info.width, pixel + info.width]) {
+        if (neighbor < 0 || neighbor >= pixelCount || visited[neighbor]) continue;
+        const neighborX = neighbor % info.width;
+        if (Math.abs(neighborX - x) > 1 || data[neighbor * 4 + 3] > 16) continue;
+        visited[neighbor] = 1;
+        stack.push(neighbor);
+      }
+    }
+
+    if (!touchesBorder && pixels.length > 10_000) {
+      components.push({ pixels, minX, minY, maxX, maxY });
+    }
+  }
+
+  if (components.length === 0) throw new Error(`No enclosed glass opening found for ${sku}.`);
+  const bounds = components.reduce(
+    (result, component) => ({
+      minX: Math.min(result.minX, component.minX),
+      minY: Math.min(result.minY, component.minY),
+      maxX: Math.max(result.maxX, component.maxX),
+      maxY: Math.max(result.maxY, component.maxY),
+    }),
+    { minX: info.width, minY: info.height, maxX: 0, maxY: 0 },
+  );
+  for (const component of components) {
+    for (const pixel of component.pixels) openingPixels.push(pixel);
+  }
+  const mask = Buffer.alloc(pixelCount);
+  for (const pixel of openingPixels) mask[pixel] = 255;
+  const maskWidth = bounds.maxX - bounds.minX + 1;
+  const maskHeight = bounds.maxY - bounds.minY + 1;
+  await sharp(mask, { raw: { width: info.width, height: info.height, channels: 1 } })
+    .extract({ left: bounds.minX, top: bounds.minY, width: maskWidth, height: maskHeight })
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(path.join(output, filename.replace(".png", "-media-mask.png")));
+}
+
 for (const [sku, filename] of standardFaces) {
   const face = await sharp(path.join(source, `fpx-face-${sku}-900.png`))
     .extract({ left: 120, top: 155, width: 660, height: 570 })
@@ -36,6 +118,7 @@ for (const [sku, filename] of standardFaces) {
     .composite([{ input: face }])
     .png({ compressionLevel: 9, adaptiveFiltering: true })
     .toFile(path.join(output, filename));
+  await makeExactDesignerFace(sku, filename);
 }
 
 await sharp(path.join(source, "fpx-4237-clean-birch-900.png"))
@@ -63,28 +146,18 @@ await makeFireplaceOverlay({
   height: 468,
   openingPath: "M51 64 H573 V404 H51 Z",
 });
-for (const filename of ["fpx-864-metropolitan.png", "fpx-864-rectangle-double-door.png"]) {
-  await makeFireplaceOverlay({
-    filename,
-    width: 660,
-    height: 570,
-    openingPath: "M52 106 H608 V464 H52 Z",
-  });
-}
-for (const filename of ["fpx-864-classic-arch.png", "fpx-864-arched-french-country.png"]) {
-  await makeFireplaceOverlay({
-    filename,
-    width: 660,
-    height: 570,
-    openingPath: "M52 464 V238 Q52 106 330 106 Q608 106 608 238 V464 Z",
-  });
-}
 await makeFireplaceOverlay({
   filename: "fpx-4237-clean-face.png",
   width: 600,
   height: 518,
   openingPath: "M26 27 H574 V491 H26 Z",
 });
+
+await sharp({
+  create: { width: 16, height: 16, channels: 3, background: "#ffffff" },
+})
+  .png({ compressionLevel: 9 })
+  .toFile(path.join(output, "firebox-media-mask-rect.png"));
 
 const stoneAtlasWidth = 4096;
 const stoneAtlasHeight = 3072;
