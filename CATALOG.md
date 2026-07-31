@@ -126,6 +126,13 @@ untrimmed installations. These products remain blocked from the live catalog
 because their public isolated FireBuilder masters are only 900-960 px and do
 not pass the 4K visual gate.
 
+The insert-fit screening domain compares the four measured masonry-opening
+dimensions against each exact manufacturer variant. It reports per-dimension
+margins and deficits, rules out a profile as soon as any known dimension is too
+small, and never reports a fit while a required field measurement is missing.
+This is conservative sales screening only; final fit, venting, clearances, and
+installation remain subject to onsite verification.
+
 Superior DRI2000 is the first non-FPX family at `documents-verified`. Its
 current English installation manual is P/N 900787-04, revision H, October 2024.
 The intake records both DRI2027 and DRI2032TEN identifiers, minimum front/rear
