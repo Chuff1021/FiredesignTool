@@ -1,135 +1,11 @@
 import { z } from "zod";
-import { catalogRepository } from "@/domain/catalogRepository";
+import {
+  catalogIntakeSchema,
+  intakeProductSchema,
+  intakeStageSchema,
+} from "@/catalog/intakeSchema";
 
-export const intakeStageSchema = z.enum([
-  "source-indexed",
-  "documents-verified",
-  "assets-prepared",
-  "visual-qa",
-  "approved",
-]);
-
-const intakeProductSchema = z.object({
-  id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-  brandId: z.literal("fireplace-xtrordinair"),
-  model: z.string().min(1),
-  applianceType: z.enum(["fireplace", "insert"]),
-  fuel: z.enum(["gas", "wood", "electric"]),
-  style: z.enum(["traditional", "linear", "portrait", "see-through"]),
-  stage: intakeStageSchema,
-  approvedCatalogIds: z.array(z.string()).default([]),
-  productUrl: z.string().url(),
-  officialIndexUrl: z.string().url(),
-  sourceCheckedAt: z.string().date(),
-  notes: z.string().min(1),
-  evidence: z
-    .object({
-      productSku: z.string().min(1),
-      fireBuilderProductId: z.number().int().positive(),
-      fireBuilderModelId: z.number().int().positive(),
-      viewingArea: z.object({
-        width: z.number().positive(),
-        height: z.number().positive(),
-      }),
-      installationManualUrl: z.string().url(),
-      installationManualRevision: z.string().min(1),
-      mantelRulePage: z.number().int().positive(),
-      visualOptionSkus: z.array(z.string().min(1)).min(1),
-      maximumOfficialLayerPixels: z.number().int().positive(),
-      assetQualityGate: z.enum(["blocked-high-resolution-master", "approved"]),
-    })
-    .optional(),
-});
-
-export const catalogIntakeSchema = z
-  .object({
-    schemaVersion: z.literal(1),
-    snapshotId: z.string().regex(/^fpx-\d{4}\.\d{2}\.\d{2}-\d+$/),
-    sourceCheckedAt: z.string().date(),
-    sourceUrls: z.array(z.string().url()).min(1),
-    products: z.array(intakeProductSchema).min(1),
-  })
-  .superRefine((intake, context) => {
-    const seen = new Set<string>();
-    const approvedIds = new Set(
-      catalogRepository.listFireplaces().map((product) => product.id),
-    );
-    const mappedApprovedIds = new Set<string>();
-
-    intake.products.forEach((product, index) => {
-      if (seen.has(product.id)) {
-        context.addIssue({
-          code: "custom",
-          message: `Duplicate intake product ID: ${product.id}`,
-          path: ["products", index, "id"],
-        });
-      }
-      seen.add(product.id);
-
-      if (product.stage === "approved" && product.approvedCatalogIds.length === 0) {
-        context.addIssue({
-          code: "custom",
-          message: `Approved intake product ${product.id} has no catalog mapping`,
-          path: ["products", index, "approvedCatalogIds"],
-        });
-      }
-      if (
-        product.stage !== "source-indexed" &&
-        product.stage !== "approved" &&
-        !product.evidence
-      ) {
-        context.addIssue({
-          code: "custom",
-          message: `Intake product ${product.id} cannot advance without verified evidence`,
-          path: ["products", index, "evidence"],
-        });
-      }
-      if (
-        (product.stage === "assets-prepared" || product.stage === "visual-qa") &&
-        product.evidence?.assetQualityGate !== "approved"
-      ) {
-        context.addIssue({
-          code: "custom",
-          message: `Intake product ${product.id} cannot advance with a blocked visual master`,
-          path: ["products", index, "evidence", "assetQualityGate"],
-        });
-      }
-      if (product.stage !== "approved" && product.approvedCatalogIds.length > 0) {
-        context.addIssue({
-          code: "custom",
-          message: `Unapproved intake product ${product.id} cannot map to a live catalog product`,
-          path: ["products", index, "approvedCatalogIds"],
-        });
-      }
-      product.approvedCatalogIds.forEach((catalogId) => {
-        if (!approvedIds.has(catalogId)) {
-          context.addIssue({
-            code: "custom",
-            message: `Unknown approved catalog ID: ${catalogId}`,
-            path: ["products", index, "approvedCatalogIds"],
-          });
-        }
-        if (mappedApprovedIds.has(catalogId)) {
-          context.addIssue({
-            code: "custom",
-            message: `Catalog product is mapped by more than one intake record: ${catalogId}`,
-            path: ["products", index, "approvedCatalogIds"],
-          });
-        }
-        mappedApprovedIds.add(catalogId);
-      });
-    });
-
-    approvedIds.forEach((catalogId) => {
-      if (!mappedApprovedIds.has(catalogId)) {
-        context.addIssue({
-          code: "custom",
-          message: `Live catalog product is missing from the intake snapshot: ${catalogId}`,
-          path: ["products"],
-        });
-      }
-    });
-  });
+export { catalogIntakeSchema, summarizeCatalogIntake } from "@/catalog/intakeSchema";
 
 const specsUrl = "https://www.fireplacex.com/professionals/specs-and-drawings/";
 const checkedAt = "2026-07-31";
@@ -190,8 +66,11 @@ const indexedProduct = (
 const electricUrl = "https://www.fireplacex.com/electric-fireplaces/";
 
 export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
-  schemaVersion: 1,
+  schemaVersion: 2,
   snapshotId: "fpx-2026.07.31-1",
+  brandId: "fireplace-xtrordinair",
+  brandName: "Fireplace Xtrordinair",
+  manufacturer: "Travis Industries",
   sourceCheckedAt: checkedAt,
   sourceUrls: [
     specsUrl,
@@ -434,25 +313,3 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
     ),
   ],
 });
-
-export type CatalogIntake = z.infer<typeof catalogIntakeSchema>;
-export type CatalogIntakeProduct = z.infer<typeof intakeProductSchema>;
-
-export function summarizeCatalogIntake(intake: CatalogIntake) {
-  const byStage = Object.fromEntries(
-    intakeStageSchema.options.map((stage) => [
-      stage,
-      intake.products.filter((product) => product.stage === stage).length,
-    ]),
-  ) as Record<z.infer<typeof intakeStageSchema>, number>;
-  const approvedCatalogProducts = intake.products.reduce(
-    (total, product) => total + product.approvedCatalogIds.length,
-    0,
-  );
-  return {
-    totalFamilies: intake.products.length,
-    approvedCatalogProducts,
-    remainingFamilies: intake.products.filter((product) => product.stage !== "approved").length,
-    byStage,
-  };
-}

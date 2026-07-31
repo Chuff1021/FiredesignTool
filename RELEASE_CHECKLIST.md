@@ -22,6 +22,9 @@ application version, asset version, preview URL, and deployment ID.
       or default-option references.
 - [ ] `npm run catalog:validate` maps every live product to the dated intake
       snapshot and verifies every packaged asset byte-for-byte.
+- [ ] The intake registry has exactly one current snapshot per brand, contains
+      no brand drift or duplicate family IDs, and prevents every source-indexed
+      Superior or Majestic product from mapping into the live catalog.
 - [ ] Saved configuration migration attaches the current catalog release and
       safely restores defaults for a retired or unknown product ID.
 - [ ] Both 864 variants, all four designer faces, and the 4237 play their mapped

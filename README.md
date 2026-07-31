@@ -82,6 +82,10 @@ means the approved visual release changed and requires a fresh review.
 
 - `src/catalog/releases` contains immutable approved catalog snapshots. Adding
   a manufacturer or product no longer requires extending a TypeScript enum.
+- `src/catalog/intakeSchema.ts` and `src/catalog/intakeRegistry.ts` hold the
+  manufacturer-neutral pre-release gates. The current queue indexes 85 FPX,
+  Superior, and Majestic fireplace/insert families while exposing only three
+  fully approved FPX products to customers.
 - `src/domain/catalogRepository.ts` validates release integrity and is the only
   product lookup boundary used by configuration, renderers, controls, and
   exports.

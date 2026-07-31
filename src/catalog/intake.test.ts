@@ -56,15 +56,20 @@ describe("FPX catalog intake queue", () => {
       product.id.startsWith("564-trv-25k"),
     );
     expect(models).toHaveLength(2);
-    expect(models.map((product) => product.evidence?.productSku)).toEqual([
-      "98500277",
-      "98500278",
-    ]);
+    expect(
+      models.map((product) =>
+        product.evidence && "productSku" in product.evidence
+          ? product.evidence.productSku
+          : undefined,
+      ),
+    ).toEqual(["98500277", "98500278"]);
     expect(
       models.every(
         (product) =>
           product.stage === "documents-verified" &&
-          product.evidence?.viewingArea.width === 29.375 &&
+          product.evidence &&
+          "viewingArea" in product.evidence &&
+          product.evidence.viewingArea.width === 29.375 &&
           product.evidence.viewingArea.height === 16.375 &&
           product.evidence.assetQualityGate === "blocked-high-resolution-master",
       ),

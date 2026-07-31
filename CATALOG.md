@@ -70,12 +70,27 @@ complete unique asset list used by readiness checks and the offline cache.
 Models lacking sufficient official imagery, current manuals, or asset rights do
 not enter an approved release.
 
-## Current FPX intake queue
+## Current cross-brand intake registry
 
-`src/catalog/intake.ts` is a dated inventory of the current official Fireplace
-Xtrordinair appliance families. It intentionally separates discovery from
-approval: an indexed product never appears in the showroom until its manuals,
-dimensions, options, local visual assets, and 4K visual review have passed.
+`src/catalog/intakeRegistry.ts` validates the dated current snapshots for
+Fireplace Xtrordinair, Superior Fireplaces, and Majestic as one registry. It
+intentionally separates discovery from approval: an indexed product never
+appears in the showroom until its manuals, dimensions, options, local visual
+assets, and 4K visual review have passed. The registry currently covers 85
+fixed-fireplace and insert families: 36 FPX, 30 Superior, and 19 Majestic.
+
+The Superior and Majestic snapshots are the first manufacturer-neutral intake
+batch. They focus on installed gas fireplaces and gas inserts from the official
+current category indexes; outdoor products, freestanding stoves, and gas-log
+sets are outside this batch. The first five non-FPX insert families are
+Superior DRI2000 and Majestic Jasper, Ruby, Trilliant, and Ruby Platinum.
+
+`src/catalog/intakeSchema.ts` owns common stages, fuel, appliance, style, and
+venting classifications plus two verified-evidence forms: configurator-backed
+evidence for Travis FireBuilder and manufacturer-document evidence for other
+brands. It rejects brand drift, duplicate snapshots, duplicate product IDs,
+cross-brand live mappings, and any attempt to advance a product without the
+required evidence or visual master.
 
 Run `npm run catalog:validate` before every preview. The command validates the
 approved release and intake mapping, then independently checks every packaged
@@ -83,7 +98,7 @@ asset against the release manifest, byte size, and SHA-256 checksum. A live
 catalog product missing from the intake snapshot—or an incomplete intake item
 mapped into the live catalog—fails validation.
 
-The 564 TRV 25K designer-face and clean-face models are the first queued batch
+The 564 TRV 25K designer-face and clean-face models are the first FPX batch
 to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
 area, current installation manuals, mantel-rule page, and visible option SKUs
 are recorded. They remain blocked from the live catalog because the public

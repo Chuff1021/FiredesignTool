@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
-import { FPX_CURRENT_INTAKE, summarizeCatalogIntake } from "../src/catalog/intake";
+import { summarizeIntakeRegistry } from "../src/catalog/intakeRegistry";
 import { APPROVED_ASSET_PATHS, catalogRepository } from "../src/domain/catalogRepository";
 
 type ManifestEntry = { path: string; size: number; sha256: string };
@@ -45,12 +45,22 @@ if (failures.length > 0) {
   failures.forEach((failure) => console.error(`ERROR ${failure}`));
   process.exitCode = 1;
 } else {
-  const intake = summarizeCatalogIntake(FPX_CURRENT_INTAKE);
+  const intake = summarizeIntakeRegistry();
+  const fpx = intake.brands.find((brand) => brand.brandId === "fireplace-xtrordinair")!;
+  const superior = intake.brands.find((brand) => brand.brandId === "superior-fireplaces")!;
+  const majestic = intake.brands.find((brand) => brand.brandId === "majestic")!;
   console.log(`Catalog release: ${catalogRepository.release.version}`);
   console.log(`Asset manifest release: ${manifestDocument.version}`);
   console.log(`Approved products: ${catalogRepository.listFireplaces().length}`);
-  console.log(`FPX indexed families: ${intake.totalFamilies}`);
-  console.log(`FPX families awaiting approval: ${intake.remainingFamilies}`);
-  console.log(`FPX document-verified families: ${intake.byStage["documents-verified"]}`);
+  console.log(`Intake brands: ${intake.brands.length}`);
+  console.log(`Indexed appliance families: ${intake.totalFamilies}`);
+  console.log(`FPX indexed / awaiting: ${fpx.totalFamilies} / ${fpx.remainingFamilies}`);
+  console.log(`FPX document-verified families: ${fpx.byStage["documents-verified"]}`);
+  console.log(
+    `Superior indexed / awaiting: ${superior.totalFamilies} / ${superior.remainingFamilies}`,
+  );
+  console.log(
+    `Majestic indexed / awaiting: ${majestic.totalFamilies} / ${majestic.remainingFamilies}`,
+  );
   console.log(`Packaged assets verified: ${APPROVED_ASSET_PATHS.length}`);
 }

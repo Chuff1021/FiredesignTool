@@ -1,4 +1,4 @@
-const CACHE_VERSION = "firedesign-2026.07.31-9";
+const CACHE_VERSION = "firedesign-2026.07.31-10";
 const SHELL = ["/", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 async function cacheApprovedRelease(cache) {
