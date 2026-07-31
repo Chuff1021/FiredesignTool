@@ -12,6 +12,39 @@ type Point = { x: number; y: number };
 type Triangle = [Point, Point, Point];
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
+const MIN_DESIGN_PIXELS_PER_INCH = 6;
+const MAX_DESIGN_CANVAS_EDGE = 4096;
+const MAX_DESIGN_CANVAS_PIXELS = 4096 * 2160;
+
+function pointDistance(first: Point, second: Point): number {
+  return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+export function projectedPixelsPerInch(
+  quad: Point[],
+  widthInches: number,
+  heightInches: number,
+): number {
+  const [topLeft, topRight, bottomRight, bottomLeft] = quad;
+  if (!topLeft || !topRight || !bottomRight || !bottomLeft) {
+    return MIN_DESIGN_PIXELS_PER_INCH;
+  }
+  const projectedWidth = Math.max(
+    pointDistance(topLeft, topRight),
+    pointDistance(bottomLeft, bottomRight),
+  );
+  const projectedHeight = Math.max(
+    pointDistance(topLeft, bottomLeft),
+    pointDistance(topRight, bottomRight),
+  );
+  const desired = Math.max(projectedWidth / widthInches, projectedHeight / heightInches);
+  const edgeLimit = Math.min(
+    MAX_DESIGN_CANVAS_EDGE / widthInches,
+    MAX_DESIGN_CANVAS_EDGE / heightInches,
+  );
+  const pixelLimit = Math.sqrt(MAX_DESIGN_CANVAS_PIXELS / (widthInches * heightInches));
+  return Math.max(MIN_DESIGN_PIXELS_PER_INCH, Math.min(desired, edgeLimit, pixelLimit));
+}
 
 function cachedImage(source: string): Promise<HTMLImageElement> {
   const existing = imageCache.get(source);
@@ -47,8 +80,8 @@ function drawTexturedRect(
 async function createDesignLayer(
   configuration: FeatureWallConfiguration,
   scenario: RoomProject["scenario"],
+  pixelsPerInch: number,
 ): Promise<HTMLCanvasElement> {
-  const pixelsPerInch = 6;
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(configuration.wallWidth * pixelsPerInch);
   canvas.height = Math.round(configuration.wallHeight * pixelsPerInch);
@@ -155,8 +188,8 @@ async function createDesignLayer(
 
 async function createInsertFaceLayer(
   configuration: FeatureWallConfiguration,
+  pixelsPerInch: number,
 ): Promise<{ canvas: HTMLCanvasElement; widthInches: number; heightInches: number }> {
-  const pixelsPerInch = 8;
   const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
   const image = await cachedImage(face.asset.localPath);
   const canvas = document.createElement("canvas");
@@ -280,9 +313,13 @@ export async function renderRoomProject(
   context.drawImage(room, 0, 0, canvas.width, canvas.height);
   const comparison = options.comparison ?? project.comparison;
   if (project.scenario === "full-remodel" && project.wallQuad.length === 4) {
-    const design = await createDesignLayer(configuration, "full-remodel");
     const wallQuad = project.wallQuad.map((point) =>
       imagePoint(point, project.source.width, project.source.height),
+    );
+    const design = await createDesignLayer(
+      configuration,
+      "full-remodel",
+      projectedPixelsPerInch(wallQuad, configuration.wallWidth, configuration.wallHeight),
     );
     context.save();
     context.beginPath();
@@ -292,17 +329,32 @@ export async function renderRoomProject(
     context.restore();
   }
   if (project.scenario === "insert" && project.openingQuad.length === 4) {
-    const face = await createInsertFaceLayer(configuration);
+    const selectedFace = catalogRepository.getFace(
+      configuration.fireplaceId,
+      configuration.faceOptionId,
+    );
     const opening = project.openingQuad.map((point) =>
       imagePoint(point, project.source.width, project.source.height),
     );
-    const bounds = faceBoundsWithinOpening(project, face.widthInches, face.heightInches);
+    const bounds = faceBoundsWithinOpening(
+      project,
+      selectedFace.visibleFace.width,
+      selectedFace.visibleFace.height,
+    );
     const target = [
       bilinear(opening, bounds.left, bounds.top),
       bilinear(opening, bounds.right, bounds.top),
       bilinear(opening, bounds.right, bounds.bottom),
       bilinear(opening, bounds.left, bounds.bottom),
     ];
+    const face = await createInsertFaceLayer(
+      configuration,
+      projectedPixelsPerInch(
+        target,
+        selectedFace.visibleFace.width,
+        selectedFace.visibleFace.height,
+      ),
+    );
     context.save();
     context.beginPath();
     context.rect(0, 0, canvas.width * comparison, canvas.height);

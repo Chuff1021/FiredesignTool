@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import path from "node:path";
+import sharp from "sharp";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
@@ -249,6 +250,39 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("Dimensionally scaled")).toBeVisible();
   await expect(page.getByLabel("Existing opening width in inches")).toHaveValue("40");
+});
+
+test("preserves a true 4K customer photograph", async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name === "showroom-4k",
+    "The 4K image pipeline is covered in both desktop browser engines.",
+  );
+  const photograph = await sharp({
+    create: {
+      width: 3840,
+      height: 2160,
+      channels: 3,
+      background: { r: 190, g: 181, b: 169 },
+    },
+  })
+    .jpeg({ quality: 90 })
+    .toBuffer();
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "customer-room-4k.jpg",
+    mimeType: "image/jpeg",
+    buffer: photograph,
+  });
+  const canvas = page.getByTestId("room-canvas");
+  await expect(canvas).toBeVisible({ timeout: 20_000 });
+  await expect
+    .poll(() =>
+      canvas.evaluate((element) => ({
+        width: (element as HTMLCanvasElement).width,
+        height: (element as HTMLCanvasElement).height,
+      })),
+    )
+    .toEqual({ width: 3840, height: 2160 });
 });
 
 test("keeps multiple named customer projects and returns without deleting", async ({

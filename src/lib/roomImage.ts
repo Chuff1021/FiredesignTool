@@ -1,4 +1,26 @@
-const MAX_ROOM_IMAGE_EDGE = 2560;
+export const MAX_ROOM_IMAGE_EDGE = 4096;
+export const MAX_ROOM_IMAGE_PIXELS = 4096 * 3072;
+
+export function calculateRoomImageDimensions(
+  naturalWidth: number,
+  naturalHeight: number,
+): { width: number; height: number } {
+  if (
+    !Number.isFinite(naturalWidth) ||
+    !Number.isFinite(naturalHeight) ||
+    naturalWidth <= 0 ||
+    naturalHeight <= 0
+  ) {
+    throw new Error("The room photograph has invalid dimensions.");
+  }
+  const edgeScale = MAX_ROOM_IMAGE_EDGE / Math.max(naturalWidth, naturalHeight);
+  const pixelScale = Math.sqrt(MAX_ROOM_IMAGE_PIXELS / (naturalWidth * naturalHeight));
+  const scale = Math.min(1, edgeScale, pixelScale);
+  return {
+    width: Math.max(1, Math.round(naturalWidth * scale)),
+    height: Math.max(1, Math.round(naturalHeight * scale)),
+  };
+}
 
 function fileToDataUrl(file: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -46,12 +68,10 @@ export async function prepareRoomImage(file: File): Promise<{
   if (Math.max(image.naturalWidth, image.naturalHeight) < 1200) {
     throw new Error("Choose a sharper photograph at least 1200 pixels across.");
   }
-  const scale = Math.min(
-    1,
-    MAX_ROOM_IMAGE_EDGE / Math.max(image.naturalWidth, image.naturalHeight),
+  const { width, height } = calculateRoomImageDimensions(
+    image.naturalWidth,
+    image.naturalHeight,
   );
-  const width = Math.round(image.naturalWidth * scale);
-  const height = Math.round(image.naturalHeight * scale);
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;

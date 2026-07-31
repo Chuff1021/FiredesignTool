@@ -37,7 +37,8 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Production bundle, memory, texture dimensions, and sustained frame rate
       are recorded.
 - [ ] Customer Room Designer accepts JPEG/PNG/HEIC input, rejects undersized or
-      oversized files, and removes source metadata during local preparation.
+      oversized files, removes source metadata during local preparation, and
+      preserves eligible photographs up to the 4096-pixel/12-megapixel ceiling.
 - [ ] Four-corner wall calibration and measured wall width survive refresh and
       produce a perspective-aligned design within 2% of the marked plane.
 - [ ] Full-remodel and insert-only modes preserve the expected portions of the
@@ -48,7 +49,8 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Version 1 customer-room records migrate to the opening-aware schema with
       their original photo, wall calibration, name, and comparison intact.
 - [ ] Before/after comparison and high-resolution JPEG export contain no
-      calibration markers, loading state, or UI chrome.
+      calibration markers, loading state, or UI chrome; projected design layers
+      are generated at a destination-aware density for the exported photograph.
 - [ ] Multiple named customer projects can be created, reopened, renamed, and
       selectively deleted; Back and Replace Photo preserve the intended record.
 - [ ] A confirmed deletion removes only the selected project from IndexedDB and

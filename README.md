@@ -39,9 +39,11 @@ is then scaled and perspective-aligned from that opening instead of the overall
 wall. The workspace includes before/after comparison, high-resolution JPEG
 export, and automatic project recovery after a refresh.
 
-Room photographs are resized to a maximum 2560-pixel edge and stored locally in
-the browser's IndexedDB. They are not uploaded or sent to an external service in
-this release. Named projects appear newest-first in the local project library.
+Room photographs preserve up to a 4096-pixel edge and 12 megapixels and are
+stored locally in the browser's IndexedDB. Perspective-projected wall and insert
+layers are rendered at a destination-aware pixel density instead of a fixed
+low-resolution working size. Photographs are not uploaded or sent to an external
+service in this release. Named projects appear newest-first in the local project library.
 Returning to the library never deletes work, replacing a photograph preserves
 the project identity, and deletion requires a second explicit confirmation.
 

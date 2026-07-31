@@ -331,7 +331,9 @@ export function CustomerRoomViewport() {
             >
               <UiIcon name="upload" /> New customer project
             </button>
-            <small>JPEG, PNG, or HEIC · at least 1200 px · processed locally</small>
+            <small>
+              JPEG, PNG, or HEIC · at least 1200 px · preserves up to 4K · processed locally
+            </small>
             {message ? (
               <div className="room-message" role="alert">
                 {message}
