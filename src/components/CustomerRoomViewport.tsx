@@ -15,9 +15,13 @@ import { normalizeConfiguration, WALL_WIDTH_RANGE } from "@/domain/configuration
 import { UiIcon } from "@/components/UiIcon";
 import { prepareRoomImage } from "@/lib/roomImage";
 import {
-  deleteCurrentRoomProject,
+  clearCurrentRoomProject,
+  deleteRoomProject,
+  listRoomProjects,
   readCurrentRoomProject,
   saveRoomProject,
+  selectRoomProject,
+  type RoomProjectSummary,
 } from "@/lib/roomProjectPersistence";
 import { renderRoomProject } from "@/lib/roomRenderer";
 import { createProjectPdf } from "@/lib/projectExport";
@@ -29,6 +33,8 @@ export function CustomerRoomViewport() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [project, setProject] = useState<RoomProject | null>(null);
+  const [projects, setProjects] = useState<RoomProjectSummary[]>([]);
+  const [deleteCandidate, setDeleteCandidate] = useState<string | null>(null);
   const [tool, setTool] = useState<CalibrationTool>("wall");
   const [loading, setLoading] = useState(true);
   const [rendering, setRendering] = useState(false);
@@ -57,27 +63,39 @@ export function CustomerRoomViewport() {
     [configurationValues],
   );
 
+  const refreshProjects = useCallback(async () => {
+    setProjects(await listRoomProjects());
+  }, []);
+
+  const activateProject = useCallback(
+    (saved: RoomProject) => {
+      setProject(saved);
+      setWallWidth(saved.referenceInches);
+      setTool(
+        saved.wallQuad.length < 4
+          ? "wall"
+          : saved.referenceSegment.length < 2
+            ? "measurement"
+            : "view",
+      );
+    },
+    [setWallWidth],
+  );
+
   useEffect(() => {
     let active = true;
-    void readCurrentRoomProject()
-      .then((saved) => {
-        if (!active || !saved) return;
-        setProject(saved);
-        setWallWidth(saved.referenceInches);
-        setTool(
-          saved.wallQuad.length < 4
-            ? "wall"
-            : saved.referenceSegment.length < 2
-              ? "measurement"
-              : "view",
-        );
+    void Promise.all([readCurrentRoomProject(), listRoomProjects()])
+      .then(([saved, library]) => {
+        if (!active) return;
+        setProjects(library);
+        if (saved) activateProject(saved);
       })
-      .catch(() => setMessage("The previous room project could not be recovered."))
+      .catch(() => setMessage("The local project library could not be recovered."))
       .finally(() => active && setLoading(false));
     return () => {
       active = false;
     };
-  }, [setWallWidth]);
+  }, [activateProject]);
 
   useEffect(() => {
     if (!project || !canvasRef.current) return;
@@ -99,30 +117,87 @@ export function CustomerRoomViewport() {
     };
   }, [configuration, project, tool]);
 
-  const updateProject = useCallback((next: RoomProject) => {
-    const validated = roomProjectSchema.parse({ ...next, updatedAt: new Date().toISOString() });
-    setProject(validated);
-    void saveRoomProject(validated).catch(() =>
-      setMessage("This project could not be saved locally."),
-    );
-  }, []);
+  const updateProject = useCallback(
+    (next: RoomProject) => {
+      const validated = roomProjectSchema.parse({
+        ...next,
+        updatedAt: new Date().toISOString(),
+      });
+      setProject(validated);
+      void saveRoomProject(validated)
+        .then(refreshProjects)
+        .catch(() => setMessage("This project could not be saved locally."));
+    },
+    [refreshProjects],
+  );
 
-  const handleFile = async (file: File | undefined) => {
+  const handleFile = async (file: File | undefined, replaceCurrent = false) => {
     if (!file) return;
     setLoading(true);
     setMessage(null);
     try {
       const source = await prepareRoomImage(file);
-      const next = createRoomProject(source);
+      const created = createRoomProject(source);
+      const fileName = source.fileName.replace(/\.[^.]+$/, "").trim();
+      const next = roomProjectSchema.parse(
+        replaceCurrent && project
+          ? {
+              ...created,
+              id: project.id,
+              name: project.name,
+              createdAt: project.createdAt,
+            }
+          : {
+              ...created,
+              name: fileName.slice(0, 80) || created.name,
+            },
+      );
       await saveRoomProject(next);
-      setProject(next);
-      setTool("wall");
+      await refreshProjects();
+      activateProject(next);
+      setDeleteCandidate(null);
     } catch (error) {
       setMessage(
         error instanceof Error ? error.message : "The room photograph could not be prepared.",
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const openProject = async (id: string) => {
+    setLoading(true);
+    setMessage(null);
+    try {
+      const saved = await selectRoomProject(id);
+      if (!saved) throw new Error("That project is no longer available.");
+      activateProject(saved);
+      setDeleteCandidate(null);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "The project could not be opened.");
+      await refreshProjects();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const returnToLibrary = async () => {
+    clearCurrentRoomProject();
+    setProject(null);
+    setDeleteCandidate(null);
+    await refreshProjects().catch(() =>
+      setMessage("The project library could not be refreshed."),
+    );
+  };
+
+  const removeProject = async (id: string) => {
+    try {
+      await deleteRoomProject(id);
+      if (project?.id === id) setProject(null);
+      setDeleteCandidate(null);
+      await refreshProjects();
+    } catch {
+      setMessage("The project could not be deleted.");
     }
   };
 
@@ -219,34 +294,88 @@ export function CustomerRoomViewport() {
         className="room-workspace room-workspace--empty"
         aria-label="Customer room designer"
       >
-        <div className="room-empty">
-          <div className="room-empty__icon">
-            <UiIcon name="image" size={30} />
+        <div className={`room-library${projects.length === 0 ? " room-library--empty" : ""}`}>
+          <div className="room-empty">
+            <div className="room-empty__icon">
+              <UiIcon name="image" size={30} />
+            </div>
+            <p className="eyebrow">Customer room designer</p>
+            <h2>{projects.length > 0 ? "Customer projects" : "Design in their space."}</h2>
+            <p>
+              Upload a clear photograph that includes the fireplace wall and finished floor.
+              Every project stays on this device.
+            </p>
+            <button
+              className="primary-action"
+              onClick={() => fileInputRef.current?.click()}
+              type="button"
+            >
+              <UiIcon name="upload" /> New customer project
+            </button>
+            <small>JPEG, PNG, or HEIC · at least 1200 px · processed locally</small>
+            {message ? (
+              <div className="room-message" role="alert">
+                {message}
+              </div>
+            ) : null}
           </div>
-          <p className="eyebrow">Customer room designer</p>
-          <h2>See this design in the customer’s space.</h2>
-          <p>
-            Use a clear, straight-on photograph that includes the fireplace wall and finished
-            floor.
-          </p>
-          <button
-            className="primary-action"
-            onClick={() => fileInputRef.current?.click()}
-            type="button"
-          >
-            <UiIcon name="upload" /> Choose room photograph
-          </button>
-          <small>JPEG, PNG, or HEIC · at least 1200 px · processed on this device</small>
-          {message ? (
-            <div className="room-message" role="alert">
-              {message}
+          {projects.length > 0 ? (
+            <div className="room-project-list" aria-label="Saved customer projects">
+              <div className="room-project-list__heading">
+                <span>Saved on this computer</span>
+                <small>
+                  {projects.length} project{projects.length === 1 ? "" : "s"}
+                </small>
+              </div>
+              {projects.map((saved) => (
+                <article className="room-project-card" key={saved.id}>
+                  <button
+                    aria-label={`Open ${saved.name}`}
+                    className="room-project-card__open"
+                    onClick={() => void openProject(saved.id)}
+                    type="button"
+                  >
+                    <span className="room-project-card__mark">
+                      <UiIcon name="image" size={18} />
+                    </span>
+                    <span>
+                      <strong>{saved.name}</strong>
+                      <small>
+                        {new Date(saved.updatedAt).toLocaleDateString()} · {saved.source.width}{" "}
+                        × {saved.source.height} ·{" "}
+                        {saved.calibrated ? "Scaled" : "Needs calibration"}
+                      </small>
+                    </span>
+                    <UiIcon name="arrow" size={16} />
+                  </button>
+                  <button
+                    aria-label={
+                      deleteCandidate === saved.id
+                        ? `Confirm delete ${saved.name}`
+                        : `Delete ${saved.name}`
+                    }
+                    className="room-project-card__delete"
+                    onClick={() =>
+                      deleteCandidate === saved.id
+                        ? void removeProject(saved.id)
+                        : setDeleteCandidate(saved.id)
+                    }
+                    type="button"
+                  >
+                    {deleteCandidate === saved.id ? "Confirm delete" : "Delete"}
+                  </button>
+                </article>
+              ))}
             </div>
           ) : null}
           <input
             ref={fileInputRef}
             accept="image/jpeg,image/png,image/heic,image/heif"
             className="sr-only"
-            onChange={(event) => void handleFile(event.target.files?.[0])}
+            onChange={(event) => {
+              void handleFile(event.target.files?.[0]);
+              event.target.value = "";
+            }}
             type="file"
           />
         </div>
@@ -279,6 +408,13 @@ export function CustomerRoomViewport() {
         <div className="room-toolbar__actions">
           <button
             className="secondary-action"
+            onClick={() => void returnToLibrary()}
+            type="button"
+          >
+            Projects
+          </button>
+          <button
+            className="secondary-action"
             onClick={() => fileInputRef.current?.click()}
             type="button"
           >
@@ -305,7 +441,10 @@ export function CustomerRoomViewport() {
           ref={fileInputRef}
           accept="image/jpeg,image/png,image/heic,image/heif"
           className="sr-only"
-          onChange={(event) => void handleFile(event.target.files?.[0])}
+          onChange={(event) => {
+            void handleFile(event.target.files?.[0], true);
+            event.target.value = "";
+          }}
           type="file"
         />
       </div>
@@ -435,12 +574,8 @@ export function CustomerRoomViewport() {
           <button onClick={resetCalibration} type="button">
             Recalibrate
           </button>
-          <button
-            className="danger-link"
-            onClick={() => void deleteCurrentRoomProject().then(() => setProject(null))}
-            type="button"
-          >
-            Close project
+          <button onClick={() => void returnToLibrary()} type="button">
+            Back to projects
           </button>
         </div>
         <p className="room-disclaimer">

@@ -236,3 +236,41 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("Dimensionally scaled")).toBeVisible();
 });
+
+test("keeps multiple named customer projects and returns without deleting", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === "showroom-4k",
+    "Customer project library is covered at desktop scale.",
+  );
+  const photo = path.join(process.cwd(), "assets-source/centurion-kentucky-ledge.jpg");
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await page.locator('input[type="file"]').setInputFiles(photo);
+  await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
+  const firstName = page.getByLabel("Project name");
+  await firstName.fill("Smith living room");
+  await firstName.blur();
+  await page.getByRole("button", { name: "Back to projects" }).click();
+  await expect(page.getByRole("button", { name: "Open Smith living room" })).toBeVisible();
+
+  await page.getByRole("button", { name: "New customer project" }).click();
+  await page.locator('input[type="file"]').setInputFiles(photo);
+  await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
+  const secondName = page.getByLabel("Project name");
+  await secondName.fill("Jones fireplace");
+  await secondName.blur();
+  await page.getByRole("button", { name: "Projects", exact: true }).click();
+  await expect(page.getByText("2 projects")).toBeVisible();
+
+  await page.getByRole("button", { name: "Delete Jones fireplace" }).click();
+  await page.getByRole("button", { name: "Confirm delete Jones fireplace" }).click();
+  await expect(page.getByText("1 project")).toBeVisible();
+  await page.getByRole("button", { name: "Open Smith living room" }).click();
+  await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByLabel("Project name")).toHaveValue("Smith living room");
+  await page.locator('input[type="file"]').setInputFiles(photo);
+  await expect(page.getByLabel("Project name")).toHaveValue("Smith living room");
+  await page.getByRole("button", { name: "Projects", exact: true }).click();
+  await expect(page.getByText("1 project")).toBeVisible();
+});

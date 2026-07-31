@@ -157,6 +157,23 @@ select:focus-visible {
   justify-content: center;
 }
 
+.room-library {
+  align-items: center;
+  display: grid;
+  gap: clamp(2rem, 5vw, 5rem);
+  grid-template-columns: minmax(320px, 0.85fr) minmax(390px, 1.15fr);
+  max-height: 100%;
+  max-width: 1120px;
+  padding: clamp(1.5rem, 4vw, 4rem);
+  width: 100%;
+}
+
+.room-library--empty {
+  display: flex;
+  justify-content: center;
+  max-width: 620px;
+}
+
 .room-empty {
   align-items: center;
   display: flex;
@@ -164,6 +181,111 @@ select:focus-visible {
   max-width: 500px;
   padding: 3rem;
   text-align: center;
+}
+
+.room-library .room-empty {
+  padding: 0;
+  text-align: left;
+}
+
+.room-library .room-empty__icon {
+  align-self: flex-start;
+}
+
+.room-project-list {
+  background: rgba(28, 25, 22, 0.82);
+  border: 1px solid var(--line);
+  max-height: min(620px, calc(100dvh - 9rem));
+  overflow: auto;
+  padding: 0.8rem;
+}
+
+.room-project-list__heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.35rem 0.35rem 0.9rem;
+}
+
+.room-project-list__heading span {
+  font-size: 0.67rem;
+  font-weight: 620;
+}
+
+.room-project-list__heading small {
+  color: var(--muted-2);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.52rem;
+}
+
+.room-project-card {
+  background: #171513;
+  border: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 0.4rem;
+}
+
+.room-project-card__open {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 72px;
+  padding: 0.65rem 0.8rem;
+  text-align: left;
+}
+
+.room-project-card__open:hover {
+  background: rgba(202, 167, 119, 0.05);
+}
+
+.room-project-card__mark {
+  align-items: center;
+  border: 1px solid rgba(202, 167, 119, 0.25);
+  color: var(--gold-bright);
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.room-project-card__open strong,
+.room-project-card__open small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-project-card__open strong {
+  font-size: 0.7rem;
+  font-weight: 590;
+}
+
+.room-project-card__open small {
+  color: var(--muted);
+  font-size: 0.53rem;
+  margin-top: 0.25rem;
+}
+
+.room-project-card__delete {
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--line);
+  color: var(--muted-2);
+  cursor: pointer;
+  font-size: 0.52rem;
+  min-width: 72px;
+  padding: 0.5rem;
+}
+
+.room-project-card__delete:hover {
+  color: #d8a28e;
 }
 
 .room-empty__icon {

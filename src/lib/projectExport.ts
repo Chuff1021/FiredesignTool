@@ -79,7 +79,7 @@ export async function createProjectPdf(
     "Conceptual sales visualization. Verify appliance fit, venting, framing, clearances, materials, and installation onsite using current manufacturer instructions and local code.",
     { x: 34, y: 61, font: regular, size: 7.5, color: muted, maxWidth: 724, lineHeight: 10 },
   );
-  page.drawText(`Generated ${new Date().toLocaleDateString()} · FireDesign v0.7.0`, {
+  page.drawText(`Generated ${new Date().toLocaleDateString()} · FireDesign v0.8.0`, {
     x: 34,
     y: 25,
     font: regular,

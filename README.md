@@ -28,7 +28,7 @@ The tool does not generate, invent, or substitute product imagery.
 
 ## Customer Room Designer
 
-Version 0.7 includes a separate customer-room workspace around the same approved
+Version 0.8 includes a separate customer-room workspace around the same approved
 catalog. A salesperson can upload a room photograph, mark the intended wall in
 perspective, enter its measured width, and project the current fireplace,
 stone, mantel, and hearth configuration into the photograph. Insert-only mode
@@ -38,8 +38,9 @@ export, and automatic project recovery after a refresh.
 
 Room photographs are resized to a maximum 2560-pixel edge and stored locally in
 the browser's IndexedDB. They are not uploaded or sent to an external service in
-this release. Use **Close project** to delete the active customer photograph
-from local project storage.
+this release. Named projects appear newest-first in the local project library.
+Returning to the library never deletes work, replacing a photograph preserves
+the project identity, and deletion requires a second explicit confirmation.
 
 The complete measured wall width and a four-corner wall plane are required
 before the result is labeled dimensionally scaled. This remains a conceptual

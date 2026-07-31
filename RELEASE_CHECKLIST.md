@@ -38,8 +38,10 @@ application version, asset version, preview URL, and deployment ID.
       customer photograph.
 - [ ] Before/after comparison and high-resolution JPEG export contain no
       calibration markers, loading state, or UI chrome.
-- [ ] Closing a customer project removes it from IndexedDB and the next launch
-      returns to the photo-intake screen.
+- [ ] Multiple named customer projects can be created, reopened, renamed, and
+      selectively deleted; Back and Replace Photo preserve the intended record.
+- [ ] A confirmed deletion removes only the selected project from IndexedDB and
+      leaves every other customer project recoverable.
 
 ## Physical showroom gate
 

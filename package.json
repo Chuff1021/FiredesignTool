@@ -1,6 +1,6 @@
 {
   "name": "firedesign-tool",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "engines": {
     "node": ">=22.0.0"
@@ -44,6 +44,7 @@
     "@vitejs/plugin-react": "5.1.4",
     "eslint": "9.39.2",
     "eslint-config-next": "16.2.12",
+    "fake-indexeddb": "6.2.5",
     "jsdom": "28.1.0",
     "prettier": "3.8.1",
     "sharp": "0.35.3",
