@@ -78,6 +78,14 @@ const clearanceRulesSchema = z.object({
       minimumClearance: z.number().nonnegative(),
     })
     .optional(),
+  facing: z
+    .object({
+      measurementFrom: z.literal("appliance-base"),
+      minimumSideExtent: z.number().nonnegative(),
+      minimumTopExtent: z.number().nonnegative(),
+      topMayTerminateAtMantelBottom: z.boolean(),
+    })
+    .optional(),
   hearth: z
     .object({
       measurementFrom: z.literal("appliance-base"),
@@ -141,14 +149,22 @@ const manufacturerEvidenceSchema = z.object({
           .object({
             frontWidth: z.number().positive(),
             height: z.number().positive(),
-            rearWidth: z.number().positive(),
+            rearWidth: z.number().positive().optional(),
             depth: z.number().positive(),
             frontWidthRequiredDepth: z.number().positive().optional(),
           })
           .optional(),
+        surroundForwardExtension: z.number().nonnegative().optional(),
       }),
     )
     .min(1),
+  fireplaceInteriorClearances: z
+    .object({
+      side: z.number().nonnegative(),
+      back: z.number().nonnegative(),
+      top: z.number().nonnegative(),
+    })
+    .optional(),
   installationManualUrl: z.string().url(),
   installationManualRevision: z.string().min(1),
   dimensionPages: z.array(z.number().int().positive()).min(1),

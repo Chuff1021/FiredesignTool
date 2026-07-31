@@ -14,8 +14,8 @@ describe("FPX catalog intake queue", () => {
       remainingFamilies: 34,
     });
     expect(summary.byStage.approved).toBe(2);
-    expect(summary.byStage["documents-verified"]).toBe(2);
-    expect(summary.byStage["source-indexed"]).toBe(32);
+    expect(summary.byStage["documents-verified"]).toBe(3);
+    expect(summary.byStage["source-indexed"]).toBe(31);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")
@@ -74,5 +74,67 @@ describe("FPX catalog intake queue", () => {
           product.evidence.assetQualityGate === "blocked-high-resolution-master",
       ),
     ).toBe(true);
+  });
+
+  it("records the 616 insert opening profiles and base-referenced clearance rules", () => {
+    const product = FPX_CURRENT_INTAKE.products.find(
+      (candidate) => candidate.id === "616-deluxe-ember-glo",
+    );
+    expect(product?.stage).toBe("documents-verified");
+    const evidence = product?.evidence;
+    if (!evidence || !("variants" in evidence)) {
+      throw new Error("616 manufacturer evidence is missing");
+    }
+    expect(evidence.variants).toMatchObject([
+      {
+        id: "one-piece-panel",
+        viewingArea: { width: 27.5, height: 19.75 },
+        minimumOpening: { frontWidth: 35, height: 24, depth: 16.5 },
+        surroundForwardExtension: 0,
+      },
+      {
+        id: "one-piece-panel-with-trim",
+        minimumOpening: { frontWidth: 34.625, height: 23.5, depth: 15.25 },
+        surroundForwardExtension: 1.25,
+      },
+    ]);
+    expect(evidence.fireplaceInteriorClearances).toEqual({
+      side: 0.5,
+      back: 0.5,
+      top: 0.625,
+    });
+    expect(evidence.clearanceRules).toMatchObject({
+      mantel: {
+        measurementFrom: "appliance-base",
+        profiles: [
+          {
+            material: "combustible",
+            points: [
+              { projection: 4, minimumClearance: 33 },
+              { projection: 12, minimumClearance: 36.5 },
+            ],
+          },
+          {
+            material: "non-combustible",
+            points: [
+              { projection: 4, minimumClearance: 33 },
+              { projection: 12, minimumClearance: 36.5 },
+            ],
+          },
+        ],
+      },
+      facing: {
+        measurementFrom: "appliance-base",
+        minimumSideExtent: 5,
+        minimumTopExtent: 35.5,
+        topMayTerminateAtMantelBottom: true,
+      },
+      hearth: {
+        minimumThickness: 0.5,
+        placementProfiles: [{ applianceElevation: 0, minimumHorizontalExtension: 0 }],
+      },
+    });
+    expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
+    expect(evidence.maximumOfficialLayerPixels).toBe(960);
   });
 });

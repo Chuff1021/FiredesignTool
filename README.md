@@ -91,11 +91,11 @@ means the approved visual release changed and requires a fresh review.
   manufacturer-neutral pre-release gates. The current queue indexes 85 FPX,
   Superior, and Majestic fireplace/insert families while exposing only three
   fully approved FPX products to customers.
-  Superior DRI2000 and Majestic Ruby Platinum are the first non-FPX families
-  with verified model-specific opening, clearance, facade, surround, and
-  manual evidence. Both remain hidden until approved isolated high-resolution
-  visual masters are available. Ruby Platinum mantel rules are explicitly
-  referenced to the top of the surround opening, matching its current manual.
+  FPX 616 Deluxe Ember-Glo, Superior DRI2000, and Majestic Ruby Platinum have
+  verified model-specific opening, clearance, facade, surround, and manual
+  evidence. All remain hidden until approved isolated high-resolution visual
+  masters are available. Ruby Platinum mantel rules are explicitly referenced
+  to the top of the surround opening, matching its current manual.
 - `src/domain/catalogRepository.ts` validates release integrity and is the only
   product lookup boundary used by configuration, renderers, controls, and
   exports.

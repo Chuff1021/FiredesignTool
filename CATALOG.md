@@ -106,11 +106,16 @@ asset against the release manifest, byte size, and SHA-256 checksum. A live
 catalog product missing from the intake snapshot—or an incomplete intake item
 mapped into the live catalog—fails validation.
 
-The 564 TRV 25K designer-face and clean-face models are the first FPX batch
+The 564 TRV 25K designer-face and clean-face models were the first FPX batch
 to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
 area, current installation manuals, mantel-rule page, and visible option SKUs
-are recorded. They remain blocked from the live catalog because the public
-isolated FireBuilder masters are only 900 px and do not pass the 4K visual gate.
+are recorded. The 616 Deluxe Ember-Glo is the first FPX insert to reach the
+same gate. Its two manual-published masonry-opening profiles, glass area,
+surround projection, fireplace-interior clearances, facing requirements,
+hearth relationship, base-referenced mantel curve, and current FireBuilder
+option SKUs are structured for the room designer. These products remain
+blocked from the live catalog because their public isolated FireBuilder masters
+are only 900-960 px and do not pass the 4K visual gate.
 
 Superior DRI2000 is the first non-FPX family at `documents-verified`. Its
 current English installation manual is P/N 900787-04, revision H, October 2024.
