@@ -116,10 +116,10 @@ mapped into the live catalog—fails validation.
 The 564 TRV 25K designer-face and clean-face models were the first FPX batch
 to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
 area, current installation manuals, mantel-rule page, and visible option SKUs
-are recorded. The 616 Deluxe Ember-Glo is the first FPX insert to reach the
-same gate. Its two manual-published masonry-opening profiles, glass area,
-surround projection, fireplace-interior clearances, facing requirements,
-hearth relationship, base-referenced mantel curve, and current FireBuilder
+are recorded. The 430 and 616 Deluxe Ember-Glo models are the first FPX inserts
+to reach the same gate. Their manual-published masonry-opening profiles, glass
+areas, surround projections, fireplace-interior clearances, facing requirements,
+hearth relationships, base-referenced mantel curves, and current FireBuilder
 option SKUs are structured for the room designer. These products remain
 blocked from the live catalog because their public isolated FireBuilder masters
 are only 900-960 px and do not pass the 4K visual gate.

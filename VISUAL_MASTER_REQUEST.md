@@ -60,7 +60,9 @@ geometry needed to render the actual product:
    - Metropolitan `95800623`
    - Rectangle Double Door `95800743`
 3. 4237 Ember-Glo Clean Face Deluxe, SKU `98500344`.
-4. 616 Deluxe Ember-Glo insert, SKU `98400120`, including its current faces,
+4. 430 Deluxe Ember-Glo insert, SKU `98400113`, including its current faces,
+   one-piece panels, firebacks, and Oak/Birch/Driftwood media.
+5. 616 Deluxe Ember-Glo insert, SKU `98400120`, including its current faces,
    one-piece panels, firebacks, and Oak/Birch/Driftwood media.
 
 Please also restore or replace the BIM and CAD downloads currently linked from

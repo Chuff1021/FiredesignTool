@@ -14,8 +14,8 @@ describe("FPX catalog intake queue", () => {
       remainingFamilies: 34,
     });
     expect(summary.byStage.approved).toBe(2);
-    expect(summary.byStage["documents-verified"]).toBe(3);
-    expect(summary.byStage["source-indexed"]).toBe(31);
+    expect(summary.byStage["documents-verified"]).toBe(4);
+    expect(summary.byStage["source-indexed"]).toBe(30);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")
@@ -136,6 +136,64 @@ describe("FPX catalog intake queue", () => {
     });
     expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
     expect(evidence.maximumOfficialLayerPixels).toBe(960);
+  });
+
+  it("records the 430 insert fit profiles and its distinct clearance datum", () => {
+    const product = FPX_CURRENT_INTAKE.products.find(
+      (candidate) => candidate.id === "430-deluxe-ember-glo",
+    );
+    expect(product?.stage).toBe("documents-verified");
+    const evidence = product?.evidence;
+    if (!evidence || !("variants" in evidence)) {
+      throw new Error("430 manufacturer evidence is missing");
+    }
+    expect(evidence.variants).toMatchObject([
+      {
+        id: "one-piece-panel",
+        viewingArea: { width: 23, height: 16 },
+        minimumOpening: { frontWidth: 30.5, height: 20.25, depth: 15.5 },
+        surroundForwardExtension: 0,
+      },
+      {
+        id: "one-piece-panel-with-trim",
+        minimumOpening: { frontWidth: 30.25, height: 19.75, depth: 14.25 },
+        surroundForwardExtension: 1.25,
+      },
+    ]);
+    expect(evidence.fireplaceInteriorClearances).toEqual({
+      side: 0.5,
+      back: 0.5,
+      top: 0.75,
+    });
+    expect(evidence.clearanceRules).toMatchObject({
+      mantel: {
+        measurementFrom: "appliance-base",
+        profiles: [
+          {
+            material: "combustible",
+            points: [
+              { projection: 4, minimumClearance: 33.5 },
+              { projection: 12, minimumClearance: 34.5 },
+            ],
+          },
+          {
+            material: "non-combustible",
+            points: [
+              { projection: 4, minimumClearance: 33.5 },
+              { projection: 12, minimumClearance: 34.5 },
+            ],
+          },
+        ],
+      },
+      sideWall: { measurementFrom: "appliance-side", minimumClearance: 5 },
+      facing: {
+        minimumSideExtent: 3.375,
+        minimumTopExtent: 32.375,
+        topMayTerminateAtMantelBottom: true,
+      },
+    });
+    expect(evidence.visualOptionIds).toContain("96800705");
+    expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
   });
 
   it("cannot approve a visual master that fails its recorded 4K requirements", () => {

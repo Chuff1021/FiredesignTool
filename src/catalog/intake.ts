@@ -277,14 +277,132 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
       "traditional",
       "https://www.fireplacex.com/product/32-dvs-deluxe-ember-glo/",
     ),
-    indexedProduct(
-      "430-deluxe-ember-glo",
-      "430 Deluxe Ember-Glo",
-      "insert",
-      "gas",
-      "traditional",
-      "https://www.fireplacex.com/product/430-gsr-deluxe/",
-    ),
+    {
+      ...indexedProduct(
+        "430-deluxe-ember-glo",
+        "430 Deluxe Ember-Glo",
+        "insert",
+        "gas",
+        "traditional",
+        "https://www.fireplacex.com/product/430-gsr-deluxe/",
+      ),
+      stage: "documents-verified" as const,
+      evidence: {
+        productIdentifiers: [
+          { id: "98400113", kind: "sku" as const },
+          { id: "430 EG GSR2", kind: "model" as const },
+        ],
+        variants: [
+          {
+            id: "one-piece-panel",
+            viewingArea: { width: 23, height: 16 },
+            minimumOpening: { frontWidth: 30.5, height: 20.25, depth: 15.5 },
+            surroundForwardExtension: 0,
+          },
+          {
+            id: "one-piece-panel-with-trim",
+            viewingArea: { width: 23, height: 16 },
+            minimumOpening: { frontWidth: 30.25, height: 19.75, depth: 14.25 },
+            surroundForwardExtension: 1.25,
+          },
+        ],
+        fireplaceInteriorClearances: { side: 0.5, back: 0.5, top: 0.75 },
+        installationManualUrl: "https://www.travisindustries.com/docs/100-01521.pdf",
+        installationManualRevision: "100-01521, 10/24/2023",
+        dimensionPages: [6, 8],
+        clearanceRulePages: [8, 9, 10],
+        clearanceRules: {
+          mantel: {
+            measurementFrom: "appliance-base" as const,
+            profiles: [
+              {
+                material: "combustible" as const,
+                points: [
+                  { projection: 4, minimumClearance: 33.5 },
+                  { projection: 12, minimumClearance: 34.5 },
+                ],
+              },
+              {
+                material: "non-combustible" as const,
+                points: [
+                  { projection: 4, minimumClearance: 33.5 },
+                  { projection: 12, minimumClearance: 34.5 },
+                ],
+              },
+            ],
+          },
+          sideWall: {
+            measurementFrom: "appliance-side" as const,
+            minimumClearance: 5,
+          },
+          facing: {
+            measurementFrom: "appliance-base" as const,
+            minimumSideExtent: 3.375,
+            minimumTopExtent: 32.375,
+            topMayTerminateAtMantelBottom: true,
+          },
+          hearth: {
+            measurementFrom: "appliance-base" as const,
+            placementProfiles: [{ applianceElevation: 0, minimumHorizontalExtension: 0 }],
+            minimumThickness: 0.5,
+          },
+        },
+        optionPages: [7],
+        visualOptionIds: [
+          "96800703",
+          "96800705",
+          "96800706",
+          "96800708",
+          "96800711",
+          "96800709",
+          "96800209",
+          "96100917HB",
+          "96100917SB",
+          "96100920",
+          "96100921",
+          "96100922",
+          "96100923",
+          "96100337",
+          "96100338",
+          "96100588",
+          "94500957",
+          "94500956",
+          "94500953",
+        ],
+        visualSourceUrls: [
+          "https://firebuilder.travisindustries.com/api/product/115/pl/1/cy/1",
+          "https://firebuilder.travisindustries.com/api/product/115/pl/1/accessory",
+          "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98400113_96100920_94500957.png",
+          "https://www.fireplacex.com/wp-content/uploads/430_MetropolitanBP_Oak.jpg",
+          "https://www.fireplacex.com/wp-content/uploads/430_ShadowboxBP_Oak.jpg",
+          "https://vimeo.com/466357090",
+        ],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 2400,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "firebuilder-raw-layer",
+              sourceUrl:
+                "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98400113_96100920_94500957.png",
+              kind: "configurator-layer",
+              width: 960,
+              height: 960,
+              isolated: true,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
+        maximumOfficialLayerPixels: 960,
+        assetQualityGate: "blocked-high-resolution-master" as const,
+      },
+      notes:
+        "Current appliance dimensions, two surround-fit opening profiles, cavity clearances, viewing area, manual clearance datum, live FireBuilder options, burn source, and visual sources are verified. The largest official isolated layer is 960 px and remains blocked from the 4K visual gate.",
+    },
     indexedProduct(
       "430-mod-fyre",
       "430 Mod-Fyre",
