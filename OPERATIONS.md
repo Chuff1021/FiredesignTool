@@ -44,3 +44,21 @@ customer is watching; return to the last known-good release.
 
 The operator diagnostics reports the detected GPU and measured frame rate.
 Sustained performance below 30 FPS is not releaseable on that computer.
+
+## Catalog source monitoring
+
+GitHub Actions audits every indexed and verified official manufacturer source
+each Monday and whenever catalog-source code changes on `main`. It can also be
+started manually before a release. This network check is deliberately separate
+from the Vercel build and the installed PWA, so a manufacturer outage cannot
+interrupt a customer session or prevent rollback to a packaged release.
+
+When the **Catalog source audit** fails:
+
+1. Open its retained `catalog-source-audit-<run id>` JSON artifact and identify
+   the exact URL, expected content type, owner, status, and final URL.
+2. Confirm the failure from a second network before changing catalog evidence.
+3. Replace a source only with the current official manufacturer equivalent and
+   rerun `npm run catalog:validate` plus the complete source audit.
+4. Do not promote affected catalog or visual changes until a clean audit is
+   recorded. The currently packaged production release remains in service.

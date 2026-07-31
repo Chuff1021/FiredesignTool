@@ -22,6 +22,9 @@ application version, asset version, preview URL, and deployment ID.
       or default-option references.
 - [ ] `npm run catalog:validate` maps every live product to the dated intake
       snapshot and verifies every packaged asset byte-for-byte.
+- [ ] The latest GitHub **Catalog source audit** checks all indexed and verified
+      official sources with zero failures. Record its run URL, completion time,
+      JSON evidence artifact, and any accepted redirects in the release record.
 - [ ] The intake registry has exactly one current snapshot per brand, contains
       no brand drift or duplicate family IDs, and prevents every source-indexed
       Superior or Majestic product from mapping into the live catalog.

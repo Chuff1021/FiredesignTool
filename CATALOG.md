@@ -118,7 +118,12 @@ evidence. It checks every approved or document-verified official page, manual,
 image, and configurator endpoint for HTTP success and the expected payload
 type; an HTML error page returned with status 200 still fails. Add `-- --all`
 for the periodic full audit of source-indexed product pages. The network audit
-is intentionally separate from deterministic offline builds.
+is intentionally separate from deterministic offline builds. GitHub Actions
+runs the full audit weekly, whenever catalog-source code changes on `main`, and
+for catalog-related pull requests. Each run retains a JSON evidence report for
+90 days. A failed network audit blocks catalog promotion, but it does not make
+the installed showroom application or its Vercel build depend on a manufacturer
+website being available.
 
 The 564 TRV 25K designer-face and clean-face models were the first FPX batch
 to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing

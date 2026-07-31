@@ -1,3 +1,6 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+
 import {
   auditCatalogSources,
   collectCatalogSourceReferences,
@@ -9,14 +12,19 @@ const concurrencyArgument = process.argv.find((argument) =>
   argument.startsWith("--concurrency="),
 );
 const timeoutArgument = process.argv.find((argument) => argument.startsWith("--timeout="));
+const reportArgument = process.argv.find((argument) => argument.startsWith("--report="));
 const concurrency = concurrencyArgument ? Number(concurrencyArgument.split("=")[1]) : 6;
 const timeoutMs = timeoutArgument ? Number(timeoutArgument.split("=")[1]) : 15_000;
+const reportPath = reportArgument?.slice("--report=".length);
 
 if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 16) {
   throw new Error("--concurrency must be an integer from 1 through 16");
 }
 if (!Number.isFinite(timeoutMs) || timeoutMs < 1_000 || timeoutMs > 120_000) {
   throw new Error("--timeout must be between 1000 and 120000 milliseconds");
+}
+if (reportArgument && !reportPath) {
+  throw new Error("--report requires a file path");
 }
 
 const sources = collectCatalogSourceReferences(CURRENT_CATALOG_INTAKES, {
@@ -47,5 +55,31 @@ console.log(
     .map(([kind, count]) => `${kind}=${count}`)
     .join(", ")}; redirects=${redirects.length}; failures=${failures.length}`,
 );
+
+if (reportPath) {
+  const outputPath = resolve(reportPath);
+  await mkdir(dirname(outputPath), { recursive: true });
+  await writeFile(
+    outputPath,
+    `${JSON.stringify(
+      {
+        auditedAt: new Date().toISOString(),
+        scope: includeIndexedProducts ? "all" : "verified",
+        totals: {
+          checked: results.length,
+          passed: results.length - failures.length,
+          redirects: redirects.length,
+          failures: failures.length,
+          byKind: Object.fromEntries(counts),
+        },
+        results,
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  console.log(`Wrote audit evidence to ${outputPath}`);
+}
 
 if (failures.length > 0) process.exitCode = 1;

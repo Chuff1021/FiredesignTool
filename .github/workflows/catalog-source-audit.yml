@@ -1,0 +1,71 @@
+name: Catalog source audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 13 * * 1"
+  pull_request:
+    paths:
+      - ".github/workflows/catalog-source-audit.yml"
+      - "src/catalog/**"
+      - "scripts/audit-catalog-sources.mts"
+      - "scripts/validate-catalog.mts"
+      - "package.json"
+      - "package-lock.json"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/catalog-source-audit.yml"
+      - "src/catalog/**"
+      - "scripts/audit-catalog-sources.mts"
+      - "scripts/validate-catalog.mts"
+      - "package.json"
+      - "package-lock.json"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-source-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Validate catalog and audit official sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate deterministic catalog data
+        run: npm run catalog:validate
+
+      - name: Audit all official manufacturer sources
+        id: source_audit
+        run: >-
+          npm run catalog:audit-sources --
+          --all
+          --concurrency=8
+          --timeout=30000
+          --report="$RUNNER_TEMP/catalog-source-audit.json"
+
+      - name: Upload source-audit evidence
+        if: ${{ always() && steps.source_audit.outcome != 'skipped' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: catalog-source-audit-${{ github.run_id }}
+          path: ${{ runner.temp }}/catalog-source-audit.json
+          if-no-files-found: error
+          retention-days: 90
