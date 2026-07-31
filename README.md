@@ -156,4 +156,6 @@ with generative enhancement.
 
 See [ASSET_SOURCES.md](./ASSET_SOURCES.md) for provenance and
 [CATALOG.md](./CATALOG.md) for the intake contract, and
-[RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) for promotion gates.
+[VISUAL_MASTER_REQUEST.md](./VISUAL_MASTER_REQUEST.md) for the manufacturer
+delivery specification. See [RELEASE_CHECKLIST.md](./RELEASE_CHECKLIST.md) for
+promotion gates.

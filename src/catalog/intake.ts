@@ -107,6 +107,25 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
           "94500626",
           "94500624",
         ],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 2400,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "firebuilder-900",
+              sourceUrl: "https://firebuilder.travisindustries.com/api/product/103/pl/1/cy/1",
+              kind: "configurator-layer",
+              width: 900,
+              height: 900,
+              isolated: true,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
         maximumOfficialLayerPixels: 900,
         assetQualityGate: "blocked-high-resolution-master",
       },
@@ -125,6 +144,25 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
         installationManualRevision: "2024-04-02",
         mantelRulePage: 42,
         visualOptionSkus: ["95900370", "95900380", "95900382", "94500626", "94500624"],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 2400,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "firebuilder-900",
+              sourceUrl: "https://firebuilder.travisindustries.com/api/product/105/pl/1/cy/1",
+              kind: "configurator-layer",
+              width: 900,
+              height: 900,
+              isolated: true,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
         maximumOfficialLayerPixels: 900,
         assetQualityGate: "blocked-high-resolution-master",
       },
@@ -362,6 +400,26 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
           "https://www.fireplacex.com/wp-content/uploads/616_Metropolitan.jpg",
           "https://www.fireplacex.com/wp-content/uploads/616_ShadowboxBP.jpg",
         ],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 2400,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "firebuilder-raw-layer",
+              sourceUrl:
+                "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98400120_96100928_94500952.png",
+              kind: "configurator-layer",
+              width: 960,
+              height: 960,
+              isolated: true,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
         maximumOfficialLayerPixels: 960,
         assetQualityGate: "blocked-high-resolution-master" as const,
       },

@@ -157,6 +157,26 @@ describe("manufacturer-neutral catalog intake registry", () => {
       visualSourceUrls: [
         "https://superiorfireplaces.us.com/wp-content/uploads/sites/7/2021/05/Superior-dvin-dri2000_PD-1136x852-1.jpg",
       ],
+      visualMaster: {
+        requirement: {
+          minimumWidth: 2400,
+          minimumHeight: 1800,
+          requiresIsolation: true,
+          requiresTransparentMediaOpening: true,
+        },
+        candidates: [
+          {
+            id: "test-lifestyle",
+            sourceUrl:
+              "https://superiorfireplaces.us.com/wp-content/uploads/sites/7/2021/05/Superior-dvin-dri2000_PD-1136x852-1.jpg",
+            kind: "lifestyle",
+            width: 701,
+            height: 526,
+            isolated: false,
+            transparentMediaOpening: false,
+          },
+        ],
+      },
       maximumOfficialLayerPixels: 701,
       assetQualityGate: "blocked-high-resolution-master",
     };

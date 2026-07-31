@@ -137,4 +137,31 @@ describe("FPX catalog intake queue", () => {
     expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
     expect(evidence.maximumOfficialLayerPixels).toBe(960);
   });
+
+  it("cannot approve a visual master that fails its recorded 4K requirements", () => {
+    const intake = structuredClone(FPX_CURRENT_INTAKE);
+    const product = intake.products.find(
+      (candidate) => candidate.id === "564-trv-25k-clean-face",
+    );
+    const evidence = product?.evidence;
+    if (!evidence || !("visualMaster" in evidence)) {
+      throw new Error("Visual master evidence is missing");
+    }
+    evidence.assetQualityGate = "approved";
+    expect(() => catalogIntakeSchema.parse(intake)).toThrow(
+      /cannot be approved without a qualifying recorded candidate/,
+    );
+
+    const candidate = evidence.visualMaster.candidates[0]!;
+    candidate.width = 2400;
+    candidate.height = 1800;
+    candidate.transparentMediaOpening = true;
+    evidence.maximumOfficialLayerPixels = 2400;
+    expect(catalogIntakeSchema.parse(intake)).toBeTruthy();
+
+    evidence.maximumOfficialLayerPixels = 2399;
+    expect(() => catalogIntakeSchema.parse(intake)).toThrow(
+      /must match the largest recorded candidate edge/,
+    );
+  });
 });

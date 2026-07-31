@@ -100,6 +100,13 @@ thickness, and elevation/extension pairs. Validation rejects duplicate material
 profiles, unsorted projection points, and any curve whose required clearance
 decreases as projection increases.
 
+Visual-master evidence is similarly measurable. Every verified family declares
+its minimum pixel dimensions, isolation requirement, transparent firebox-opening
+requirement, and each current official candidate's exact dimensions and source
+type. Validation rejects a claimed approval unless at least one recorded
+candidate meets every requirement, and it rejects stale maximum-resolution
+claims that do not match the candidate records.
+
 Run `npm run catalog:validate` before every preview. The command validates the
 approved release and intake mapping, then independently checks every packaged
 asset against the release manifest, byte size, and SHA-256 checksum. A live

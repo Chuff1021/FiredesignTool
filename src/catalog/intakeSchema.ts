@@ -23,6 +23,61 @@ export const ventingSchema = z.enum([
 
 const assetQualityGateSchema = z.enum(["blocked-high-resolution-master", "approved"]);
 
+const visualMasterSchema = z.object({
+  requirement: z.object({
+    minimumWidth: z.number().int().positive(),
+    minimumHeight: z.number().int().positive(),
+    requiresIsolation: z.boolean(),
+    requiresTransparentMediaOpening: z.boolean(),
+  }),
+  candidates: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        sourceUrl: z.string().url(),
+        kind: z.enum(["configurator-layer", "isolated-product", "lifestyle", "cad-bim"]),
+        width: z.number().int().positive(),
+        height: z.number().int().positive(),
+        isolated: z.boolean(),
+        transparentMediaOpening: z.boolean(),
+      }),
+    )
+    .min(1),
+});
+
+type VisualGateEvidence = z.infer<typeof visualMasterSchema> & {
+  maximumOfficialLayerPixels: number;
+  assetQualityGate: z.infer<typeof assetQualityGateSchema>;
+};
+
+function validateVisualGate(evidence: VisualGateEvidence, context: z.RefinementCtx): void {
+  const largestCandidateEdge = Math.max(
+    ...evidence.candidates.flatMap((candidate) => [candidate.width, candidate.height]),
+  );
+  if (largestCandidateEdge !== evidence.maximumOfficialLayerPixels) {
+    context.addIssue({
+      code: "custom",
+      message: "Maximum official layer pixels must match the largest recorded candidate edge",
+      path: ["maximumOfficialLayerPixels"],
+    });
+  }
+  const requirement = evidence.requirement;
+  const qualifyingCandidate = evidence.candidates.some(
+    (candidate) =>
+      candidate.width >= requirement.minimumWidth &&
+      candidate.height >= requirement.minimumHeight &&
+      (!requirement.requiresIsolation || candidate.isolated) &&
+      (!requirement.requiresTransparentMediaOpening || candidate.transparentMediaOpening),
+  );
+  if (evidence.assetQualityGate === "approved" && !qualifyingCandidate) {
+    context.addIssue({
+      code: "custom",
+      message: "Visual master cannot be approved without a qualifying recorded candidate",
+      path: ["assetQualityGate"],
+    });
+  }
+}
+
 const clearancePointSchema = z.object({
   projection: z.number().nonnegative(),
   minimumClearance: z.number().nonnegative(),
@@ -106,76 +161,100 @@ const clearanceRulesSchema = z.object({
     .optional(),
 });
 
-const configuratorEvidenceSchema = z.object({
-  productSku: z.string().min(1),
-  fireBuilderProductId: z.number().int().positive(),
-  fireBuilderModelId: z.number().int().positive(),
-  viewingArea: z.object({
-    width: z.number().positive(),
-    height: z.number().positive(),
-  }),
-  installationManualUrl: z.string().url(),
-  installationManualRevision: z.string().min(1),
-  mantelRulePage: z.number().int().positive(),
-  visualOptionSkus: z.array(z.string().min(1)).min(1),
-  maximumOfficialLayerPixels: z.number().int().positive(),
-  assetQualityGate: assetQualityGateSchema,
-});
+const configuratorEvidenceSchema = z
+  .object({
+    productSku: z.string().min(1),
+    fireBuilderProductId: z.number().int().positive(),
+    fireBuilderModelId: z.number().int().positive(),
+    viewingArea: z.object({
+      width: z.number().positive(),
+      height: z.number().positive(),
+    }),
+    installationManualUrl: z.string().url(),
+    installationManualRevision: z.string().min(1),
+    mantelRulePage: z.number().int().positive(),
+    visualOptionSkus: z.array(z.string().min(1)).min(1),
+    visualMaster: visualMasterSchema,
+    maximumOfficialLayerPixels: z.number().int().positive(),
+    assetQualityGate: assetQualityGateSchema,
+  })
+  .superRefine((evidence, context) =>
+    validateVisualGate(
+      {
+        ...evidence.visualMaster,
+        maximumOfficialLayerPixels: evidence.maximumOfficialLayerPixels,
+        assetQualityGate: evidence.assetQualityGate,
+      },
+      context,
+    ),
+  );
 
-const manufacturerEvidenceSchema = z.object({
-  productIdentifiers: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        kind: z.enum(["sku", "catalog-number", "model"]),
-      }),
-    )
-    .min(1),
-  variants: z
-    .array(
-      z.object({
-        id: z.string().min(1),
-        viewingArea: z
-          .object({ width: z.number().positive(), height: z.number().positive() })
-          .optional(),
-        framing: z
-          .object({
-            width: z.number().positive(),
-            height: z.number().positive(),
-            depth: z.number().positive(),
-          })
-          .optional(),
-        minimumOpening: z
-          .object({
-            frontWidth: z.number().positive(),
-            height: z.number().positive(),
-            rearWidth: z.number().positive().optional(),
-            depth: z.number().positive(),
-            frontWidthRequiredDepth: z.number().positive().optional(),
-          })
-          .optional(),
-        surroundForwardExtension: z.number().nonnegative().optional(),
-      }),
-    )
-    .min(1),
-  fireplaceInteriorClearances: z
-    .object({
-      side: z.number().nonnegative(),
-      back: z.number().nonnegative(),
-      top: z.number().nonnegative(),
-    })
-    .optional(),
-  installationManualUrl: z.string().url(),
-  installationManualRevision: z.string().min(1),
-  dimensionPages: z.array(z.number().int().positive()).min(1),
-  clearanceRulePages: z.array(z.number().int().positive()).min(1),
-  clearanceRules: clearanceRulesSchema,
-  optionPages: z.array(z.number().int().positive()),
-  visualOptionIds: z.array(z.string().min(1)),
-  visualSourceUrls: z.array(z.string().url()).min(1),
-  maximumOfficialLayerPixels: z.number().int().positive(),
-  assetQualityGate: assetQualityGateSchema,
-});
+const manufacturerEvidenceSchema = z
+  .object({
+    productIdentifiers: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          kind: z.enum(["sku", "catalog-number", "model"]),
+        }),
+      )
+      .min(1),
+    variants: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          viewingArea: z
+            .object({ width: z.number().positive(), height: z.number().positive() })
+            .optional(),
+          framing: z
+            .object({
+              width: z.number().positive(),
+              height: z.number().positive(),
+              depth: z.number().positive(),
+            })
+            .optional(),
+          minimumOpening: z
+            .object({
+              frontWidth: z.number().positive(),
+              height: z.number().positive(),
+              rearWidth: z.number().positive().optional(),
+              depth: z.number().positive(),
+              frontWidthRequiredDepth: z.number().positive().optional(),
+            })
+            .optional(),
+          surroundForwardExtension: z.number().nonnegative().optional(),
+        }),
+      )
+      .min(1),
+    fireplaceInteriorClearances: z
+      .object({
+        side: z.number().nonnegative(),
+        back: z.number().nonnegative(),
+        top: z.number().nonnegative(),
+      })
+      .optional(),
+    installationManualUrl: z.string().url(),
+    installationManualRevision: z.string().min(1),
+    dimensionPages: z.array(z.number().int().positive()).min(1),
+    clearanceRulePages: z.array(z.number().int().positive()).min(1),
+    clearanceRules: clearanceRulesSchema,
+    optionPages: z.array(z.number().int().positive()),
+    visualOptionIds: z.array(z.string().min(1)),
+    visualSourceUrls: z.array(z.string().url()).min(1),
+    visualMaster: visualMasterSchema,
+    maximumOfficialLayerPixels: z.number().int().positive(),
+    assetQualityGate: assetQualityGateSchema,
+  })
+  .superRefine((evidence, context) =>
+    validateVisualGate(
+      {
+        ...evidence.visualMaster,
+        maximumOfficialLayerPixels: evidence.maximumOfficialLayerPixels,
+        assetQualityGate: evidence.assetQualityGate,
+      },
+      context,
+    ),
+  );
 
 export const intakeProductSchema = z.object({
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),

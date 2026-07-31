@@ -148,6 +148,46 @@ export const MAJESTIC_CURRENT_INTAKE = catalogIntakeSchema.parse({
           "https://hearthnhome.getbynder.com/transform/2dc1e8db-6c2b-4d64-a6cd-1062cbdf7c1c/MAJ_RubyPlat_35_BlkGls_Birch_ContempArch_Rm",
           "https://hearthnhome.getbynder.com/m/79b5f0dc5c300098/original/MAJ_Ruby_Platinum_product_intro_F_720p.mp4",
         ],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 2400,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "ruby-platinum-30-studio",
+              sourceUrl:
+                "https://hearthnhome.getbynder.com/transform/c6e9e2f4-243a-4fc9-bec6-429740a5d766/MAJ_RubyPlatinum_30_CottageRed_Oak_BlkContArch_SmSurr_so",
+              kind: "isolated-product",
+              width: 2000,
+              height: 1320,
+              isolated: true,
+              transparentMediaOpening: false,
+            },
+            {
+              id: "ruby-platinum-35-room",
+              sourceUrl:
+                "https://hearthnhome.getbynder.com/transform/0618ccec-3eb6-4437-8884-0536f0585a4b/MAJ_RubyPlat_35_CottRed_Oak_CleanScrn_Rm",
+              kind: "lifestyle",
+              width: 2000,
+              height: 1091,
+              isolated: false,
+              transparentMediaOpening: false,
+            },
+            {
+              id: "ruby-platinum-35-arched-room",
+              sourceUrl:
+                "https://hearthnhome.getbynder.com/transform/2dc1e8db-6c2b-4d64-a6cd-1062cbdf7c1c/MAJ_RubyPlat_35_BlkGls_Birch_ContempArch_Rm",
+              kind: "lifestyle",
+              width: 1718,
+              height: 2000,
+              isolated: false,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
         maximumOfficialLayerPixels: 2000,
         assetQualityGate: "blocked-high-resolution-master",
       },
