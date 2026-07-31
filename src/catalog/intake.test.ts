@@ -14,8 +14,8 @@ describe("FPX catalog intake queue", () => {
       remainingFamilies: 34,
     });
     expect(summary.byStage.approved).toBe(2);
-    expect(summary.byStage["documents-verified"]).toBe(4);
-    expect(summary.byStage["source-indexed"]).toBe(30);
+    expect(summary.byStage["documents-verified"]).toBe(5);
+    expect(summary.byStage["source-indexed"]).toBe(29);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")
@@ -193,6 +193,88 @@ describe("FPX catalog intake queue", () => {
       },
     });
     expect(evidence.visualOptionIds).toContain("96800705");
+    expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
+  });
+
+  it("preserves the 34 DVL face-dependent depth and trim fit profiles", () => {
+    const product = FPX_CURRENT_INTAKE.products.find(
+      (candidate) => candidate.id === "34-dvl-deluxe-ember-glo",
+    );
+    expect(product?.stage).toBe("documents-verified");
+    const evidence = product?.evidence;
+    if (!evidence || !("variants" in evidence)) {
+      throw new Error("34 DVL manufacturer evidence is missing");
+    }
+    expect(evidence.productIdentifiers).toEqual([
+      { id: "98400376", kind: "sku" },
+      { id: "DVL EG GSR2", kind: "model" },
+    ]);
+    expect(evidence.variants).toMatchObject([
+      {
+        id: "one-piece-panel-standard-face",
+        viewingArea: { width: 27, height: 16.125 },
+        minimumOpening: {
+          frontWidth: 32.5,
+          height: 24.875,
+          rearWidth: 20,
+          depth: 15.75,
+        },
+        surroundForwardExtension: 0,
+      },
+      {
+        id: "one-piece-panel-arched-face",
+        minimumOpening: { depth: 16.25 },
+      },
+      {
+        id: "one-piece-panel-with-trim-standard-face",
+        minimumOpening: {
+          frontWidth: 31.5,
+          height: 23.75,
+          rearWidth: 20,
+          depth: 14.5,
+        },
+        surroundForwardExtension: 1.25,
+      },
+      {
+        id: "one-piece-panel-with-trim-arched-face",
+        minimumOpening: { depth: 15 },
+        surroundForwardExtension: 1.25,
+      },
+    ]);
+    expect(evidence.clearanceRules).toMatchObject({
+      mantel: {
+        measurementFrom: "appliance-base",
+        profiles: [
+          {
+            material: "combustible",
+            points: [
+              { projection: 4, minimumClearance: 33 },
+              { projection: 12, minimumClearance: 35.5 },
+            ],
+          },
+          {
+            material: "non-combustible",
+            points: [
+              { projection: 4, minimumClearance: 33 },
+              { projection: 12, minimumClearance: 35.5 },
+            ],
+          },
+        ],
+      },
+      sideWall: { measurementFrom: "appliance-side", minimumClearance: 4 },
+      facing: {
+        measurementFrom: "appliance-base",
+        minimumSideExtent: 4,
+        minimumTopExtent: 35.5,
+        topMayTerminateAtMantelBottom: true,
+      },
+      hearth: {
+        placementProfiles: [{ applianceElevation: 0, minimumHorizontalExtension: 0 }],
+      },
+    });
+    expect(evidence.visualOptionIds).toContain("95300591");
+    expect(evidence.visualOptionIds).toContain("94500958");
+    expect(evidence.maximumOfficialLayerPixels).toBe(960);
     expect(evidence.assetQualityGate).toBe("blocked-high-resolution-master");
   });
 
