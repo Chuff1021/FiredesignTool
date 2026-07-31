@@ -86,6 +86,7 @@ describe("local customer project library", () => {
     expect(projects[0]).toMatchObject({
       name: "Miller living room",
       calibrated: true,
+      ready: true,
       source: { fileName: "second.png", width: 1600, height: 1000 },
     });
     expect(projects[0]).not.toHaveProperty("source.dataUrl");
@@ -141,7 +142,12 @@ describe("local customer project library", () => {
 
   it("migrates a legacy embedded image before metadata overwrites the record", async () => {
     vi.stubGlobal("crypto", { randomUUID: () => "project-legacy" });
-    const legacy = createRoomProject(source("legacy.png"));
+    const current = createRoomProject(source("legacy.png"));
+    const { openingQuad, openingWidthInches, openingHeightInches, ...legacyFields } = current;
+    void openingQuad;
+    void openingWidthInches;
+    void openingHeightInches;
+    const legacy = { ...legacyFields, schemaVersion: 1 as const };
     const legacyDatabase = await new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open("firedesign-projects", 1);
       request.onupgradeneeded = () =>
@@ -159,7 +165,13 @@ describe("local customer project library", () => {
     localStorage.setItem("firedesign:current-room-project:v1", legacy.id);
 
     const recovered = await readCurrentRoomProject();
-    expect(recovered?.source.dataUrl).toBe(legacy.source.dataUrl);
+    expect(recovered).toMatchObject({
+      schemaVersion: 2,
+      source: { dataUrl: legacy.source.dataUrl },
+      openingQuad: [],
+      openingWidthInches: 36,
+      openingHeightInches: 30,
+    });
     if (!recovered) throw new Error("Legacy project was not recovered.");
     recovered.comparison = 0.4;
     await saveRoomProject(recovered);

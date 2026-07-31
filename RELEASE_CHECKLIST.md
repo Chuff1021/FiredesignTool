@@ -36,6 +36,11 @@ application version, asset version, preview URL, and deployment ID.
       produce a perspective-aligned design within 2% of the marked plane.
 - [ ] Full-remodel and insert-only modes preserve the expected portions of the
       customer photograph.
+- [ ] Insert-only mode requires four ordered existing-opening corners plus its
+      measured width and height, scales the appliance face from that opening,
+      and prevents export until the opening is complete.
+- [ ] Version 1 customer-room records migrate to the opening-aware schema with
+      their original photo, wall calibration, name, and comparison intact.
 - [ ] Before/after comparison and high-resolution JPEG export contain no
       calibration markers, loading state, or UI chrome.
 - [ ] Multiple named customer projects can be created, reopened, renamed, and

@@ -1,6 +1,11 @@
 import { catalogRepository } from "@/domain/catalogRepository";
 import { getMantelBottom, type FeatureWallConfiguration } from "@/domain/configuration";
-import { imagePoint, type NormalizedPoint, type RoomProject } from "@/domain/roomProject";
+import {
+  faceBoundsWithinOpening,
+  imagePoint,
+  type NormalizedPoint,
+  type RoomProject,
+} from "@/domain/roomProject";
 import { loadImage } from "@/lib/roomImage";
 
 type Point = { x: number; y: number };
@@ -148,6 +153,27 @@ async function createDesignLayer(
   return canvas;
 }
 
+async function createInsertFaceLayer(
+  configuration: FeatureWallConfiguration,
+): Promise<{ canvas: HTMLCanvasElement; widthInches: number; heightInches: number }> {
+  const pixelsPerInch = 8;
+  const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
+  const image = await cachedImage(face.asset.localPath);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(face.visibleFace.width * pixelsPerInch);
+  canvas.height = Math.round(face.visibleFace.height * pixelsPerInch);
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("The insert renderer could not start.");
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return {
+    canvas,
+    widthInches: face.visibleFace.width,
+    heightInches: face.visibleFace.height,
+  };
+}
+
 function bilinear(quad: Point[], u: number, v: number): Point {
   const [topLeft, topRight, bottomRight, bottomLeft] = quad;
   if (!topLeft || !topRight || !bottomRight || !bottomLeft) return { x: 0, y: 0 };
@@ -252,32 +278,67 @@ export async function renderRoomProject(
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
   context.drawImage(room, 0, 0, canvas.width, canvas.height);
-  if (project.wallQuad.length === 4) {
-    const design = await createDesignLayer(configuration, project.scenario);
-    const quad = project.wallQuad.map((point) =>
+  const comparison = options.comparison ?? project.comparison;
+  if (project.scenario === "full-remodel" && project.wallQuad.length === 4) {
+    const design = await createDesignLayer(configuration, "full-remodel");
+    const wallQuad = project.wallQuad.map((point) =>
       imagePoint(point, project.source.width, project.source.height),
     );
     context.save();
-    const comparison = options.comparison ?? project.comparison;
     context.beginPath();
     context.rect(0, 0, canvas.width * comparison, canvas.height);
     context.clip();
-    projectLayer(context, design, quad);
+    projectLayer(context, design, wallQuad);
     context.restore();
-    if (comparison > 0 && comparison < 1) {
-      context.strokeStyle = "rgba(255,255,255,.95)";
-      context.lineWidth = Math.max(2, canvas.width / 700);
-      context.beginPath();
-      context.moveTo(canvas.width * comparison, 0);
-      context.lineTo(canvas.width * comparison, canvas.height);
-      context.stroke();
-    }
+  }
+  if (project.scenario === "insert" && project.openingQuad.length === 4) {
+    const face = await createInsertFaceLayer(configuration);
+    const opening = project.openingQuad.map((point) =>
+      imagePoint(point, project.source.width, project.source.height),
+    );
+    const bounds = faceBoundsWithinOpening(project, face.widthInches, face.heightInches);
+    const target = [
+      bilinear(opening, bounds.left, bounds.top),
+      bilinear(opening, bounds.right, bounds.top),
+      bilinear(opening, bounds.right, bounds.bottom),
+      bilinear(opening, bounds.left, bounds.bottom),
+    ];
+    context.save();
+    context.beginPath();
+    context.rect(0, 0, canvas.width * comparison, canvas.height);
+    context.clip();
+    projectLayer(context, face.canvas, target);
+    context.restore();
+  }
+  if (comparison > 0 && comparison < 1) {
+    context.strokeStyle = "rgba(255,255,255,.95)";
+    context.lineWidth = Math.max(2, canvas.width / 700);
+    context.beginPath();
+    context.moveTo(canvas.width * comparison, 0);
+    context.lineTo(canvas.width * comparison, canvas.height);
+    context.stroke();
   }
   if (options.markers) drawCalibrationMarkers(context, project);
 }
 
 function drawCalibrationMarkers(context: CanvasRenderingContext2D, project: RoomProject) {
-  const drawPoints = (points: NormalizedPoint[], color: string) => {
+  const drawOutline = (points: NormalizedPoint[], color: string) => {
+    if (points.length < 2) return;
+    const pixels = points.map((point) =>
+      imagePoint(point, project.source.width, project.source.height),
+    );
+    context.save();
+    context.beginPath();
+    context.strokeStyle = color;
+    context.lineWidth = Math.max(2, project.source.width / 900);
+    context.setLineDash([Math.max(7, project.source.width / 140), 6]);
+    context.moveTo(pixels[0]!.x, pixels[0]!.y);
+    pixels.slice(1).forEach((pixel) => context.lineTo(pixel.x, pixel.y));
+    if (pixels.length === 4) context.closePath();
+    context.stroke();
+    context.restore();
+  };
+  const drawPoints = (points: NormalizedPoint[], color: string, prefix = "") => {
     points.forEach((point, index) => {
       const pixel = imagePoint(point, project.source.width, project.source.height);
       context.beginPath();
@@ -291,9 +352,15 @@ function drawCalibrationMarkers(context: CanvasRenderingContext2D, project: Room
       context.font = `600 ${Math.max(11, project.source.width / 110)}px sans-serif`;
       context.textAlign = "center";
       context.textBaseline = "middle";
-      context.fillText(String(index + 1), pixel.x, pixel.y);
+      context.fillText(`${prefix}${index + 1}`, pixel.x, pixel.y);
     });
   };
+  drawOutline(project.wallQuad, "rgba(227,198,158,.9)");
+  drawOutline(project.referenceSegment, "rgba(140,183,142,.9)");
   drawPoints(project.wallQuad, "#e3c69e");
   drawPoints(project.referenceSegment, "#8cb78e");
+  if (project.scenario === "insert") {
+    drawOutline(project.openingQuad, "rgba(121,182,201,.95)");
+    drawPoints(project.openingQuad, "#79b6c9", "O");
+  }
 }

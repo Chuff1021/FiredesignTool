@@ -5,7 +5,9 @@ import { useShallow } from "zustand/react/shallow";
 import {
   calibrationLabel,
   createRoomProject,
+  isInsertOpeningCalibrated,
   isRoomProjectCalibrated,
+  isRoomProjectReady,
   pixelsPerInch,
   roomProjectSchema,
   type NormalizedPoint,
@@ -27,7 +29,7 @@ import { renderRoomProject } from "@/lib/roomRenderer";
 import { createProjectPdf } from "@/lib/projectExport";
 import { useConfigurationStore } from "@/store/configurationStore";
 
-type CalibrationTool = "wall" | "measurement" | "view";
+type CalibrationTool = "wall" | "measurement" | "opening" | "view";
 
 export function CustomerRoomViewport() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -76,7 +78,9 @@ export function CustomerRoomViewport() {
           ? "wall"
           : saved.referenceSegment.length < 2
             ? "measurement"
-            : "view",
+            : saved.scenario === "insert" && saved.openingQuad.length < 4
+              ? "opening"
+              : "view",
       );
     },
     [setWallWidth],
@@ -212,24 +216,39 @@ export function CustomerRoomViewport() {
       const wallQuad = [...project.wallQuad, point].slice(0, 4);
       updateProject({ ...project, wallQuad });
       if (wallQuad.length === 4) setTool("measurement");
-    } else {
+    } else if (tool === "measurement") {
       const referenceSegment = [...project.referenceSegment, point].slice(0, 2);
       const nextProject = { ...project, referenceSegment };
       updateProject(nextProject);
       if (referenceSegment.length === 2 && isRoomProjectCalibrated(nextProject)) {
-        setTool("view");
+        setTool(project.scenario === "insert" ? "opening" : "view");
       }
+    } else if (tool === "opening") {
+      const openingQuad = [...project.openingQuad, point].slice(0, 4);
+      updateProject({ ...project, openingQuad });
+      if (openingQuad.length === 4) setTool("view");
     }
   };
 
   const resetCalibration = () => {
     if (!project) return;
-    updateProject({ ...project, wallQuad: [], referenceSegment: [] });
+    updateProject({ ...project, wallQuad: [], referenceSegment: [], openingQuad: [] });
     setTool("wall");
+  };
+
+  const resetOpening = () => {
+    if (!project) return;
+    updateProject({ ...project, openingQuad: [] });
+    setTool("opening");
   };
 
   const undoPoint = () => {
     if (!project) return;
+    if (tool === "opening" || (tool === "view" && project.openingQuad.length > 0)) {
+      updateProject({ ...project, openingQuad: project.openingQuad.slice(0, -1) });
+      setTool("opening");
+      return;
+    }
     if (tool === "measurement" || (tool === "view" && project.referenceSegment.length > 0)) {
       updateProject({ ...project, referenceSegment: project.referenceSegment.slice(0, -1) });
       setTool("measurement");
@@ -240,7 +259,7 @@ export function CustomerRoomViewport() {
   };
 
   const prepareExport = async () => {
-    if (!project || !canvasRef.current || !isRoomProjectCalibrated(project)) return;
+    if (!project || !canvasRef.current || !isRoomProjectReady(project)) return;
     const exportCanvas = document.createElement("canvas");
     await renderRoomProject(exportCanvas, project, configuration, {
       comparison: 1,
@@ -343,7 +362,11 @@ export function CustomerRoomViewport() {
                       <small>
                         {new Date(saved.updatedAt).toLocaleDateString()} · {saved.source.width}{" "}
                         × {saved.source.height} ·{" "}
-                        {saved.calibrated ? "Scaled" : "Needs calibration"}
+                        {saved.ready
+                          ? "Ready"
+                          : saved.calibrated && saved.scenario === "insert"
+                            ? "Opening needed"
+                            : "Needs calibration"}
                       </small>
                     </span>
                     <UiIcon name="arrow" size={16} />
@@ -385,6 +408,15 @@ export function CustomerRoomViewport() {
 
   const scale = pixelsPerInch(project);
   const calibrated = isRoomProjectCalibrated(project);
+  const openingCalibrated = isInsertOpeningCalibrated(project);
+  const ready = isRoomProjectReady(project);
+
+  const setScenario = (scenario: RoomProject["scenario"]) => {
+    const next = { ...project, scenario };
+    updateProject(next);
+    if (!isRoomProjectCalibrated(next)) return;
+    setTool(scenario === "insert" && !isInsertOpeningCalibrated(next) ? "opening" : "view");
+  };
   return (
     <section className="room-workspace" aria-label="Customer room designer">
       <div className="room-toolbar">
@@ -401,7 +433,7 @@ export function CustomerRoomViewport() {
             defaultValue={project.name}
           />
         </div>
-        <div className="room-status" data-ready={calibrated}>
+        <div className="room-status" data-ready={ready}>
           <span /> {calibrationLabel(project)}
           {scale ? <small>{scale.toFixed(1)} pixels per inch</small> : null}
         </div>
@@ -422,7 +454,7 @@ export function CustomerRoomViewport() {
           </button>
           <button
             className="primary-action"
-            disabled={!calibrated || rendering}
+            disabled={!ready || rendering}
             onClick={() => void exportDesign("image")}
             type="button"
           >
@@ -430,7 +462,7 @@ export function CustomerRoomViewport() {
           </button>
           <button
             className="secondary-action"
-            disabled={!calibrated || rendering}
+            disabled={!ready || rendering}
             onClick={() => void exportDesign("pdf")}
             type="button"
           >
@@ -469,7 +501,12 @@ export function CustomerRoomViewport() {
       </div>
 
       <div className="room-calibration-panel">
-        <div className="room-stepper" role="group" aria-label="Photo calibration steps">
+        <div
+          className="room-stepper"
+          data-insert={project.scenario === "insert"}
+          role="group"
+          aria-label="Photo calibration steps"
+        >
           <button aria-pressed={tool === "wall"} onClick={() => setTool("wall")} type="button">
             <span>1</span> Wall corners <small>{project.wallQuad.length}/4</small>
           </button>
@@ -482,12 +519,21 @@ export function CustomerRoomViewport() {
             <span>2</span> Wall width <small>{project.referenceSegment.length}/2</small>
           </button>
           <button
-            aria-pressed={tool === "view"}
+            aria-pressed={tool === "opening"}
             disabled={!calibrated}
+            hidden={project.scenario !== "insert"}
+            onClick={() => setTool("opening")}
+            type="button"
+          >
+            <span>3</span> Opening <small>{project.openingQuad.length}/4</small>
+          </button>
+          <button
+            aria-pressed={tool === "view"}
+            disabled={!ready}
             onClick={() => setTool("view")}
             type="button"
           >
-            <span>3</span> Present
+            <span>{project.scenario === "insert" ? 4 : 3}</span> Present
           </button>
         </div>
         <div className="room-instruction">
@@ -507,31 +553,85 @@ export function CustomerRoomViewport() {
               </span>
             </>
           ) : null}
+          {tool === "opening" ? (
+            <>
+              <strong>Mark the existing fireplace opening.</strong>
+              <span>Click top-left, top-right, bottom-right, then bottom-left.</span>
+            </>
+          ) : null}
           {tool === "view" ? (
             <>
               <strong>Scaled concept ready.</strong>
-              <span>Use the main controls to change the fireplace and finishes.</span>
+              <span>
+                {project.scenario === "insert"
+                  ? "The appliance face is scaled from the measured existing opening."
+                  : "Use the main controls to change the fireplace and finishes."}
+              </span>
             </>
           ) : null}
         </div>
-        <label className="room-measurement">
-          <span>Measured wall width</span>
-          <div>
-            <input
-              aria-label="Known measurement in inches"
-              min={WALL_WIDTH_RANGE.min}
-              max={WALL_WIDTH_RANGE.max}
-              onChange={(event) => {
-                const inches = Number(event.target.value) || 1;
-                updateProject({ ...project, referenceInches: inches });
-                setWallWidth(inches);
-              }}
-              type="number"
-              value={project.referenceInches}
-            />
-            <span>in</span>
-          </div>
-        </label>
+        <div className="room-dimensions">
+          <label className="room-measurement">
+            <span>Measured wall width</span>
+            <div>
+              <input
+                aria-label="Known measurement in inches"
+                min={WALL_WIDTH_RANGE.min}
+                max={WALL_WIDTH_RANGE.max}
+                onChange={(event) => {
+                  const inches = Number(event.target.value) || 1;
+                  updateProject({ ...project, referenceInches: inches });
+                  setWallWidth(inches);
+                }}
+                type="number"
+                value={project.referenceInches}
+              />
+              <span>in</span>
+            </div>
+          </label>
+          {project.scenario === "insert" ? (
+            <div className="room-opening-measurements" aria-label="Existing opening size">
+              <label>
+                <span>Opening width</span>
+                <div>
+                  <input
+                    aria-label="Existing opening width in inches"
+                    max="240"
+                    min="1"
+                    onChange={(event) =>
+                      updateProject({
+                        ...project,
+                        openingWidthInches: Number(event.target.value) || 1,
+                      })
+                    }
+                    type="number"
+                    value={project.openingWidthInches}
+                  />
+                  <span>in</span>
+                </div>
+              </label>
+              <label>
+                <span>Opening height</span>
+                <div>
+                  <input
+                    aria-label="Existing opening height in inches"
+                    max="120"
+                    min="1"
+                    onChange={(event) =>
+                      updateProject({
+                        ...project,
+                        openingHeightInches: Number(event.target.value) || 1,
+                      })
+                    }
+                    type="number"
+                    value={project.openingHeightInches}
+                  />
+                  <span>in</span>
+                </div>
+              </label>
+            </div>
+          ) : null}
+        </div>
         <div
           className="room-scenario segmented-control"
           role="group"
@@ -539,14 +639,14 @@ export function CustomerRoomViewport() {
         >
           <button
             aria-pressed={project.scenario === "full-remodel"}
-            onClick={() => updateProject({ ...project, scenario: "full-remodel" })}
+            onClick={() => setScenario("full-remodel")}
             type="button"
           >
             Full remodel
           </button>
           <button
             aria-pressed={project.scenario === "insert"}
-            onClick={() => updateProject({ ...project, scenario: "insert" })}
+            onClick={() => setScenario("insert")}
             type="button"
           >
             Insert only
@@ -574,11 +674,19 @@ export function CustomerRoomViewport() {
           <button onClick={resetCalibration} type="button">
             Recalibrate
           </button>
+          {project.scenario === "insert" && project.openingQuad.length > 0 ? (
+            <button onClick={resetOpening} type="button">
+              Reset opening
+            </button>
+          ) : null}
           <button onClick={() => void returnToLibrary()} type="button">
             Back to projects
           </button>
         </div>
         <p className="room-disclaimer">
+          {project.scenario === "insert" && openingCalibrated
+            ? `${project.openingWidthInches} × ${project.openingHeightInches} in opening · `
+            : ""}
           Conceptual sales visualization. Verify fit, venting, framing, clearances, and
           installation onsite.
         </p>

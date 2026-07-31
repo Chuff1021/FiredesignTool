@@ -28,11 +28,14 @@ The tool does not generate, invent, or substitute product imagery.
 
 ## Customer Room Designer
 
-Version 0.8 includes a separate customer-room workspace around the same approved
+Version 0.9 includes a separate customer-room workspace around the same approved
 catalog. A salesperson can upload a room photograph, mark the intended wall in
 perspective, enter its measured width, and project the current fireplace,
 stone, mantel, and hearth configuration into the photograph. Insert-only mode
 preserves the existing surround; full-remodel mode renders the complete feature
+wall. Insert-only projects add a second four-corner calibration for the actual
+existing firebox opening plus its measured width and height. The appliance face
+is then scaled and perspective-aligned from that opening instead of the overall
 wall. The workspace includes before/after comparison, high-resolution JPEG
 export, and automatic project recovery after a refresh.
 
@@ -43,8 +46,11 @@ Returning to the library never deletes work, replacing a photograph preserves
 the project identity, and deletion requires a second explicit confirmation.
 
 The complete measured wall width and a four-corner wall plane are required
-before the result is labeled dimensionally scaled. This remains a conceptual
-sales visualization, not an installation or fit approval.
+before a full remodel is labeled dimensionally scaled. Insert-only projects
+also require a measured four-corner existing opening. Version 1 customer room
+records migrate automatically to the new schema without losing their photo or
+configuration. This remains a conceptual sales visualization, not an
+installation or fit approval.
 
 ## Run locally
 

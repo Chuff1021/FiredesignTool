@@ -470,8 +470,11 @@ select:focus-visible {
   background: var(--panel);
   border-top: 1px solid var(--line);
   display: grid;
-  gap: 0.8rem 1rem;
-  grid-template-columns: minmax(270px, 1.2fr) minmax(190px, 1fr) auto auto minmax(180px, 0.8fr);
+  gap: 0.8rem 0.75rem;
+  grid-template-columns: minmax(270px, 1.15fr) minmax(175px, 0.78fr) auto 160px minmax(
+      120px,
+      0.7fr
+    );
   padding: 0.85rem 1rem;
 }
 
@@ -479,6 +482,10 @@ select:focus-visible {
   display: grid;
   gap: 3px;
   grid-template-columns: repeat(3, 1fr);
+}
+
+.room-stepper[data-insert="true"] {
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .room-stepper button {
@@ -536,14 +543,22 @@ select:focus-visible {
   margin-top: 0.15rem;
 }
 
-.room-measurement > span {
+.room-dimensions {
+  align-items: end;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.room-measurement > span,
+.room-opening-measurements label > span {
   color: var(--muted);
   display: block;
   font-size: 0.55rem;
   margin-bottom: 0.25rem;
 }
 
-.room-measurement > div {
+.room-measurement > div,
+.room-opening-measurements label > div {
   align-items: center;
   background: #171513;
   border: 1px solid var(--line);
@@ -552,7 +567,8 @@ select:focus-visible {
   padding: 0 0.55rem;
 }
 
-.room-measurement input {
+.room-measurement input,
+.room-opening-measurements input {
   background: transparent;
   border: 0;
   color: var(--ink);
@@ -560,13 +576,19 @@ select:focus-visible {
   width: 55px;
 }
 
-.room-measurement div span {
+.room-measurement div span,
+.room-opening-measurements div span {
   color: var(--muted);
   font-size: 0.6rem;
 }
 
+.room-opening-measurements {
+  display: flex;
+  gap: 0.4rem;
+}
+
 .room-scenario {
-  min-width: 190px;
+  min-width: 180px;
 }
 
 .room-comparison {

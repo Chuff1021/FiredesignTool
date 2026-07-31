@@ -27,6 +27,9 @@
   computer, and reopen the last known-good installed release.
 - If saved dimensions appear invalid, use **Reset design**. The application
   also rejects corrupt saved data automatically.
+- For an insert concept, measure the masonry opening width and height onsite,
+  then mark its four corners in order. **Dimensionally scaled** must appear
+  before export. This calibration does not approve appliance fit.
 
 Technical errors stay in the diagnostics surface. Do not troubleshoot while a
 customer is watching; return to the last known-good release.

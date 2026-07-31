@@ -1,6 +1,8 @@
 import { z } from "zod";
 import {
   isRoomProjectCalibrated,
+  isRoomProjectReady,
+  parseRoomProject,
   roomProjectSchema,
   type RoomProject,
 } from "@/domain/roomProject";
@@ -20,6 +22,17 @@ const storedImageSchema = z.object({
   dataUrl: z.string().startsWith("data:image/"),
 });
 
+const storedProjectEnvelopeSchema = z
+  .object({
+    id: z.string().min(1),
+    source: z.object({
+      fileName: z.string().min(1),
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+    }),
+  })
+  .passthrough();
+
 type StoredRoomProject = z.infer<typeof storedRoomProjectSchema>;
 
 export type RoomProjectSummary = Pick<
@@ -28,6 +41,7 @@ export type RoomProjectSummary = Pick<
 > & {
   source: Pick<RoomProject["source"], "fileName" | "width" | "height">;
   calibrated: boolean;
+  ready: boolean;
 };
 
 const knownProjectImages = new Map<string, string>();
@@ -84,7 +98,16 @@ function toSummary(project: RoomProject | StoredRoomProject): RoomProjectSummary
       height: project.source.height,
     },
     calibrated: isRoomProjectCalibrated(calibrationProject),
+    ready: isRoomProjectReady(calibrationProject),
   };
+}
+
+function safelyParseRoomProject(candidate: unknown): RoomProject | null {
+  try {
+    return parseRoomProject(candidate);
+  } catch {
+    return null;
+  }
 }
 
 export async function saveRoomProject(project: RoomProject): Promise<void> {
@@ -135,24 +158,24 @@ export async function readRoomProject(id: string): Promise<RoomProject | null> {
     database.close();
   }
 
-  const legacy = roomProjectSchema.safeParse(candidate);
-  if (legacy.success) {
-    knownProjectImages.set(legacy.data.id, legacy.data.source.dataUrl);
-    return legacy.data;
+  const embedded = safelyParseRoomProject(candidate);
+  if (embedded) {
+    knownProjectImages.set(embedded.id, embedded.source.dataUrl);
+    return embedded;
   }
-  const metadata = storedRoomProjectSchema.safeParse(candidate);
+  const metadata = storedProjectEnvelopeSchema.safeParse(candidate);
   const image = storedImageSchema.safeParse(imageCandidate);
   if (!metadata.success || !image.success || image.data.projectId !== metadata.data.id) {
     return null;
   }
-  const hydrated = roomProjectSchema.safeParse({
+  const hydrated = safelyParseRoomProject({
     ...metadata.data,
     source: { ...metadata.data.source, dataUrl: image.data.dataUrl },
   });
-  if (!hydrated.success) return null;
-  knownProjectImages.set(hydrated.data.id, hydrated.data.source.dataUrl);
-  persistedProjectImages.add(hydrated.data.id);
-  return hydrated.data;
+  if (!hydrated) return null;
+  knownProjectImages.set(hydrated.id, hydrated.source.dataUrl);
+  persistedProjectImages.add(hydrated.id);
+  return hydrated;
 }
 
 export async function selectRoomProject(id: string): Promise<RoomProject | null> {
@@ -184,10 +207,16 @@ export async function listRoomProjects(): Promise<RoomProjectSummary[]> {
 
   return candidates
     .flatMap((candidate) => {
-      const current = storedRoomProjectSchema.safeParse(candidate);
-      if (current.success) return [toSummary(current.data)];
-      const legacy = roomProjectSchema.safeParse(candidate);
-      return legacy.success ? [toSummary(legacy.data)] : [];
+      const envelope = storedProjectEnvelopeSchema.safeParse(candidate);
+      if (!envelope.success) return [];
+      const project = safelyParseRoomProject({
+        ...envelope.data,
+        source: {
+          ...envelope.data.source,
+          dataUrl: "data:image/png;base64,metadata-only",
+        },
+      });
+      return project ? [toSummary(project)] : [];
     })
     .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
 }

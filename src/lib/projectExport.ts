@@ -1,3 +1,4 @@
+import { APP_VERSION } from "@/domain/catalog";
 import { catalogRepository } from "@/domain/catalogRepository";
 import type { FeatureWallConfiguration } from "@/domain/configuration";
 import type { RoomProject } from "@/domain/roomProject";
@@ -68,6 +69,12 @@ export async function createProjectPdf(
   line("Mantel", `${finish.name} ${mantel.shortLabel} · ${configuration.mantelWidth} in`);
   line("Installation concept", project.scenario === "insert" ? "Insert only" : "Full remodel");
   line("Measured wall", `${project.referenceInches} in · four-corner calibrated`);
+  if (project.scenario === "insert") {
+    line(
+      "Existing opening",
+      `${project.openingWidthInches} × ${project.openingHeightInches} in · four-corner calibrated`,
+    );
+  }
 
   page.drawLine({
     start: { x: 34, y: 88 },
@@ -79,7 +86,7 @@ export async function createProjectPdf(
     "Conceptual sales visualization. Verify appliance fit, venting, framing, clearances, materials, and installation onsite using current manufacturer instructions and local code.",
     { x: 34, y: 61, font: regular, size: 7.5, color: muted, maxWidth: 724, lineHeight: 10 },
   );
-  page.drawText(`Generated ${new Date().toLocaleDateString()} · FireDesign v0.8.0`, {
+  page.drawText(`Generated ${new Date().toLocaleDateString()} · FireDesign v${APP_VERSION}`, {
     x: 34,
     y: 25,
     font: regular,

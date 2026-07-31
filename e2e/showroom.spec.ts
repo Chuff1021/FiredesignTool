@@ -230,11 +230,25 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
     "aria-pressed",
     "true",
   );
+  await expect(page.locator(".room-status")).toContainText(
+    "Mark the existing fireplace opening",
+  );
+  await expect(page.getByRole("button", { name: "Export", exact: true })).toBeDisabled();
+  await page.getByLabel("Existing opening width in inches").fill("40");
+  await page.getByLabel("Existing opening height in inches").fill("30");
+  await click(0.36, 0.38);
+  await click(0.64, 0.38);
+  await click(0.64, 0.72);
+  await click(0.36, 0.72);
+  await expect(page.getByText("Dimensionally scaled")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Export", exact: true })).toBeEnabled();
+  await expect(page.getByText(/40 × 30 in opening/)).toBeVisible();
   await page.reload();
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
   await page.getByRole("button", { name: /Customer room/ }).click();
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByText("Dimensionally scaled")).toBeVisible();
+  await expect(page.getByLabel("Existing opening width in inches")).toHaveValue("40");
 });
 
 test("keeps multiple named customer projects and returns without deleting", async ({
