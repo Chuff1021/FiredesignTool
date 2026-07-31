@@ -944,8 +944,8 @@ export const ALL_ASSET_PATHS = [
   ...mantelFinishes.flatMap((finish) => finish.assets.map((asset) => asset.localPath)),
 ].filter((path, index, all) => all.indexOf(path) === index);
 
-export const APP_VERSION = "0.5.3";
-export const ASSET_VERSION = "2026.07.31-4";
+export const APP_VERSION = "0.5.4";
+export const ASSET_VERSION = "2026.07.31-5";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;
