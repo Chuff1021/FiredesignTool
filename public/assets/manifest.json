@@ -1,5 +1,5 @@
 {
-  "version": "2026.07.31-2",
+  "version": "2026.07.31-3",
   "generatedAt": "2026-07-31T00:00:00.000Z",
   "files": [
     {
@@ -84,13 +84,13 @@
     },
     {
       "path": "/assets/fpx-864-burn-poster.webp",
-      "sha256": "6262ea575dca59d36edaee774267a74512d438f55d6a69cd1a9063c4a6cd2261",
-      "size": 177700
+      "sha256": "aa6be5553860ae64bf8d9087e397514690b329bc7b790184d398d5e357e0dc20",
+      "size": 182624
     },
     {
       "path": "/assets/fpx-864-burn.mp4",
-      "sha256": "e2ae9d14b56b4bd671181802f16829dacb59e34fcb9468d0627cfcde6fcfe0fa",
-      "size": 12601310
+      "sha256": "ae6d65a88ed64d66c4493538484627f938271b2dd6dccfaaee93b677b216a22f",
+      "size": 12659608
     },
     {
       "path": "/assets/fpx-864-classic-arch-media-mask.png",

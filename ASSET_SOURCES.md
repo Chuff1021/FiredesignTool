@@ -54,10 +54,11 @@ official face and trim pixels are isolated above the published glass opening.
 
 ### Official burn footage
 
-- 864 source: Travis Industries’ official `FireplaceX® 864 TRV 31K Deluxe Gas
-Fireplaces` video, `https://vimeo.com/356069122`
-- 864 approved segment: 00:36–00:48, Classic Oak; center-cropped to the
-  published 34-1/4 × 22-1/4 inch glass ratio and exported at 1920 × 1248
+- 864 source: Travis Industries’ official `FireplaceX® 864 40K Clean Face Gas
+Fireplace` video, `https://vimeo.com/468202425`
+- 864 approved segment: 00:08–00:20, Classic Oak with the official brick
+  fireback; cropped strictly inside the physical glass opening, calibrated to
+  the published 34-1/4 × 22-1/4 inch glass ratio, and exported at 1920 × 1248
 - 4237 source: Travis Industries’ official `The NEW 4237 Deluxe Gas Fireplace
 ft. Ember-Glo™`, `https://vimeo.com/639273752`
 - 4237 approved segment: 01:42–01:54, Birch; the complete clean burn frame is

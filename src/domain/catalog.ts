@@ -238,18 +238,18 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
     burnMedia: {
       video: officialLayer(
         "/assets/fpx-864-burn.mp4",
-        "https://vimeo.com/356069122",
-        "Official Travis Industries 864 TRV 31K Classic Oak burn footage",
+        "https://vimeo.com/468202425",
+        "Official Travis Industries 864 Clean Face brick-fireback burn footage",
       ),
       poster: officialLayer(
         "/assets/fpx-864-burn-poster.webp",
-        "https://vimeo.com/356069122",
+        "https://vimeo.com/468202425",
         "Poster extracted from the approved 864 burn loop",
       ),
       codec: "H.264/AVC",
       durationSeconds: 12,
       logSet: "Classic Oak",
-      sourceTimecode: "00:36–00:48",
+      sourceTimecode: "00:08–00:20",
     },
   },
   {
@@ -390,18 +390,18 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
     burnMedia: {
       video: officialLayer(
         "/assets/fpx-864-burn.mp4",
-        "https://vimeo.com/356069122",
-        "Official Travis Industries 864 TRV 31K Classic Oak burn footage",
+        "https://vimeo.com/468202425",
+        "Official Travis Industries 864 Clean Face brick-fireback burn footage",
       ),
       poster: officialLayer(
         "/assets/fpx-864-burn-poster.webp",
-        "https://vimeo.com/356069122",
+        "https://vimeo.com/468202425",
         "Poster extracted from the approved 864 burn loop",
       ),
       codec: "H.264/AVC",
       durationSeconds: 12,
       logSet: "Classic Oak",
-      sourceTimecode: "00:36–00:48",
+      sourceTimecode: "00:08–00:20",
     },
   },
   {
@@ -944,8 +944,8 @@ export const ALL_ASSET_PATHS = [
   ...mantelFinishes.flatMap((finish) => finish.assets.map((asset) => asset.localPath)),
 ].filter((path, index, all) => all.indexOf(path) === index);
 
-export const APP_VERSION = "0.5.1";
-export const ASSET_VERSION = "2026.07.31-2";
+export const APP_VERSION = "0.5.2";
+export const ASSET_VERSION = "2026.07.31-3";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;
