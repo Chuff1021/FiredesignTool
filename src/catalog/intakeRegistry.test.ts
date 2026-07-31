@@ -39,7 +39,14 @@ describe("manufacturer-neutral catalog intake registry", () => {
       "ruby-platinum",
     ]);
     expect(superiorInserts[0]?.stage).toBe("documents-verified");
-    expect(majesticInserts.every((product) => product.stage === "source-indexed")).toBe(true);
+    expect(majesticInserts.find((product) => product.id === "ruby-platinum")?.stage).toBe(
+      "documents-verified",
+    );
+    expect(
+      majesticInserts
+        .filter((product) => product.id !== "ruby-platinum")
+        .every((product) => product.stage === "source-indexed"),
+    ).toBe(true);
     expect(
       [...superiorInserts, ...majesticInserts].every((product) =>
         product.officialIndexUrl.startsWith("https://"),
@@ -57,6 +64,25 @@ describe("manufacturer-neutral catalog intake registry", () => {
       },
     ]);
     expect(evidence?.assetQualityGate).toBe("blocked-high-resolution-master");
+
+    const rubyEvidence = majesticInserts.find(
+      (product) => product.id === "ruby-platinum",
+    )?.evidence;
+    expect(
+      rubyEvidence && "variants" in rubyEvidence ? rubyEvidence.variants : [],
+    ).toMatchObject([
+      {
+        id: "Ruby Platinum 30",
+        viewingArea: { width: 27.5, height: 15.9375 },
+        minimumOpening: { frontWidth: 31.625, height: 21, rearWidth: 20.125, depth: 15 },
+      },
+      {
+        id: "Ruby Platinum 35",
+        viewingArea: { width: 32.5, height: 19.375 },
+        minimumOpening: { frontWidth: 36.625, height: 24.25, rearWidth: 25.125, depth: 15 },
+      },
+    ]);
+    expect(rubyEvidence?.assetQualityGate).toBe("blocked-high-resolution-master");
   });
 
   it("rejects brand drift and duplicate current snapshots", () => {

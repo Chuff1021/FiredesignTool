@@ -63,5 +63,6 @@ if (failures.length > 0) {
   console.log(
     `Majestic indexed / awaiting: ${majestic.totalFamilies} / ${majestic.remainingFamilies}`,
   );
+  console.log(`Majestic document-verified families: ${majestic.byStage["documents-verified"]}`);
   console.log(`Packaged assets verified: ${APPROVED_ASSET_PATHS.length}`);
 }
