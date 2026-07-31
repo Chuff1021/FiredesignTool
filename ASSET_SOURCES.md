@@ -63,8 +63,9 @@ Fireplace` video, `https://vimeo.com/468202425`
 ft. Ember-Glo™`, `https://vimeo.com/639273752`
 - 4237 approved segment: 01:42–01:54, Birch; the complete clean burn frame is
   fitted at its original aspect ratio into the published 39-7/8 × 34-7/8 inch
-  glass area, with the natural black upper firebox retained, and exported at
-  1600 × 1400
+  glass area. The unused upper opening is extended from the recorded reflective
+  glass edge so the background remains continuous without enlarging the logs;
+  the result is exported at 1600 × 1400.
 
 Both 12-second loops contain only manufacturer-recorded frames. Each uses a
 one-second dissolve between real end/start frames, H.264 video without audio,

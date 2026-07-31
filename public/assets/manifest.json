@@ -1,5 +1,5 @@
 {
-  "version": "2026.07.31-3",
+  "version": "2026.07.31-4",
   "generatedAt": "2026-07-31T00:00:00.000Z",
   "files": [
     {
@@ -49,13 +49,13 @@
     },
     {
       "path": "/assets/fpx-4237-burn-poster.webp",
-      "sha256": "346331fc9a4828652959be6d282a09dda30a4cbcf1c2836df165840ce770f3f7",
-      "size": 161900
+      "sha256": "6d66a0309fa6d11fd9bebf799aa782ddf8e611f7aae28a9646ab54c7262399db",
+      "size": 174738
     },
     {
       "path": "/assets/fpx-4237-burn.mp4",
-      "sha256": "1112c9435ed2f7eee200e7a92bf77bba3d78a0da77939b1d5ab92a0c1026ac78",
-      "size": 7145592
+      "sha256": "12a1588fb0f5e9463c589d0a4dc72eaecdad0df10d6e1d1c65c82f92f9ea370a",
+      "size": 11263860
     },
     {
       "path": "/assets/fpx-4237-clean-face-overlay.png",
