@@ -83,6 +83,23 @@ describe("manufacturer-neutral catalog intake registry", () => {
       },
     ]);
     expect(rubyEvidence?.assetQualityGate).toBe("blocked-high-resolution-master");
+    expect(
+      rubyEvidence && "clearanceRules" in rubyEvidence
+        ? rubyEvidence.clearanceRules.mantel
+        : undefined,
+    ).toMatchObject({
+      measurementFrom: "top-of-surround-opening",
+      profiles: [
+        { material: "combustible", points: [{ projection: 12, minimumClearance: 12 }] },
+        {
+          material: "non-combustible",
+          points: [
+            { projection: 6, minimumClearance: 6 },
+            { projection: 12, minimumClearance: 12 },
+          ],
+        },
+      ],
+    });
   });
 
   it("rejects brand drift and duplicate current snapshots", () => {
@@ -124,6 +141,17 @@ describe("manufacturer-neutral catalog intake registry", () => {
       installationManualRevision: "pending-file-revision-capture",
       dimensionPages: [13],
       clearanceRulePages: [1],
+      clearanceRules: {
+        mantel: {
+          measurementFrom: "appliance-base",
+          profiles: [
+            {
+              material: "combustible",
+              points: [{ projection: 10, minimumClearance: 32 }],
+            },
+          ],
+        },
+      },
       optionPages: [],
       visualOptionIds: [],
       visualSourceUrls: [
@@ -136,6 +164,35 @@ describe("manufacturer-neutral catalog intake registry", () => {
     dri.stage = "assets-prepared";
     expect(() => catalogIntakeSchema.parse(verified)).toThrow(
       /cannot advance with a blocked visual master/,
+    );
+  });
+
+  it("rejects ambiguous or unsafe clearance curves", () => {
+    const invalid = structuredClone(MAJESTIC_CURRENT_INTAKE);
+    const evidence = invalid.products.find(
+      (product) => product.id === "ruby-platinum",
+    )?.evidence;
+    if (!evidence || !("clearanceRules" in evidence)) {
+      throw new Error("Ruby Platinum clearance evidence is missing");
+    }
+    evidence.clearanceRules.mantel.profiles[1]!.points = [
+      { projection: 12, minimumClearance: 12 },
+      { projection: 6, minimumClearance: 6 },
+    ];
+    expect(() => catalogIntakeSchema.parse(invalid)).toThrow(
+      /projection points must be strictly increasing/,
+    );
+
+    const duplicate = structuredClone(MAJESTIC_CURRENT_INTAKE);
+    const duplicateEvidence = duplicate.products.find(
+      (product) => product.id === "ruby-platinum",
+    )?.evidence;
+    if (!duplicateEvidence || !("clearanceRules" in duplicateEvidence)) {
+      throw new Error("Ruby Platinum clearance evidence is missing");
+    }
+    duplicateEvidence.clearanceRules.mantel.profiles[1]!.material = "combustible";
+    expect(() => catalogIntakeSchema.parse(duplicate)).toThrow(
+      /Duplicate mantel material profile/,
     );
   });
 });

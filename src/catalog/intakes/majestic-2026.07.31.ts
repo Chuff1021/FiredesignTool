@@ -100,6 +100,30 @@ export const MAJESTIC_CURRENT_INTAKE = catalogIntakeSchema.parse({
         installationManualRevision: "2722-980 Rev. C 3/26",
         dimensionPages: [9, 10, 11, 12, 14],
         clearanceRulePages: [17, 18],
+        clearanceRules: {
+          mantel: {
+            measurementFrom: "top-of-surround-opening",
+            profiles: [
+              {
+                material: "combustible",
+                points: [{ projection: 12, minimumClearance: 12 }],
+              },
+              {
+                material: "non-combustible",
+                points: [
+                  { projection: 6, minimumClearance: 6 },
+                  { projection: 12, minimumClearance: 12 },
+                ],
+              },
+            ],
+          },
+          hearth: {
+            measurementFrom: "appliance-base",
+            minimumFrontGap: 0.5,
+            minimumApplianceFloorGap: 0.25,
+            mustRemainBelowSurround: true,
+          },
+        },
         optionPages: [10, 11, 12, 17],
         visualOptionIds: [
           "Cottage Red",

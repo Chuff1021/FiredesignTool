@@ -23,6 +23,81 @@ export const ventingSchema = z.enum([
 
 const assetQualityGateSchema = z.enum(["blocked-high-resolution-master", "approved"]);
 
+const clearancePointSchema = z.object({
+  projection: z.number().nonnegative(),
+  minimumClearance: z.number().nonnegative(),
+});
+
+const mantelClearanceProfileSchema = z
+  .object({
+    material: z.enum(["combustible", "non-combustible"]),
+    points: z.array(clearancePointSchema).min(1),
+  })
+  .superRefine((profile, context) => {
+    profile.points.forEach((point, index) => {
+      const previous = profile.points[index - 1];
+      if (previous && point.projection <= previous.projection) {
+        context.addIssue({
+          code: "custom",
+          message: "Mantel projection points must be strictly increasing",
+          path: ["points", index, "projection"],
+        });
+      }
+      if (previous && point.minimumClearance < previous.minimumClearance) {
+        context.addIssue({
+          code: "custom",
+          message: "Mantel clearance cannot decrease as projection increases",
+          path: ["points", index, "minimumClearance"],
+        });
+      }
+    });
+  });
+
+const clearanceRulesSchema = z.object({
+  mantel: z
+    .object({
+      measurementFrom: z.enum(["appliance-base", "top-of-surround-opening"]),
+      profiles: z.array(mantelClearanceProfileSchema).min(1),
+    })
+    .superRefine((mantel, context) => {
+      const materials = new Set<string>();
+      mantel.profiles.forEach((profile, index) => {
+        if (materials.has(profile.material)) {
+          context.addIssue({
+            code: "custom",
+            message: `Duplicate mantel material profile: ${profile.material}`,
+            path: ["profiles", index, "material"],
+          });
+        }
+        materials.add(profile.material);
+      });
+    }),
+  sideWall: z
+    .object({
+      measurementFrom: z.enum(["appliance-side", "surround-opening-edge"]),
+      minimumClearance: z.number().nonnegative(),
+    })
+    .optional(),
+  hearth: z
+    .object({
+      measurementFrom: z.literal("appliance-base"),
+      placementProfiles: z
+        .array(
+          z.object({
+            applianceElevation: z.number().nonnegative(),
+            minimumHorizontalExtension: z.number().nonnegative(),
+          }),
+        )
+        .min(1)
+        .optional(),
+      minimumThickness: z.number().positive().optional(),
+      minimumFrontGap: z.number().nonnegative().optional(),
+      minimumApplianceFloorGap: z.number().nonnegative().optional(),
+      mustRemainBelowSurround: z.boolean().optional(),
+    })
+    .optional(),
+});
+
 const configuratorEvidenceSchema = z.object({
   productSku: z.string().min(1),
   fireBuilderProductId: z.number().int().positive(),
@@ -78,6 +153,7 @@ const manufacturerEvidenceSchema = z.object({
   installationManualRevision: z.string().min(1),
   dimensionPages: z.array(z.number().int().positive()).min(1),
   clearanceRulePages: z.array(z.number().int().positive()).min(1),
+  clearanceRules: clearanceRulesSchema,
   optionPages: z.array(z.number().int().positive()),
   visualOptionIds: z.array(z.string().min(1)),
   visualSourceUrls: z.array(z.string().url()).min(1),

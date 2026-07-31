@@ -83,6 +83,29 @@ export const SUPERIOR_CURRENT_INTAKE = catalogIntakeSchema.parse({
         installationManualRevision: "P/N 900787-04 REV. H 10/2024",
         dimensionPages: [13],
         clearanceRulePages: [14],
+        clearanceRules: {
+          mantel: {
+            measurementFrom: "appliance-base",
+            profiles: [
+              {
+                material: "combustible",
+                points: [{ projection: 10, minimumClearance: 32 }],
+              },
+            ],
+          },
+          sideWall: {
+            measurementFrom: "appliance-side",
+            minimumClearance: 4,
+          },
+          hearth: {
+            measurementFrom: "appliance-base",
+            placementProfiles: [
+              { applianceElevation: 0, minimumHorizontalExtension: 10 },
+              { applianceElevation: 4, minimumHorizontalExtension: 0 },
+            ],
+            minimumThickness: 0.5,
+          },
+        },
         optionPages: [34, 35],
         visualOptionIds: [
           "FPMD-BDVI27",

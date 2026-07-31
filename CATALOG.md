@@ -92,6 +92,14 @@ brands. It rejects brand drift, duplicate snapshots, duplicate product IDs,
 cross-brand live mappings, and any attempt to advance a product without the
 required evidence or visual master.
 
+Manufacturer-document evidence stores the clearance rule itself, not only a
+manual URL and page number. Mantel profiles identify the physical measurement
+datum, material classification, projection, and minimum clearance in inches.
+Optional side-wall and hearth records capture their own datums, minimum gaps,
+thickness, and elevation/extension pairs. Validation rejects duplicate material
+profiles, unsorted projection points, and any curve whose required clearance
+decreases as projection increases.
+
 Run `npm run catalog:validate` before every preview. The command validates the
 approved release and intake mapping, then independently checks every packaged
 asset against the release manifest, byte size, and SHA-256 checksum. A live
@@ -112,3 +120,10 @@ mantel and hearth-rule page, and every manual-listed full facade and four-sided
 surround. The only public manufacturer photographs are 1136x852 lifestyle
 images rather than isolated product masters, so the family remains blocked at
 the high-resolution asset gate.
+
+Majestic Ruby Platinum is also `documents-verified` for its 30- and 35-inch
+variants. Its current manual data records viewing areas, minimum masonry
+openings, official fronts and surrounds, the combustible and non-combustible
+mantel profiles measured from the top of the surround opening, and the hearth
+gaps measured from the appliance base. Its public isolated product imagery
+tops out at 2000 px and remains blocked from the 4K approved catalog.
