@@ -204,7 +204,7 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("101 / 101 verified")).toBeVisible();
+  await expect(page.getByText("123 / 123 verified")).toBeVisible();
   await expect(page.getByText("Playing · H.264 · muted")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,

@@ -625,6 +625,42 @@ for (const hearthstone of [
     .toFile(path.join(output, `centurion-hearthstone-${hearthstone.id}-bump.webp`));
 }
 
+// Current FPX lineup masters are exact FireBuilder composites. Trim only the
+// transparent configurator canvas; do not invent pixels or reshape the product.
+// Their remaining native pixel density exceeds the appliance footprint at the
+// supported 4K wall framing sizes.
+const staticProductAssets = [
+  ["fpx-864-tv40-clean-oak-960.png", "fpx-864-tv40-clean.png"],
+  ["fpx-864-tv40-classic-arch-960.png", "fpx-864-tv40-classic-arch.png"],
+  ["fpx-864-tv40-french-country-960.png", "fpx-864-tv40-french-country.png"],
+  ["fpx-864-tv40-metropolitan-960.png", "fpx-864-tv40-metropolitan.png"],
+  ["fpx-864-tv40-double-door-960.png", "fpx-864-tv40-double-door.png"],
+  ["fpx-4237-ironworks-birch-960.png", "fpx-4237-ironworks.png"],
+  ["fpx-4415-black-glass-platinum-1410.png", "fpx-4415-high-output.png"],
+  ["fpx-6015-black-glass-platinum-1410.png", "fpx-6015-high-output.png"],
+  ["fpx-pb36-basic-1410.png", "fpx-pb36-basic.png"],
+  ["fpx-pb36-deluxe-oak-1410.png", "fpx-pb36-deluxe.png"],
+  ["fpx-pb36-see-through-oak-1410.png", "fpx-pb36-see-through.png"],
+  ["fpx-pb42-deluxe-oak-1410.png", "fpx-pb42-deluxe.png"],
+  ["fpx-pb42-linear-platinum-1410.png", "fpx-pb42-linear.png"],
+  ["fpx-pb54-linear-platinum-1410.png", "fpx-pb54-linear.png"],
+  ["fpx-pb72-linear-gsb-platinum-1410.png", "fpx-pb72-linear-gsb.png"],
+  ["fpx-pb72-linear-deluxe-platinum-1410.png", "fpx-pb72-linear-deluxe.png"],
+  ["fpx-32-dvs-metropolitan-oak-960.png", "fpx-32-dvs-insert.png"],
+  ["fpx-430-metropolitan-oak-960.png", "fpx-430-insert.png"],
+  ["fpx-430-mod-metropolitan-platinum-960.png", "fpx-430-mod-insert.png"],
+  ["fpx-34-dvl-metropolitan-oak-960.png", "fpx-34-dvl-insert.png"],
+  ["fpx-616-metropolitan-oak-960.png", "fpx-616-insert.png"],
+  ["fpx-616-mod-metropolitan-platinum-960.png", "fpx-616-mod-insert.png"],
+];
+
+for (const [sourceName, outputName] of staticProductAssets) {
+  await sharp(path.join(source, sourceName))
+    .trim({ background: { r: 0, g: 0, b: 0, alpha: 0 }, threshold: 12 })
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(path.join(output, outputName));
+}
+
 await sharp(path.join(root, "public", "icon.svg"))
   .resize(192, 192)
   .png({ compressionLevel: 9 })

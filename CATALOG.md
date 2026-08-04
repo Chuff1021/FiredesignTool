@@ -76,8 +76,8 @@ not enter an approved release.
 Fireplace Xtrordinair, Superior Fireplaces, and Majestic as one registry. It
 intentionally separates discovery from approval: an indexed product never
 appears in the showroom until its manuals, dimensions, options, local visual
-assets, and 4K visual review have passed. The registry currently covers 85
-fixed-fireplace and insert families: 36 FPX, 30 Superior, and 19 Majestic.
+assets, and 4K visual review have passed. The registry currently covers 90
+fixed-fireplace and insert families: 41 FPX, 30 Superior, and 19 Majestic.
 
 The Superior and Majestic snapshots are the first manufacturer-neutral intake
 batch. They focus on installed gas fireplaces and gas inserts from the official
@@ -125,20 +125,32 @@ for catalog-related pull requests. Each run retains a JSON evidence report for
 the installed showroom application or its Vercel build depend on a manufacturer
 website being available.
 
-The complete 564 gas family is approved in release `2026.08.04-1`: TRV 25K and
-TV 35K, each in Designer and Clean Face form. Their official SKUs, FireBuilder
-IDs, 29-3/8 × 16-3/8-inch viewing area, current manuals, base-referenced mantel
-curves, face/trim SKUs, transparent masks, lossless Travis firebox masters, and
-local official burn loops are recorded. The 32 DVS, 430, 34 DVL, and 616
-Deluxe Ember-Glo inserts remain at `documents-verified`. Their
-manual-published masonry-opening profiles, glass
-areas, surround projections, facing requirements, hearth relationships,
-base-referenced mantel curves, and current FireBuilder option SKUs are
-structured for the room designer. The 32 DVS and 34 DVL retain separate
+Release `2026.08.04-2` contains all 27 models and factory variants in FPX's
+current marketed gas-fireplace and gas-insert collections as checked on
+2026-08-04: ten premium traditional fireplaces, two premium linear fireplaces,
+five traditional ProBuilder fireplaces, four linear ProBuilder fireplaces, and
+six gas inserts. Current marketing status and current factory availability are
+stored separately, so the 430 Mod-Fyre can be labeled limited stock and the 616
+Mod-Fyre factory sold out without silently removing either current marketed
+model. ProBuilder 24, 564 TV High Output, 3615 High Output, and 4415 See-Thru
+remain in the legacy intake list and never appear as current products.
+
+Every live appliance has a stable model ID, official SKU where published,
+manufacturer visual, published viewing area, and manual-referenced mantel
+curve. The four 564 variants retain their local official burn loops; the 25K
+loop has a model-specific media registration that corrects the source camera's
+left-heavy framing without moving or scaling the face, glass opening, or
+physical appliance. Newly added models use exact static Travis/FireBuilder
+composites until a model-specific burn loop and transparent opening receive a
+separate visual approval.
+
+The 32 DVS, 430, 34 DVL, and 616 Ember-Glo inserts retain their
+manual-published masonry-opening profiles, glass areas, surround projections,
+facing requirements, hearth relationships, base-referenced mantel curves, and
+current FireBuilder option SKUs. The 32 DVS and 34 DVL keep separate
 standard-face and arched-face depth requirements for both trimmed and
-untrimmed installations. The insert products remain blocked from the live
-catalog because their isolated layers are only 960 px and do not pass the 4K
-visual gate.
+untrimmed installations. Insert-fit screening remains conservative and never
+reports a fit while a required opening measurement is missing.
 
 The insert-fit screening domain compares the four measured masonry-opening
 dimensions against each exact manufacturer variant. It reports per-dimension

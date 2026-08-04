@@ -67,7 +67,7 @@ const electricUrl = "https://www.fireplacex.com/electric-fireplaces/";
 
 export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
   schemaVersion: 2,
-  snapshotId: "fpx-2026.08.04-1",
+  snapshotId: "fpx-2026.08.04-2",
   brandId: "fireplace-xtrordinair",
   brandName: "Fireplace Xtrordinair",
   manufacturer: "Travis Industries",
@@ -298,14 +298,28 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
       notes:
         "Approved from the current manual, official 1800 px transparent trim layer, a lossless 4870 px Travis firebox master, and locally packaged official burn footage.",
     }),
-    gasFireplace("864-trv-31k-family", "864 TRV 31K Deluxe Collection", "traditional", {
+    gasFireplace("864-trv-31k-deluxe", "864 TRV 31K Deluxe", "traditional", {
       stage: "approved",
-      approvedCatalogIds: ["864-trv-31k-clean-face", "864-trv-31k-deluxe"],
-      notes: "The clean-face and designer-face 31K configurations are approved and live.",
+      approvedCatalogIds: ["864-trv-31k-deluxe"],
+      notes: "The designer-face 31K configuration is approved and live.",
     }),
-    gasFireplace("864-tv-40k-deluxe", "864 TV 40K Deluxe", "traditional"),
-    gasFireplace("864-tv-40k-clean-face", "864 TV 40K Clean Face Deluxe", "traditional"),
-    gasFireplace("4237-tv-deluxe", "4237 TV Deluxe", "traditional"),
+    gasFireplace("864-trv-31k-clean-face", "864 TRV 31K Clean Face Deluxe", "traditional", {
+      stage: "approved",
+      approvedCatalogIds: ["864-trv-31k-clean-face"],
+      notes: "The clean-face 31K configuration is approved and live.",
+    }),
+    gasFireplace("864-tv-40k-deluxe", "864 TV 40K Deluxe", "traditional", {
+      stage: "approved",
+      approvedCatalogIds: ["864-tv-40k-deluxe"],
+    }),
+    gasFireplace("864-tv-40k-clean-face", "864 TV 40K Clean Face Deluxe", "traditional", {
+      stage: "approved",
+      approvedCatalogIds: ["864-tv-40k-clean-face"],
+    }),
+    gasFireplace("4237-tv-deluxe", "4237 TV Deluxe", "traditional", {
+      stage: "approved",
+      approvedCatalogIds: ["4237-ember-glo-deluxe"],
+    }),
     gasFireplace("4237-tv-clean-face", "4237 TV Clean Face Deluxe", "traditional", {
       stage: "approved",
       approvedCatalogIds: ["4237-ember-glo-clean-face"],
@@ -314,29 +328,80 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
     gasFireplace("3615-high-output", "3615 High Output Linear", "linear"),
     gasFireplace("4415-high-output", "4415 High Output Linear", "linear", {
       productUrl: "https://www.fireplacex.com/product/4415-high-output-deluxe/",
+      stage: "approved",
+      approvedCatalogIds: ["4415-high-output-deluxe"],
     }),
     gasFireplace(
       "4415-see-through-high-output",
       "4415 See-Thru High Output Linear",
       "see-through",
     ),
-    gasFireplace("6015-high-output", "6015 High Output Linear", "linear"),
+    gasFireplace("6015-high-output", "6015 High Output Linear", "linear", {
+      stage: "approved",
+      approvedCatalogIds: ["6015-high-output-deluxe"],
+    }),
     gasFireplace("24-probuilder-clean-face", "24 ProBuilder Clean Face Collection", "portrait"),
+    gasFireplace("36-probuilder-clean-face-mv", "ProBuilder 36 Clean Face MV", "traditional", {
+      productUrl:
+        "https://www.fireplacex.com/products/gas-fireplaces/traditional-probuilder-gas-fireplaces/",
+      stage: "approved",
+      approvedCatalogIds: ["probuilder-36-clean-face-mv"],
+    }),
     gasFireplace(
-      "36-probuilder-clean-face",
-      "36 ProBuilder Clean Face Collection",
+      "36-probuilder-clean-face-gsb",
+      "ProBuilder 36 Clean Face GSB",
+      "traditional",
+      {
+        productUrl:
+          "https://www.fireplacex.com/products/gas-fireplaces/traditional-probuilder-gas-fireplaces/",
+        stage: "approved",
+        approvedCatalogIds: ["probuilder-36-clean-face-gsb"],
+      },
+    ),
+    gasFireplace(
+      "36-probuilder-clean-face-deluxe",
+      "ProBuilder 36 Clean Face Deluxe",
       "traditional",
       {
         productUrl: "https://www.fireplacex.com/product/probuilder-36-clean-face-deluxe/",
+        stage: "approved",
+        approvedCatalogIds: ["probuilder-36-clean-face-deluxe"],
+      },
+    ),
+    gasFireplace(
+      "36-probuilder-clean-face-see-thru",
+      "ProBuilder 36 Clean Face See-Thru Deluxe",
+      "see-through",
+      {
+        productUrl:
+          "https://www.fireplacex.com/products/gas-fireplaces/traditional-probuilder-gas-fireplaces/",
+        stage: "approved",
+        approvedCatalogIds: ["probuilder-36-clean-face-see-thru"],
       },
     ),
     gasFireplace("42-probuilder-clean-face", "42 ProBuilder Clean Face Deluxe", "traditional", {
       productUrl: "https://www.fireplacex.com/product/probuilder-42-clean-face-deluxe/",
+      stage: "approved",
+      approvedCatalogIds: ["probuilder-42-clean-face-deluxe"],
     }),
-    gasFireplace("42-probuilder-linear", "42 ProBuilder Linear Deluxe", "linear"),
-    gasFireplace("54-probuilder-linear", "54 ProBuilder Linear Deluxe", "linear"),
-    gasFireplace("72-probuilder-linear", "72 ProBuilder Linear Collection", "linear", {
+    gasFireplace("42-probuilder-linear", "42 ProBuilder Linear Deluxe", "linear", {
+      stage: "approved",
+      approvedCatalogIds: ["probuilder-42-linear-deluxe"],
+    }),
+    gasFireplace("54-probuilder-linear", "54 ProBuilder Linear Deluxe", "linear", {
+      stage: "approved",
+      approvedCatalogIds: ["probuilder-54-linear-deluxe"],
+    }),
+    gasFireplace("72-probuilder-linear-gsb", "ProBuilder 72 Linear GSB", "linear", {
+      productUrl:
+        "https://www.fireplacex.com/products/gas-fireplaces/linear-probuilder-gas-fireplaces/",
+      stage: "approved",
+      approvedCatalogIds: ["probuilder-72-linear-gsb"],
+    }),
+    gasFireplace("72-probuilder-linear-deluxe", "ProBuilder 72 Linear Deluxe", "linear", {
       productUrl: "https://www.fireplacex.com/product/probuilder-72-linear-deluxe/",
+      stage: "approved",
+      approvedCatalogIds: ["probuilder-72-linear-deluxe"],
     }),
     indexedProduct(
       "39-greensmart-electric",
@@ -403,7 +468,8 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
         "traditional",
         "https://www.fireplacex.com/product/32-dvs-deluxe-ember-glo/",
       ),
-      stage: "documents-verified" as const,
+      stage: "approved" as const,
+      approvedCatalogIds: ["32-dvs-deluxe-ember-glo"],
       evidence: {
         productIdentifiers: [
           { id: "98400371", kind: "sku" as const },
@@ -567,7 +633,8 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
         "traditional",
         "https://www.fireplacex.com/product/430-gsr-deluxe/",
       ),
-      stage: "documents-verified" as const,
+      stage: "approved" as const,
+      approvedCatalogIds: ["430-deluxe-ember-glo"],
       evidence: {
         productIdentifiers: [
           { id: "98400113", kind: "sku" as const },
@@ -684,14 +751,20 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
       notes:
         "Current appliance dimensions, two surround-fit opening profiles, cavity clearances, viewing area, manual clearance datum, live FireBuilder options, burn source, and visual sources are verified. The largest official isolated layer is 960 px and remains blocked from the 4K visual gate.",
     },
-    indexedProduct(
-      "430-mod-fyre",
-      "430 Mod-Fyre",
-      "insert",
-      "gas",
-      "traditional",
-      "https://www.fireplacex.com/product/430-modfyre/",
-    ),
+    {
+      ...indexedProduct(
+        "430-mod-fyre",
+        "430 Mod-Fyre",
+        "insert",
+        "gas",
+        "traditional",
+        "https://www.fireplacex.com/product/430-modfyre/",
+      ),
+      stage: "approved" as const,
+      approvedCatalogIds: ["430-mod-fyre"],
+      notes:
+        "Exact current FireBuilder Mod-Fyre composite is packaged locally; FireBuilder reports limited stock on hand.",
+    },
     {
       ...indexedProduct(
         "34-dvl-deluxe-ember-glo",
@@ -701,7 +774,8 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
         "traditional",
         "https://www.fireplacex.com/product/34-dvl-deluxe-ember-glo/",
       ),
-      stage: "documents-verified" as const,
+      stage: "approved" as const,
+      approvedCatalogIds: ["34-dvl-deluxe-ember-glo"],
       evidence: {
         productIdentifiers: [
           { id: "98400376", kind: "sku" as const },
@@ -866,7 +940,8 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
         "traditional",
         "https://www.fireplacex.com/product/616-gsr/",
       ),
-      stage: "documents-verified" as const,
+      stage: "approved" as const,
+      approvedCatalogIds: ["616-deluxe-ember-glo"],
       evidence: {
         productIdentifiers: [
           { id: "98400120", kind: "sku" as const },
@@ -982,14 +1057,20 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
       notes:
         "Current appliance dimensions, two surround-fit opening profiles, cavity clearances, viewing area, manual clearance datum, live FireBuilder options, and visual sources are verified. The largest official isolated layer is 960 px and remains blocked from the 4K visual gate.",
     },
-    indexedProduct(
-      "616-mod-fyre",
-      "616 Mod-Fyre",
-      "insert",
-      "gas",
-      "traditional",
-      "https://www.fireplacex.com/product/616-modfyre/",
-    ),
+    {
+      ...indexedProduct(
+        "616-mod-fyre",
+        "616 Mod-Fyre",
+        "insert",
+        "gas",
+        "traditional",
+        "https://www.fireplacex.com/product/616-modfyre/",
+      ),
+      stage: "approved" as const,
+      approvedCatalogIds: ["616-mod-fyre"],
+      notes:
+        "Exact current FireBuilder Mod-Fyre composite is packaged locally; FireBuilder reports sold out at the factory.",
+    },
     indexedProduct(
       "medium-flush-wood-arched",
       "Medium Flush Wood Arched NexGen-Hybrid",

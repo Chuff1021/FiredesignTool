@@ -9,13 +9,13 @@ describe("FPX catalog intake queue", () => {
   it("indexes current official families without publishing incomplete products", () => {
     const summary = summarizeCatalogIntake(FPX_CURRENT_INTAKE);
     expect(summary).toMatchObject({
-      totalFamilies: 36,
-      approvedCatalogProducts: 7,
-      remainingFamilies: 30,
+      totalFamilies: 41,
+      approvedCatalogProducts: 27,
+      remainingFamilies: 14,
     });
-    expect(summary.byStage.approved).toBe(6);
-    expect(summary.byStage["documents-verified"]).toBe(4);
-    expect(summary.byStage["source-indexed"]).toBe(26);
+    expect(summary.byStage.approved).toBe(27);
+    expect(summary.byStage["documents-verified"]).toBe(0);
+    expect(summary.byStage["source-indexed"]).toBe(14);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")
@@ -45,7 +45,7 @@ describe("FPX catalog intake queue", () => {
     expect(() => catalogIntakeSchema.parse(duplicate)).toThrow(/Duplicate intake product ID/);
 
     const premature = structuredClone(FPX_CURRENT_INTAKE);
-    const queued = premature.products.find((product) => product.id === "864-tv-40k-clean-face");
+    const queued = premature.products.find((product) => product.id === "3615-high-output");
     if (!queued) throw new Error("Queued intake fixture is missing");
     queued.approvedCatalogIds = ["864-trv-31k-clean-face"];
     expect(() => catalogIntakeSchema.parse(premature)).toThrow(
@@ -99,7 +99,7 @@ describe("FPX catalog intake queue", () => {
     const product = FPX_CURRENT_INTAKE.products.find(
       (candidate) => candidate.id === "616-deluxe-ember-glo",
     );
-    expect(product?.stage).toBe("documents-verified");
+    expect(product?.stage).toBe("approved");
     const evidence = product?.evidence;
     if (!evidence || !("variants" in evidence)) {
       throw new Error("616 manufacturer evidence is missing");
@@ -161,7 +161,7 @@ describe("FPX catalog intake queue", () => {
     const product = FPX_CURRENT_INTAKE.products.find(
       (candidate) => candidate.id === "32-dvs-deluxe-ember-glo",
     );
-    expect(product?.stage).toBe("documents-verified");
+    expect(product?.stage).toBe("approved");
     const evidence = product?.evidence;
     if (!evidence || !("variants" in evidence)) {
       throw new Error("32 DVS manufacturer evidence is missing");
@@ -244,7 +244,7 @@ describe("FPX catalog intake queue", () => {
     const product = FPX_CURRENT_INTAKE.products.find(
       (candidate) => candidate.id === "430-deluxe-ember-glo",
     );
-    expect(product?.stage).toBe("documents-verified");
+    expect(product?.stage).toBe("approved");
     const evidence = product?.evidence;
     if (!evidence || !("variants" in evidence)) {
       throw new Error("430 manufacturer evidence is missing");
@@ -302,7 +302,7 @@ describe("FPX catalog intake queue", () => {
     const product = FPX_CURRENT_INTAKE.products.find(
       (candidate) => candidate.id === "34-dvl-deluxe-ember-glo",
     );
-    expect(product?.stage).toBe("documents-verified");
+    expect(product?.stage).toBe("approved");
     const evidence = product?.evidence;
     if (!evidence || !("variants" in evidence)) {
       throw new Error("34 DVL manufacturer evidence is missing");

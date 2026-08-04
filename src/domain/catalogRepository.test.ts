@@ -9,7 +9,7 @@ import {
 
 describe("versioned catalog repository", () => {
   it("indexes the complete approved release behind stable repository methods", () => {
-    expect(catalogRepository.release.version).toBe("2026.08.04-1");
+    expect(catalogRepository.release.version).toBe("2026.08.04-2");
     expect(catalogRepository.listBrands().map((brand) => brand.id)).toEqual([
       "fireplace-xtrordinair",
       "centurion-stone",
@@ -21,7 +21,7 @@ describe("versioned catalog repository", () => {
     );
     expect(catalogRepository.getMantelSize("linear", 84).modelCode).toBe("NCL-84");
     expect(catalogRepository.getStone("kentucky-ledge").productCode).toBe("150-260-15");
-    expect(APPROVED_ASSET_PATHS).toHaveLength(101);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(123);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
   });
 

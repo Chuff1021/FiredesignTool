@@ -74,6 +74,33 @@ fallback inside the calibrated glass area; no product pixels are generated.
 The FireBuilder layers are composited and cropped without resynthesis. Their
 official face and trim pixels are isolated above the published glass opening.
 
+### Complete current FPX gas catalog
+
+Release `2026.08.04-2` adds locally packaged, exact official product
+composites for the remaining current gas scope:
+
+- 864 TV 40K Deluxe and Clean Face Deluxe, with Classic Arch, French Country,
+  Metropolitan, Rectangle Double Door, and clean-face configurations
+- 4237 Ember-Glo Deluxe with IronWorks Double Door
+- 4415 and 6015 High Output Deluxe
+- ProBuilder 36 MV, GSB, Deluxe, and See-Thru; ProBuilder 42 traditional
+  Deluxe; and ProBuilder 42, 54, and 72 linear models
+- 32 DVS, 430, 430 Mod-Fyre, 34 DVL, 616, and 616 Mod-Fyre inserts, each with
+  its exact Metropolitan face and one-piece-panel reference configuration
+
+The source files are the corresponding live Travis FireBuilder layered-image
+composites. `scripts/prepare-assets.mjs` removes only transparent canvas and
+exports lossless local PNGs; it does not redraw, generate, recolor, or replace
+the appliance, logs, media, face, trim, or surround. The catalog records the
+source URL on every face asset, and the release checksum manifest prevents a
+different or incomplete visual from being deployed under the same version.
+
+The canonical current-lineup record lives in `src/catalog/fpxGasLineup.ts` and
+is checked against FPX's premium traditional, premium linear, ProBuilder
+traditional, ProBuilder linear, gas-insert, and professional-specification
+pages. It keeps current marketed products separate from supported legacy
+models and retains FireBuilder's limited-stock/factory-sold-out qualifiers.
+
 ### Official burn footage
 
 - 564 25K source: official Travis

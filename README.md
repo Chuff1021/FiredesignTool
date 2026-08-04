@@ -3,7 +3,7 @@
 Showroom-grade, dimensionally accurate visualization built from deterministic,
 manufacturer-sourced product material.
 
-The current approved catalog contains:
+The current approved catalog contains the complete 27-product FPX gas scope:
 
 - Fireplace Xtrordinair 564 TRV 25K Deluxe and Clean Face Deluxe (`98500277`,
   `98500278`)
@@ -13,6 +13,14 @@ The current approved catalog contains:
 - Fireplace Xtrordinair 864 TRV 31K Deluxe (`98500186`) with two arched and
   two rectangular official designer faces
 - Fireplace Xtrordinair 4237 Ember-Glo Clean Face Deluxe (`98500344`)
+- Fireplace Xtrordinair 864 TV 40K Deluxe and Clean Face Deluxe
+  (`98500188`, `98500189`), plus the 4237 designer-face/IronWorks variant
+- Fireplace Xtrordinair 4415 and 6015 High Output premium linear fireplaces
+- ProBuilder traditional: 36 Clean Face MV, GSB, Deluxe, and See-Thru Deluxe,
+  plus 42 Clean Face Deluxe
+- ProBuilder linear: 42 Deluxe, 54 Deluxe, 72 GSB, and 72 Deluxe
+- Gas inserts: 32 DVS Deluxe Ember-Glo, 430 Deluxe Ember-Glo, 430 Mod-Fyre,
+  34 DVL Deluxe Ember-Glo, 616 Deluxe Ember-Glo, and 616 Mod-Fyre
 - Muted, automatically looping official Travis Industries burn footage for the
   564, 864, and 4237 families, with local high-resolution fallback masters and
   complete offline playback
@@ -133,13 +141,13 @@ or physical-sample approval.
 - `src/catalog/releases` contains immutable approved catalog snapshots. Adding
   a manufacturer or product no longer requires extending a TypeScript enum.
 - `src/catalog/intakeSchema.ts` and `src/catalog/intakeRegistry.ts` hold the
-  manufacturer-neutral pre-release gates. The current queue indexes 85 FPX,
-  Superior, and Majestic fireplace/insert families while exposing seven fully
-  approved FPX products to customers.
-  FPX 430 and 616 Deluxe Ember-Glo, Superior DRI2000, and Majestic Ruby Platinum
-  have verified model-specific opening, clearance, facade, surround, and manual
-  evidence. All remain hidden until approved isolated high-resolution visual
-  masters are available. Ruby Platinum mantel rules are explicitly referenced
+  manufacturer-neutral pre-release gates. The current queue indexes 90 FPX,
+  Superior, and Majestic fireplace/insert families while exposing all 27
+  current marketed FPX gas models and variants.
+  FPX inserts, Superior DRI2000, and Majestic Ruby Platinum have verified
+  model-specific opening, clearance, facade, surround, and manual evidence.
+  Ruby Platinum remains hidden until an approved isolated high-resolution
+  visual master is available. Its mantel rules are explicitly referenced
   to the top of the surround opening, matching its current manual.
 - `src/domain/catalogRepository.ts` validates release integrity and is the only
   product lookup boundary used by configuration, renderers, controls, and

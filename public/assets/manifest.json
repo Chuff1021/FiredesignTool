@@ -48,6 +48,16 @@
       "size": 98
     },
     {
+      "path": "/assets/fpx-32-dvs-insert.png",
+      "sha256": "92a4ff5fc38822670c93a20d49946af55adf36e1717c74a0aa6f18eb2ddfcd05",
+      "size": 511827
+    },
+    {
+      "path": "/assets/fpx-34-dvl-insert.png",
+      "sha256": "642d5d46526841d65548c0a43e16234487d4572e5c330c726d4bbe7e41c81469",
+      "size": 532666
+    },
+    {
       "path": "/assets/fpx-4237-burn-poster.webp",
       "sha256": "f980f875f4f214b28943d6032083a8b73e40f4c5d689d1197d96243a4d1111b9",
       "size": 285030
@@ -66,6 +76,26 @@
       "path": "/assets/fpx-4237-clean-face.png",
       "sha256": "f76c0fc2b1fdb24c6766f6dc8ce7fdd4f4fc91727eb5ddf9aa08f5fcb99588fb",
       "size": 495873
+    },
+    {
+      "path": "/assets/fpx-4237-ironworks.png",
+      "sha256": "1b97de3fbcad873b237cb8517b8b3d1f28d230595e66cad9bf2d773e736c3e96",
+      "size": 1030138
+    },
+    {
+      "path": "/assets/fpx-430-insert.png",
+      "sha256": "395c3baeef1c136164a0d70f87310dd46a62162cc3e2102c4b11fa6e0901a59e",
+      "size": 356661
+    },
+    {
+      "path": "/assets/fpx-430-mod-insert.png",
+      "sha256": "445c277669a4aa9bf1c8c55763d19c7fcaaa1d3f93f3bbc9f60531c80898110c",
+      "size": 277142
+    },
+    {
+      "path": "/assets/fpx-4415-high-output.png",
+      "sha256": "1869b9e19d887793a70e4b94bc99f44a6e222c647c3e1a9b15fdcd82b41d4245",
+      "size": 336984
     },
     {
       "path": "/assets/fpx-564-25k-burn-poster.webp",
@@ -188,6 +218,21 @@
       "size": 1796607
     },
     {
+      "path": "/assets/fpx-6015-high-output.png",
+      "sha256": "f3648e7b730e1d1bdca371b5de4b5618da235a73de75ea28b090557cbe6431c6",
+      "size": 444456
+    },
+    {
+      "path": "/assets/fpx-616-insert.png",
+      "sha256": "3fdba8a0a796f7a56debd8a0502a2f940842b201851759b2c1843b460d43120f",
+      "size": 456013
+    },
+    {
+      "path": "/assets/fpx-616-mod-insert.png",
+      "sha256": "7f500994304d1ef21880aaa7bcee2f00347a2a8c6476722ded136341b18baeb4",
+      "size": 408228
+    },
+    {
       "path": "/assets/fpx-864-arched-french-country-media-mask.png",
       "sha256": "54030624e2005e1204f5966ca667a0d722693a4030e049e0cff43f98aafdd9bf",
       "size": 1274
@@ -266,6 +311,71 @@
       "path": "/assets/fpx-864-trv-31k-clean-face.png",
       "sha256": "99d523e41fff1f8b086614d523f1fcbda7711338665762206a6eea76777d9a58",
       "size": 395462
+    },
+    {
+      "path": "/assets/fpx-864-tv40-classic-arch.png",
+      "sha256": "e86b53ee17c21b4917e2ecc1ada5f71be422e7df2baf6a7bd9d18b90833fecd4",
+      "size": 678389
+    },
+    {
+      "path": "/assets/fpx-864-tv40-clean.png",
+      "sha256": "58695afe2fef1eee0e71ad1a82d241ad8a047c6ec0be77595a397a3ed79040ee",
+      "size": 487207
+    },
+    {
+      "path": "/assets/fpx-864-tv40-double-door.png",
+      "sha256": "7aa071332a397dcbd4372e2f19c43c46f2e43a0c78c8b4944660f85c8671e0d1",
+      "size": 815865
+    },
+    {
+      "path": "/assets/fpx-864-tv40-french-country.png",
+      "sha256": "cc815048349cecc3983d609c1518eb857bfdda1e034901488e262839db5eb894",
+      "size": 625511
+    },
+    {
+      "path": "/assets/fpx-864-tv40-metropolitan.png",
+      "sha256": "db369f7f462fc9466c29c96ae3ade1da6584dd76f7edd5a4dac54405f06838fc",
+      "size": 735425
+    },
+    {
+      "path": "/assets/fpx-pb36-basic.png",
+      "sha256": "367be3265dc60936e68f18786d84a0fa3cf59e430493cd6dfcd25f179e1fb459",
+      "size": 389507
+    },
+    {
+      "path": "/assets/fpx-pb36-deluxe.png",
+      "sha256": "7b0fc1ce7a2f6a15586e108ac4893d7c1da0c8f6351b5513bcfdb9d9a541bf8d",
+      "size": 398359
+    },
+    {
+      "path": "/assets/fpx-pb36-see-through.png",
+      "sha256": "2984815fb5e34e186c2e3775a22b2c9078913f0f0b1e6420fdac4e1c7cb83727",
+      "size": 383143
+    },
+    {
+      "path": "/assets/fpx-pb42-deluxe.png",
+      "sha256": "e5d8c885ae8696c77f44be0f2bca71f470ca7556c053c7f2ba2d8dc37b0575b0",
+      "size": 760080
+    },
+    {
+      "path": "/assets/fpx-pb42-linear.png",
+      "sha256": "8a4236fa24680b495c73bd9ef2052065d3b7d9102013e52a309ad30d0a86e06e",
+      "size": 374224
+    },
+    {
+      "path": "/assets/fpx-pb54-linear.png",
+      "sha256": "eaaf15c6e8b0acdb558aa51a6f52d195d015702390bbb0038ebc3ecf3a238ecb",
+      "size": 417940
+    },
+    {
+      "path": "/assets/fpx-pb72-linear-deluxe.png",
+      "sha256": "e111c3ec300a4f99e970bdde7bd617207c5a911912cc71a015460d5ca421aa85",
+      "size": 455946
+    },
+    {
+      "path": "/assets/fpx-pb72-linear-gsb.png",
+      "sha256": "853211840b9cb2d5f09ab1cafd1dd0238a1e8c84079079e18c9c4d0c36a4e500",
+      "size": 435065
     },
     {
       "path": "/assets/pearl-cut-stone-arctic-blast-bump.webp",

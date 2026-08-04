@@ -125,9 +125,9 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
             value={data.fps > 0 ? `${Math.round(data.fps)} FPS` : "Measuring"}
           />
           <DiagnosticRow
-            label="Official burn video"
+            label="Firebox media"
             tone={
-              data.mediaStatus === "playing"
+              data.mediaStatus === "playing" || data.mediaStatus === "static"
                 ? "good"
                 : data.mediaStatus === "fallback"
                   ? "warn"
@@ -136,11 +136,13 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
             value={
               data.mediaStatus === "playing"
                 ? "Playing · H.264 · muted"
-                : data.mediaStatus === "fallback"
-                  ? "Approved poster fallback"
-                  : data.mediaStatus === "paused"
-                    ? "Paused while hidden"
-                    : "Decoding first frame"
+                : data.mediaStatus === "static"
+                  ? "Official static product image"
+                  : data.mediaStatus === "fallback"
+                    ? "Approved poster fallback"
+                    : data.mediaStatus === "paused"
+                      ? "Paused while hidden"
+                      : "Decoding first frame"
             }
           />
           <DiagnosticRow

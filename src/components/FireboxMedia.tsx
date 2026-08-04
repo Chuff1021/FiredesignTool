@@ -1,7 +1,7 @@
 "use client";
 
 import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   LinearFilter,
   MeshBasicMaterial,
@@ -11,7 +11,7 @@ import {
 } from "three";
 import type { BurnMedia, FaceOptionId } from "@/domain/catalog";
 
-export type FireboxMediaStatus = "preparing" | "playing" | "paused" | "fallback";
+export type FireboxMediaStatus = "preparing" | "playing" | "paused" | "fallback" | "static";
 
 type FireboxMediaProps = {
   faceOptionId: FaceOptionId;
@@ -33,6 +33,13 @@ export function FireboxMedia({
   width,
 }: FireboxMediaProps) {
   const [decoded, setDecoded] = useState(false);
+  const registeredPoster = useMemo(() => {
+    const texture = poster.clone();
+    texture.repeat.set(media.registration.repeatX, media.registration.repeatY);
+    texture.offset.set(media.registration.offsetX, media.registration.offsetY);
+    texture.needsUpdate = true;
+    return texture;
+  }, [media.registration, poster]);
   const [playback] = useState(() => {
     const video = document.createElement("video");
     video.src = media.video.localPath;
@@ -49,6 +56,8 @@ export function FireboxMedia({
     texture.minFilter = LinearFilter;
     texture.magFilter = LinearFilter;
     texture.generateMipmaps = false;
+    texture.repeat.set(media.registration.repeatX, media.registration.repeatY);
+    texture.offset.set(media.registration.offsetX, media.registration.offsetY);
     return { texture, video };
   });
   const videoMaterial = useRef<MeshBasicMaterial>(null);
@@ -125,6 +134,8 @@ export function FireboxMedia({
     };
   }, [media.video.localPath, onStatus, playback]);
 
+  useEffect(() => () => registeredPoster.dispose(), [registeredPoster]);
+
   useFrame((_, delta) => {
     const target = decoded ? 1 : 0;
     fade.current += (target - fade.current) * Math.min(1, delta * 7);
@@ -141,7 +152,7 @@ export function FireboxMedia({
         <meshBasicMaterial
           alphaMap={mask}
           alphaTest={0.01}
-          map={poster}
+          map={registeredPoster}
           ref={posterMaterial}
           toneMapped={false}
           transparent

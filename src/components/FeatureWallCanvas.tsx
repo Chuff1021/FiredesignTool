@@ -294,7 +294,13 @@ function FeatureWall({
   const fireTexture = requireTexture(textures, face.asset.localPath);
   const faceOverlayTexture = requireTexture(textures, face.overlayAsset.localPath);
   const fireboxMaskTexture = requireTexture(textures, face.maskAsset.localPath);
-  const burnPosterTexture = requireTexture(textures, fireplace.burnMedia.poster.localPath);
+  const burnPosterTexture = fireplace.burnMedia
+    ? requireTexture(textures, fireplace.burnMedia.poster.localPath)
+    : undefined;
+
+  useEffect(() => {
+    if (!fireplace.burnMedia) onMediaStatus("static");
+  }, [fireplace.burnMedia, onMediaStatus]);
 
   useEffect(
     () => () => {
@@ -361,39 +367,43 @@ function FeatureWall({
         <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
         <meshBasicMaterial alphaTest={0.02} map={fireTexture} toneMapped={false} transparent />
       </mesh>
-      <group
-        position={[
-          face.mediaWindow.offsetX,
-          configuration.fireplaceElevation +
-            face.visibleFace.height / 2 +
-            face.mediaWindow.offsetY,
-          0.97,
-        ]}
-      >
-        <FireboxMedia
-          faceOptionId={face.id}
-          height={face.mediaWindow.height}
-          key={fireplace.burnMedia.video.localPath}
-          mask={fireboxMaskTexture}
-          media={fireplace.burnMedia}
-          onStatus={onMediaStatus}
-          poster={burnPosterTexture}
-          width={face.mediaWindow.width}
-        />
-      </group>
-      <mesh
-        position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 1.05]}
-        renderOrder={4}
-      >
-        <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
-        <meshBasicMaterial
-          alphaTest={0.02}
-          depthWrite={false}
-          map={faceOverlayTexture}
-          toneMapped={false}
-          transparent
-        />
-      </mesh>
+      {fireplace.burnMedia && burnPosterTexture ? (
+        <>
+          <group
+            position={[
+              face.mediaWindow.offsetX,
+              configuration.fireplaceElevation +
+                face.visibleFace.height / 2 +
+                face.mediaWindow.offsetY,
+              0.97,
+            ]}
+          >
+            <FireboxMedia
+              faceOptionId={face.id}
+              height={face.mediaWindow.height}
+              key={fireplace.burnMedia.video.localPath}
+              mask={fireboxMaskTexture}
+              media={fireplace.burnMedia}
+              onStatus={onMediaStatus}
+              poster={burnPosterTexture}
+              width={face.mediaWindow.width}
+            />
+          </group>
+          <mesh
+            position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 1.05]}
+            renderOrder={4}
+          >
+            <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
+            <meshBasicMaterial
+              alphaTest={0.02}
+              depthWrite={false}
+              map={faceOverlayTexture}
+              toneMapped={false}
+              transparent
+            />
+          </mesh>
+        </>
+      ) : null}
 
       <mesh
         position={[

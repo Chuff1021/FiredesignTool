@@ -12,9 +12,9 @@ describe("manufacturer-neutral catalog intake registry", () => {
   it("indexes FPX, Superior, and Majestic without publishing queued products", () => {
     const summary = summarizeIntakeRegistry();
     expect(summary).toMatchObject({
-      totalFamilies: 85,
-      approvedCatalogProducts: 7,
-      remainingFamilies: 79,
+      totalFamilies: 90,
+      approvedCatalogProducts: 27,
+      remainingFamilies: 63,
     });
     expect(summary.brands.map((brand) => brand.brandId)).toEqual([
       "fireplace-xtrordinair",
@@ -30,11 +30,15 @@ describe("manufacturer-neutral catalog intake registry", () => {
 
   it("resolves a live catalog product back to its gated manufacturer intake", () => {
     expect(findApprovedIntakeProduct("864-trv-31k-clean-face")).toMatchObject({
-      id: "864-trv-31k-family",
+      id: "864-trv-31k-clean-face",
       applianceType: "fireplace",
       stage: "approved",
     });
-    expect(findApprovedIntakeProduct("32-dvs-deluxe-ember-glo")).toBeUndefined();
+    expect(findApprovedIntakeProduct("32-dvs-deluxe-ember-glo")).toMatchObject({
+      id: "32-dvs-deluxe-ember-glo",
+      applianceType: "insert",
+      stage: "approved",
+    });
   });
 
   it("prioritizes current official insert families for room-design intake", () => {

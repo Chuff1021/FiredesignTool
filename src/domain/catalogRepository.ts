@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RELEASE_2026_08_04_1 } from "@/catalog/releases/2026.08.04-1";
+import { RELEASE_2026_08_04_2 } from "@/catalog/releases/2026.08.04-2";
 import {
   assetSourceSchema,
   fireplaceProductSchema,
@@ -181,7 +181,7 @@ export const catalogReleaseSchema = z
 export type CatalogRelease = z.infer<typeof catalogReleaseSchema>;
 export type CatalogBrand = z.infer<typeof brandSchema>;
 
-export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_04_1);
+export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_04_2);
 
 export interface CatalogRepository {
   readonly release: CatalogRelease;
@@ -268,8 +268,7 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
             face.overlayAsset,
             face.maskAsset,
           ]),
-          product.burnMedia.video,
-          product.burnMedia.poster,
+          ...(product.burnMedia ? [product.burnMedia.video, product.burnMedia.poster] : []),
         ]),
         ...release.stones.flatMap((stone) => [...stone.assets, ...stone.hearthstone.assets]),
         ...release.mantelFinishes.flatMap((finish) => finish.assets),

@@ -61,6 +61,22 @@ export const burnMediaSchema = z.object({
   durationSeconds: z.number().positive().max(20),
   logSet: z.string().min(1),
   sourceTimecode: z.string().min(1),
+  registration: z
+    .object({
+      repeatX: z.number().positive().max(1),
+      repeatY: z.number().positive().max(1),
+      offsetX: z.number().min(0).max(1),
+      offsetY: z.number().min(0).max(1),
+    })
+    .refine(
+      ({ repeatX, offsetX }) => repeatX + offsetX <= 1,
+      "Horizontal media registration must remain inside the approved source frame",
+    )
+    .refine(
+      ({ repeatY, offsetY }) => repeatY + offsetY <= 1,
+      "Vertical media registration must remain inside the approved source frame",
+    )
+    .default({ repeatX: 1, repeatY: 1, offsetX: 0, offsetY: 0 }),
 });
 
 export const fireplaceProductSchema = z.object({
@@ -81,7 +97,7 @@ export const fireplaceProductSchema = z.object({
   faceOptions: z.array(faceOptionSchema).min(1),
   defaultFaceOptionId: faceOptionIdSchema,
   mantelRule: mantelRuleSchema,
-  burnMedia: burnMediaSchema,
+  burnMedia: burnMediaSchema.optional(),
 });
 
 export const mantelProductIdSchema = catalogIdSchema;
@@ -277,8 +293,685 @@ function burnMedia564(model: "25k" | "35k") {
     durationSeconds: is25k ? 10 : 12,
     logSet: "Classic Oak",
     sourceTimecode: is25k ? "00:16–00:26" : "00:08–00:20",
+    // The official 25K recording was photographed obliquely. Its calibrated
+    // extraction leaves the log bed visually left-heavy even while the exact
+    // appliance and mask remain centered. This restrained crop shifts only
+    // the media; face geometry and physical dimensions are unchanged.
+    registration: is25k
+      ? { repeatX: 0.88, repeatY: 1, offsetX: 0, offsetY: 0 }
+      : { repeatX: 1, repeatY: 1, offsetX: 0, offsetY: 0 },
   };
 }
+
+function staticFace(
+  id: string,
+  name: string,
+  shape: "clean" | "arched" | "rectangular",
+  sku: string,
+  visibleFace: { width: number; height: number },
+  viewingArea: { width: number; height: number },
+  localPath: string,
+  sourceUrl: string,
+  label: string,
+) {
+  const asset = officialLayer(localPath, sourceUrl, label);
+  return {
+    id,
+    name,
+    shape,
+    sku,
+    visibleFace,
+    mediaWindow: { ...viewingArea, offsetX: 0, offsetY: 0 },
+    asset,
+    // Static products render the complete exact composite. These references
+    // remain schema-compatible for later model-specific burn-media approval.
+    overlayAsset: asset,
+    maskAsset: asset,
+  };
+}
+
+function staticMantelRule(
+  manualUrl: string,
+  manualPage: number,
+  manualRevision: string,
+  depthToMinimumHeight: { depth: number; minimumHeight: number }[],
+  note: string,
+) {
+  return {
+    datum: "fireplace-base" as const,
+    manualUrl,
+    manualPage,
+    manualRevision,
+    depthToMinimumHeight,
+    note,
+  };
+}
+
+const rule86440 = staticMantelRule(
+  "https://www.travisindustries.com/docs/100-01480.pdf",
+  41,
+  "2023-10-25",
+  [
+    { depth: 1, minimumHeight: 43.75 },
+    { depth: 7, minimumHeight: 43.75 },
+    { depth: 8, minimumHeight: 44.75 },
+    { depth: 12, minimumHeight: 48.75 },
+  ],
+  "The manual measures from the fireplace base; an 8″ combustible mantel requires 44¾″.",
+);
+
+const ruleLinearHo = (manual: string, page: number, revision: string) =>
+  staticMantelRule(
+    manual,
+    page,
+    revision,
+    [
+      { depth: 1, minimumHeight: 39 },
+      { depth: 3, minimumHeight: 39 },
+      { depth: 4, minimumHeight: 40 },
+      { depth: 6, minimumHeight: 41 },
+      { depth: 8, minimumHeight: 42 },
+      { depth: 10, minimumHeight: 43 },
+      { depth: 12, minimumHeight: 44 },
+    ],
+    "The official combustible-mantel chart is measured from the fireplace base.",
+  );
+
+const rulePb36 = staticMantelRule(
+  "https://www.travisindustries.com/docs/100-01488.pdf",
+  41,
+  "2023-04-12",
+  [
+    { depth: 1, minimumHeight: 41 },
+    { depth: 4, minimumHeight: 42 },
+    { depth: 6, minimumHeight: 43 },
+    { depth: 9, minimumHeight: 44 },
+    { depth: 12, minimumHeight: 45 },
+  ],
+  "The official ProBuilder 36 combustible-mantel chart is measured from the fireplace base.",
+);
+
+const rulePb42 = staticMantelRule(
+  "https://www.travisindustries.com/docs/100-01493.pdf",
+  41,
+  "2023-04-12",
+  [
+    { depth: 1, minimumHeight: 47 },
+    { depth: 4, minimumHeight: 47 },
+    { depth: 6, minimumHeight: 48 },
+    { depth: 8, minimumHeight: 49 },
+    { depth: 10, minimumHeight: 50 },
+    { depth: 12, minimumHeight: 51 },
+  ],
+  "The official ProBuilder 42 combustible-mantel chart is measured from the fireplace base.",
+);
+
+const rulePbLinear = (manual: string, page: number, revision: string) =>
+  staticMantelRule(
+    manual,
+    page,
+    revision,
+    [
+      { depth: 1, minimumHeight: 39 },
+      { depth: 4, minimumHeight: 39 },
+      { depth: 6, minimumHeight: 40 },
+      { depth: 8, minimumHeight: 41 },
+      { depth: 10, minimumHeight: 42 },
+      { depth: 12, minimumHeight: 43 },
+    ],
+    "The official ProBuilder Linear combustible-mantel chart is measured from the fireplace base.",
+  );
+
+const insertRule = (
+  manual: string,
+  page: number,
+  revision: string,
+  fourInchHeight: number,
+  twelveInchHeight: number,
+) =>
+  staticMantelRule(
+    manual,
+    page,
+    revision,
+    [
+      { depth: 4, minimumHeight: fourInchHeight },
+      { depth: 12, minimumHeight: twelveInchHeight },
+    ],
+    "The insert manual measures mantel clearance from the base of the insert, not the glass opening.",
+  );
+
+const expandedFpxGasProducts = [
+  {
+    id: "864-tv-40k-clean-face",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "864 TV 40K Clean Face Deluxe",
+    shortLabel: "864 40K Clean Face",
+    sku: "98500189",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 34.25, height: 22.25 },
+    defaultFaceOptionId: "clean-face",
+    faceOptions: [
+      staticFace(
+        "clean-face",
+        "Clean Face",
+        "clean",
+        "98500189",
+        { width: 41, height: 30.75 },
+        { width: 34.25, height: 22.25 },
+        "/assets/fpx-864-tv40-clean.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500189_94500721.png",
+        "Exact official 864 TV 40K Clean Face composite with Classic Oak logs",
+      ),
+    ],
+    mantelRule: {
+      ...rule86440,
+      manualUrl: "https://www.travisindustries.com/docs/100-01481.pdf",
+      manualPage: 38,
+    },
+  },
+  {
+    id: "864-tv-40k-deluxe",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "864 TV 40K Deluxe",
+    shortLabel: "864 40K Designer Face",
+    sku: "98500188",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 34.25, height: 22.25 },
+    defaultFaceOptionId: "classic-arch",
+    faceOptions: [
+      staticFace(
+        "classic-arch",
+        "Classic Arch · Black",
+        "arched",
+        "99300497",
+        { width: 40.75, height: 35.5 },
+        { width: 34.25, height: 22.25 },
+        "/assets/fpx-864-tv40-classic-arch.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/99300497.png",
+        "Official 864 TV 40K Classic Oak composite with Classic Arch face",
+      ),
+      staticFace(
+        "arched-french-country",
+        "Arched French Country · Black",
+        "arched",
+        "95800616",
+        { width: 40.75, height: 35.5 },
+        { width: 34.25, height: 22.25 },
+        "/assets/fpx-864-tv40-french-country.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95800616.png",
+        "Official 864 TV 40K Classic Oak composite with French Country face",
+      ),
+      staticFace(
+        "metropolitan",
+        "Metropolitan · Black",
+        "rectangular",
+        "95800623",
+        { width: 40.875, height: 35.625 },
+        { width: 34.25, height: 22.25 },
+        "/assets/fpx-864-tv40-metropolitan.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95800623.png",
+        "Official 864 TV 40K Classic Oak composite with Metropolitan face",
+      ),
+      staticFace(
+        "rectangle-double-door",
+        "Rectangle Double Door · Black",
+        "rectangular",
+        "95800743",
+        { width: 40.875, height: 35.625 },
+        { width: 34.25, height: 22.25 },
+        "/assets/fpx-864-tv40-double-door.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95800743.png",
+        "Official 864 TV 40K Classic Oak composite with Rectangle Double Door face",
+      ),
+    ],
+    mantelRule: rule86440,
+  },
+  {
+    id: "4237-ember-glo-deluxe",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "4237 TV Ember-Glo Deluxe",
+    shortLabel: "4237 IronWorks Doors",
+    sku: "98500343",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 39.875, height: 34.875 },
+    defaultFaceOptionId: "ironworks-double-door",
+    faceOptions: [
+      staticFace(
+        "ironworks-double-door",
+        "IronWorks Double Door · Patina Bronze",
+        "arched",
+        "95900732",
+        { width: 43.75, height: 39 },
+        { width: 39.875, height: 34.875 },
+        "/assets/fpx-4237-ironworks.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95900732.png",
+        "Official 4237 Birch composite with exact IronWorks Patina Bronze doors",
+      ),
+    ],
+    mantelRule: staticMantelRule(
+      "https://www.travisindustries.com/docs/17601942.pdf",
+      35,
+      "2026-06-09",
+      [
+        { depth: 2, minimumHeight: 51 },
+        { depth: 4, minimumHeight: 53 },
+        { depth: 6, minimumHeight: 55 },
+        { depth: 8, minimumHeight: 57 },
+        { depth: 10, minimumHeight: 59 },
+        { depth: 12, minimumHeight: 61 },
+      ],
+      "The current 4237 chart is measured from the fireplace base.",
+    ),
+  },
+  {
+    id: "4415-high-output-deluxe",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "4415 High Output Deluxe",
+    shortLabel: "4415 High Output",
+    sku: "98500328",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "linear" as const,
+    viewingArea: { width: 42.125, height: 13 },
+    defaultFaceOptionId: "black-glass-platinum",
+    faceOptions: [
+      staticFace(
+        "black-glass-platinum",
+        "Black Glass · Platinum Fyre-Art",
+        "clean",
+        "98500328",
+        { width: 44, height: 15 },
+        { width: 42.125, height: 13 },
+        "/assets/fpx-4415-high-output.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500328_96100970_94500580.png",
+        "Exact official 4415 Black Glass and Platinum Fyre-Art composite",
+      ),
+    ],
+    mantelRule: ruleLinearHo(
+      "https://www.travisindustries.com/docs/100-01353.pdf",
+      42,
+      "2023-04-19",
+    ),
+  },
+  {
+    id: "6015-high-output-deluxe",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "6015 High Output Deluxe",
+    shortLabel: "6015 High Output",
+    sku: "98500334",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "linear" as const,
+    viewingArea: { width: 58.125, height: 13 },
+    defaultFaceOptionId: "black-glass-platinum",
+    faceOptions: [
+      staticFace(
+        "black-glass-platinum",
+        "Black Glass · Platinum Fyre-Art",
+        "clean",
+        "98500334",
+        { width: 60, height: 15 },
+        { width: 58.125, height: 13 },
+        "/assets/fpx-6015-high-output.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500334_96100980_94500580.png",
+        "Exact official 6015 Black Glass and Platinum Fyre-Art composite",
+      ),
+    ],
+    mantelRule: ruleLinearHo(
+      "https://www.travisindustries.com/docs/100-01366.pdf",
+      44,
+      "2023-04-12",
+    ),
+  },
+  ...(
+    [
+      [
+        "probuilder-36-clean-face-mv",
+        "ProBuilder 36 Clean Face MV",
+        "ProBuilder 36 MV",
+        "98500222",
+        "/assets/fpx-pb36-basic.png",
+      ],
+      [
+        "probuilder-36-clean-face-gsb",
+        "ProBuilder 36 Clean Face GSB",
+        "ProBuilder 36 GSB",
+        "98500223",
+        "/assets/fpx-pb36-basic.png",
+      ],
+      [
+        "probuilder-36-clean-face-deluxe",
+        "ProBuilder 36 Clean Face Deluxe",
+        "ProBuilder 36 Deluxe",
+        "98500231",
+        "/assets/fpx-pb36-deluxe.png",
+      ],
+    ] as const
+  ).map(([id, model, shortLabel, sku, asset]) => ({
+    id,
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model,
+    shortLabel,
+    sku,
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 30.125, height: 26.125 },
+    defaultFaceOptionId: "clean-face",
+    faceOptions: [
+      staticFace(
+        "clean-face",
+        "Clean Face · Black",
+        "clean",
+        sku,
+        { width: 36, height: 33.1875 },
+        { width: 30.125, height: 26.125 },
+        asset,
+        `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${sku === "98500222" ? "98500223" : sku}.png`,
+        `Exact official ${model} clean-face composite`,
+      ),
+    ],
+    mantelRule: rulePb36,
+  })),
+  {
+    id: "probuilder-36-clean-face-see-thru",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "ProBuilder 36 Clean Face See-Thru Deluxe",
+    shortLabel: "ProBuilder 36 See-Thru",
+    sku: "98500237",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "see-through" as const,
+    viewingArea: { width: 30.125, height: 26.125 },
+    defaultFaceOptionId: "clean-face",
+    faceOptions: [
+      staticFace(
+        "clean-face",
+        "Clean Face · Classic Oak",
+        "clean",
+        "98500237",
+        { width: 36, height: 33.1875 },
+        { width: 30.125, height: 26.125 },
+        "/assets/fpx-pb36-see-through.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500237_94500642.png",
+        "Exact official ProBuilder 36 See-Thru Classic Oak composite",
+      ),
+    ],
+    mantelRule: {
+      ...rulePb36,
+      manualUrl: "https://www.travisindustries.com/docs/100-01556.pdf",
+      manualPage: 42,
+      manualRevision: "2024-10-10",
+    },
+  },
+  {
+    id: "probuilder-42-clean-face-deluxe",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "ProBuilder 42 Clean Face Deluxe",
+    shortLabel: "ProBuilder 42 Deluxe",
+    sku: "98500232",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 36, height: 31 },
+    defaultFaceOptionId: "clean-face",
+    faceOptions: [
+      staticFace(
+        "clean-face",
+        "Clean Face · Classic Oak",
+        "clean",
+        "98500232",
+        { width: 42, height: 40.25 },
+        { width: 36, height: 31 },
+        "/assets/fpx-pb42-deluxe.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500232_94500771.png",
+        "Exact official ProBuilder 42 Classic Oak composite",
+      ),
+    ],
+    mantelRule: rulePb42,
+  },
+  ...(
+    [
+      [
+        "probuilder-42-linear-deluxe",
+        "ProBuilder 42 Linear Deluxe",
+        "ProBuilder 42 Linear",
+        "98500264",
+        40.375,
+        42,
+        "/assets/fpx-pb42-linear.png",
+        "https://www.travisindustries.com/docs/100-01453.pdf",
+        49,
+      ],
+      [
+        "probuilder-54-linear-deluxe",
+        "ProBuilder 54 Linear Deluxe",
+        "ProBuilder 54 Linear",
+        "98500268",
+        52.375,
+        54,
+        "/assets/fpx-pb54-linear.png",
+        "https://www.travisindustries.com/docs/100-01453.pdf",
+        49,
+      ],
+      [
+        "probuilder-72-linear-gsb",
+        "ProBuilder 72 Linear GSB",
+        "ProBuilder 72 Linear GSB",
+        "98500263",
+        70.375,
+        72,
+        "/assets/fpx-pb72-linear-gsb.png",
+        "https://www.travisindustries.com/docs/100-01458.pdf",
+        43,
+      ],
+      [
+        "probuilder-72-linear-deluxe",
+        "ProBuilder 72 Linear Deluxe",
+        "ProBuilder 72 Linear Deluxe",
+        "98500266",
+        70.375,
+        72,
+        "/assets/fpx-pb72-linear-deluxe.png",
+        "https://www.travisindustries.com/docs/100-01458.pdf",
+        43,
+      ],
+    ] as const
+  ).map(([id, model, shortLabel, sku, viewingWidth, outerWidth, asset, manual, page]) => ({
+    id,
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model,
+    shortLabel,
+    sku,
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "gas" as const,
+    style: "linear" as const,
+    viewingArea: { width: viewingWidth, height: 13.625 },
+    defaultFaceOptionId: "clean-face",
+    faceOptions: [
+      staticFace(
+        "clean-face",
+        "Clean Face · Platinum Glass",
+        "clean",
+        sku,
+        { width: outerWidth, height: 15 },
+        { width: viewingWidth, height: 13.625 },
+        asset,
+        `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${sku}_94500580.png`,
+        `Exact official ${model} Platinum Glass composite`,
+      ),
+    ],
+    mantelRule: rulePbLinear(manual, page, page === 49 ? "2024-05-16" : "2023-04-19"),
+  })),
+  ...(
+    [
+      [
+        "32-dvs-deluxe-ember-glo",
+        "32 DVS Deluxe Ember-Glo",
+        "32 DVS Insert",
+        "98400371",
+        24.25,
+        12.75,
+        38,
+        25,
+        "95300199",
+        "/assets/fpx-32-dvs-insert.png",
+        "https://www.travisindustries.com/Docs/100-01537.pdf",
+        "100-01537, 2026-07-28",
+        33,
+        35,
+      ],
+      [
+        "430-deluxe-ember-glo",
+        "430 Deluxe Ember-Glo",
+        "430 Ember-Glo Insert",
+        "98400113",
+        23,
+        16,
+        38,
+        25,
+        "96800705",
+        "/assets/fpx-430-insert.png",
+        "https://www.travisindustries.com/docs/100-01521.pdf",
+        "100-01521",
+        33.5,
+        34.5,
+      ],
+      [
+        "430-mod-fyre",
+        "430 Mod-Fyre Deluxe",
+        "430 Mod-Fyre · Limited stock",
+        "98400114",
+        23,
+        16,
+        38,
+        25,
+        "96800705",
+        "/assets/fpx-430-mod-insert.png",
+        "https://www.travisindustries.com/docs/100-01558.pdf",
+        "2023-04-26",
+        33.5,
+        34.5,
+      ],
+      [
+        "34-dvl-deluxe-ember-glo",
+        "34 DVL Deluxe Ember-Glo",
+        "34 DVL Insert",
+        "98400376",
+        27,
+        16.125,
+        42,
+        30.5,
+        "95300596",
+        "/assets/fpx-34-dvl-insert.png",
+        "https://www.travisindustries.com/Docs/100-01536.pdf",
+        "100-01536",
+        33,
+        35.5,
+      ],
+      [
+        "616-deluxe-ember-glo",
+        "616 Deluxe Ember-Glo",
+        "616 Ember-Glo Insert",
+        "98400120",
+        27.5,
+        19.75,
+        42,
+        30.5,
+        "96900759",
+        "/assets/fpx-616-insert.png",
+        "https://www.travisindustries.com/docs/100-01519.pdf",
+        "100-01519",
+        33,
+        36.5,
+      ],
+      [
+        "616-mod-fyre",
+        "616 Mod-Fyre Deluxe",
+        "616 Mod-Fyre · Factory sold out",
+        "98400121",
+        27.5,
+        19.75,
+        42,
+        30.5,
+        "96900759",
+        "/assets/fpx-616-mod-insert.png",
+        "https://www.travisindustries.com/docs/100-01559.pdf",
+        "2023-04-26",
+        33,
+        36.5,
+      ],
+    ] as const
+  ).map(
+    ([
+      id,
+      model,
+      shortLabel,
+      sku,
+      viewingWidth,
+      viewingHeight,
+      faceWidth,
+      faceHeight,
+      faceSku,
+      asset,
+      manual,
+      revision,
+      fourInch,
+      twelveInch,
+    ]) => ({
+      id,
+      brandId: "fireplace-xtrordinair",
+      manufacturer: "Fireplace Xtrordinair",
+      model,
+      shortLabel,
+      sku,
+      status: "approved" as const,
+      applianceType: "insert" as const,
+      fuel: "gas" as const,
+      style: "traditional" as const,
+      viewingArea: { width: viewingWidth, height: viewingHeight },
+      defaultFaceOptionId: "metropolitan",
+      faceOptions: [
+        staticFace(
+          "metropolitan",
+          "Metropolitan · Black",
+          "rectangular",
+          faceSku,
+          { width: faceWidth, height: faceHeight },
+          { width: viewingWidth, height: viewingHeight },
+          asset,
+          `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${sku}.png`,
+          `Exact official ${model} composite with Metropolitan face and one-piece panel`,
+        ),
+      ],
+      mantelRule: insertRule(manual, 10, revision, fourInch, twelveInch),
+    }),
+  ),
+];
 
 export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
   {
@@ -672,6 +1365,7 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
       sourceTimecode: "02:23–02:29",
     },
   },
+  ...expandedFpxGasProducts,
 ]);
 
 const finishAssets = (
@@ -1086,7 +1780,7 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export const APP_VERSION = "0.21.0";
+export const APP_VERSION = "0.22.0";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;
