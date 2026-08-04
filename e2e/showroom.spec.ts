@@ -360,6 +360,85 @@ test("adds measured built-ins independently and persists them", async ({ page },
   await expect(page.getByLabel("Add raised hearth")).toBeChecked();
 });
 
+test("calibrates hearth depth and preserves a reversible cleaned room photo", async ({
+  page,
+}, testInfo) => {
+  test.skip(
+    testInfo.project.name === "showroom-4k",
+    "Customer photo editing is covered at desktop scale.",
+  );
+  const original = await sharp({
+    create: {
+      width: 1600,
+      height: 900,
+      channels: 3,
+      background: { r: 206, g: 198, b: 184 },
+    },
+  })
+    .jpeg({ quality: 94 })
+    .toBuffer();
+  const cleaned = await sharp({
+    create: {
+      width: 1600,
+      height: 900,
+      channels: 3,
+      background: { r: 152, g: 169, b: 179 },
+    },
+  })
+    .jpeg({ quality: 94 })
+    .toBuffer();
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await page.getByTestId("room-photo-input").setInputFiles({
+    name: "original-room.jpg",
+    mimeType: "image/jpeg",
+    buffer: original,
+  });
+  const canvas = page.getByTestId("room-canvas");
+  await expect(canvas).toBeVisible({ timeout: 20_000 });
+  const box = await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  const click = async (x: number, y: number) => {
+    await canvas.click({ position: { x: box.width * x, y: box.height * y } });
+  };
+  await click(0.08, 0.08);
+  await click(0.92, 0.08);
+  await click(0.92, 0.9);
+  await click(0.08, 0.9);
+  await page.getByLabel("Known measurement in inches").fill("144");
+  await click(0.08, 0.72);
+  await click(0.92, 0.72);
+  await expect(page.getByText("Dimensionally scaled")).toBeVisible();
+  await page.getByLabel("Add raised hearth").evaluate((element: HTMLInputElement) => {
+    element.click();
+  });
+  await page.getByRole("button", { name: "Set hearth perspective" }).click();
+  await click(0.5, 0.87);
+  await expect(page.getByRole("button", { name: "Adjust hearth perspective" })).toBeVisible();
+
+  await page.getByTestId("room-cleaned-photo-input").setInputFiles({
+    name: "cleaned-room.jpg",
+    mimeType: "image/jpeg",
+    buffer: cleaned,
+  });
+  await expect(page.getByText("Cleaned background active")).toBeVisible();
+  await expect(page.locator(".room-rendering")).toHaveCount(0);
+  const cleanedCorner = await canvas.evaluate((element) =>
+    Array.from(
+      (element as HTMLCanvasElement).getContext("2d")!.getImageData(10, 10, 1, 1).data,
+    ).slice(0, 3),
+  );
+  expect(cleanedCorner[2]).toBeGreaterThan(cleanedCorner[0]!);
+
+  await page.reload();
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await expect(page.getByText("Cleaned background active")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Adjust hearth perspective" })).toBeVisible();
+  await page.getByRole("button", { name: "Remove" }).click();
+  await expect(page.getByText("Room cleanup", { exact: true })).toBeVisible();
+});
+
 test("restores and persists a traced foreground object", async ({ page }, testInfo) => {
   test.skip(
     testInfo.project.name === "showroom-4k",

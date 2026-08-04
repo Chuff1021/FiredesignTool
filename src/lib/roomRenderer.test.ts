@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { projectedPixelsPerInch } from "@/lib/roomRenderer";
+import { createRoomProject } from "@/domain/roomProject";
+import { DEFAULT_CONFIGURATION } from "@/domain/configuration";
+import { projectedHearthGeometry, projectedPixelsPerInch } from "@/lib/roomRenderer";
 
 describe("customer room render density", () => {
   it("matches the destination density for a calibrated wall", () => {
@@ -43,5 +45,39 @@ describe("customer room render density", () => {
     );
     expect(240 * density).toBeLessThanOrEqual(4096);
     expect(240 * density * (144 * density)).toBeLessThanOrEqual(4096 * 2160);
+  });
+});
+
+describe("customer room hearth projection", () => {
+  it("uses the operator-selected front center without changing the stone width", () => {
+    const project = createRoomProject({
+      dataUrl: "data:image/jpeg;base64,AA==",
+      fileName: "room.jpg",
+      width: 1600,
+      height: 900,
+    });
+    project.hearthFrontCenter = { x: 0.5, y: 0.86 };
+    const configuration = {
+      ...DEFAULT_CONFIGURATION,
+      wallWidth: 144,
+      wallHeight: 108,
+      stoneWidth: 96,
+      fireplaceElevation: 12,
+      hearthEnabled: true,
+    };
+    const geometry = projectedHearthGeometry(
+      [
+        { x: 160, y: 90 },
+        { x: 1440, y: 90 },
+        { x: 1360, y: 810 },
+        { x: 240, y: 810 },
+      ],
+      project,
+      configuration,
+    );
+    expect((geometry.frontLeftTop.x + geometry.frontRightTop.x) / 2).toBeCloseTo(800);
+    expect((geometry.frontLeftTop.y + geometry.frontRightTop.y) / 2).toBeCloseTo(774);
+    expect(geometry.depthInches).toBe(20);
+    expect(geometry.riserHeight).toBe(10.5);
   });
 });

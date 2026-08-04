@@ -1,5 +1,9 @@
 import { catalogRepository } from "@/domain/catalogRepository";
-import { getMantelBottom, type FeatureWallConfiguration } from "@/domain/configuration";
+import {
+  getHearthStoneSegments,
+  getMantelBottom,
+  type FeatureWallConfiguration,
+} from "@/domain/configuration";
 import {
   builtInAvailableWidth,
   faceBoundsWithinOpening,
@@ -20,6 +24,17 @@ const MAX_DESIGN_CANVAS_PIXELS = 4096 * 2160;
 
 function pointDistance(first: Point, second: Point): number {
   return Math.hypot(second.x - first.x, second.y - first.y);
+}
+
+function midpoint(first: Point, second: Point): Point {
+  return { x: (first.x + second.x) / 2, y: (first.y + second.y) / 2 };
+}
+
+function interpolatePoint(first: Point, second: Point, progress: number): Point {
+  return {
+    x: first.x + (second.x - first.x) * progress,
+    y: first.y + (second.y - first.y) * progress,
+  };
 }
 
 export function projectedPixelsPerInch(
@@ -497,55 +512,93 @@ function wallPhysicalPoint(
   );
 }
 
-function textureCanvas(
+function drawHearthSurface(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+  pieceIndex: number,
+) {
+  // The official color reference is a 274 × 182 landscape swatch. The
+  // packaged master is enlarged for filtering, so restore that source aspect
+  // and tile it without stretching its slate markings into long streaks.
+  const officialSurfaceAspect = 274 / 182;
+  const tileWidth = width * 1.24;
+  const tileHeight = tileWidth / officialSurfaceAspect;
+  const horizontalOffset = -width * (0.08 + (pieceIndex % 3) * 0.055);
+  let row = 0;
+  for (
+    let top = -tileHeight * (0.16 + (pieceIndex % 4) * 0.11);
+    top < height;
+    top += tileHeight - 1
+  ) {
+    context.save();
+    if ((pieceIndex + row) % 2 === 0) {
+      context.translate(horizontalOffset + tileWidth, top);
+      context.scale(-1, 1);
+      context.drawImage(image, 0, 0, tileWidth + 1, tileHeight + 1);
+    } else {
+      context.drawImage(image, horizontalOffset, top, tileWidth + 1, tileHeight + 1);
+    }
+    context.restore();
+    row += 1;
+  }
+}
+
+function hearthCapCanvas(
   image: HTMLImageElement,
   width: number,
   height: number,
   pixelsPerInch: number,
-  treatment: "top" | "riser",
+  pieceIndex: number,
 ): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(2, Math.round(width * pixelsPerInch));
   canvas.height = Math.max(2, Math.round(height * pixelsPerInch));
   const context = canvas.getContext("2d");
   if (!context) throw new Error("The hearth renderer could not start.");
-  drawTexturedRect(context, image, 0, 0, canvas.width, canvas.height, 0.48);
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  drawHearthSurface(context, image, canvas.width, canvas.height, pieceIndex);
   const shade = context.createLinearGradient(0, 0, 0, canvas.height);
-  if (treatment === "top") {
-    shade.addColorStop(0, "rgba(255,255,255,.2)");
-    shade.addColorStop(1, "rgba(0,0,0,.08)");
-  } else {
-    shade.addColorStop(0, "rgba(0,0,0,.08)");
-    shade.addColorStop(1, "rgba(0,0,0,.27)");
-  }
+  shade.addColorStop(0, "rgba(255,255,255,.14)");
+  shade.addColorStop(0.55, "rgba(255,255,255,.015)");
+  shade.addColorStop(1, "rgba(0,0,0,.12)");
   context.fillStyle = shade;
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.strokeStyle = treatment === "top" ? "rgba(255,255,255,.22)" : "rgba(0,0,0,.2)";
-  context.lineWidth = Math.max(1, pixelsPerInch * 0.12);
-  const capWidth = 20 * pixelsPerInch;
-  for (let x = capWidth; x < canvas.width; x += capWidth) {
-    context.beginPath();
-    context.moveTo(x, 0);
-    context.lineTo(x, canvas.height);
-    context.stroke();
-  }
   return canvas;
 }
 
-async function drawProjectedHearth(
-  context: CanvasRenderingContext2D,
+function stoneRiserCanvas(
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+  pixelsPerInch: number,
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(2, Math.round(width * pixelsPerInch));
+  canvas.height = Math.max(2, Math.round(height * pixelsPerInch));
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("The hearth renderer could not start.");
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  drawStoneField(context, image, 0, canvas.width, canvas.height, pixelsPerInch);
+  const shade = context.createLinearGradient(0, 0, 0, canvas.height);
+  shade.addColorStop(0, "rgba(0,0,0,.08)");
+  shade.addColorStop(1, "rgba(0,0,0,.2)");
+  context.fillStyle = shade;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  return canvas;
+}
+
+export function projectedHearthGeometry(
   quad: Point[],
+  project: RoomProject,
   configuration: FeatureWallConfiguration,
 ) {
-  if (!configuration.hearthEnabled || configuration.fireplaceElevation < 1.5) return;
   const stone = catalogRepository.getStone(configuration.stoneId);
-  const hearthImage = await cachedImage(stone.hearthstone.assets[0]!.localPath);
-  const bottomWidth = pointDistance(quad[3]!, quad[2]!);
-  const destinationPixelsPerInch = bottomWidth / configuration.wallWidth;
-  const direction = averageFloorDirection(quad);
-  const depthInches = 20;
-  const projectedDepth = Math.max(4, depthInches * destinationPixelsPerInch * 0.38);
-  const offset = { x: direction.x * projectedDepth, y: direction.y * projectedDepth };
+  const depthInches = stone.hearthstone.dimensions.depth;
+  const thicknessInches = stone.hearthstone.dimensions.thickness;
   const halfWidth = configuration.stoneWidth / 2;
   const rearLeftTop = wallPhysicalPoint(
     quad,
@@ -559,43 +612,168 @@ async function drawProjectedHearth(
     halfWidth,
     configuration.fireplaceElevation,
   );
-  const rearLeftBottom = wallPhysicalPoint(quad, configuration, -halfWidth, 0);
-  const rearRightBottom = wallPhysicalPoint(quad, configuration, halfWidth, 0);
-  const frontLeftTop = { x: rearLeftTop.x + offset.x, y: rearLeftTop.y + offset.y };
-  const frontRightTop = { x: rearRightTop.x + offset.x, y: rearRightTop.y + offset.y };
-  const frontLeftBottom = { x: rearLeftBottom.x + offset.x, y: rearLeftBottom.y + offset.y };
-  const frontRightBottom = { x: rearRightBottom.x + offset.x, y: rearRightBottom.y + offset.y };
-  const textureScale = Math.max(4, destinationPixelsPerInch);
-  const riser = textureCanvas(
-    hearthImage,
-    configuration.stoneWidth,
-    configuration.fireplaceElevation,
-    textureScale,
-    "riser",
+  const rearLeftFloor = wallPhysicalPoint(quad, configuration, -halfWidth, 0);
+  const rearRightFloor = wallPhysicalPoint(quad, configuration, halfWidth, 0);
+  const rearCenter = midpoint(rearLeftTop, rearRightTop);
+  const destinationPixelsPerInch = pointDistance(quad[3]!, quad[2]!) / configuration.wallWidth;
+  const direction = averageFloorDirection(quad);
+  const defaultDepth = Math.max(8, depthInches * destinationPixelsPerInch * 0.5);
+  const requestedFrontCenter = project.hearthFrontCenter
+    ? imagePoint(project.hearthFrontCenter, project.source.width, project.source.height)
+    : {
+        x: rearCenter.x + direction.x * defaultDepth,
+        y: rearCenter.y + direction.y * defaultDepth,
+      };
+  const depthOffset = {
+    x: requestedFrontCenter.x - rearCenter.x,
+    y: requestedFrontCenter.y - rearCenter.y,
+  };
+  const rearWidth = pointDistance(rearLeftTop, rearRightTop);
+  const rearDirection = {
+    x: (rearRightTop.x - rearLeftTop.x) / Math.max(1, rearWidth),
+    y: (rearRightTop.y - rearLeftTop.y) / Math.max(1, rearWidth),
+  };
+  const wallHeightPixels =
+    (pointDistance(quad[0]!, quad[3]!) + pointDistance(quad[1]!, quad[2]!)) / 2;
+  const perspectiveScale = Math.max(
+    0.88,
+    Math.min(1.18, 1 + (depthOffset.y / Math.max(1, wallHeightPixels)) * 0.42),
   );
-  const top = textureCanvas(
-    hearthImage,
-    configuration.stoneWidth,
+  const frontHalfWidth = (rearWidth * perspectiveScale) / 2;
+  const frontLeftTop = {
+    x: requestedFrontCenter.x - rearDirection.x * frontHalfWidth,
+    y: requestedFrontCenter.y - rearDirection.y * frontHalfWidth,
+  };
+  const frontRightTop = {
+    x: requestedFrontCenter.x + rearDirection.x * frontHalfWidth,
+    y: requestedFrontCenter.y + rearDirection.y * frontHalfWidth,
+  };
+  const frontLeftFloor = {
+    x: rearLeftFloor.x + depthOffset.x,
+    y: rearLeftFloor.y + depthOffset.y,
+  };
+  const frontRightFloor = {
+    x: rearRightFloor.x + depthOffset.x,
+    y: rearRightFloor.y + depthOffset.y,
+  };
+  const capDrop = {
+    x: direction.x * thicknessInches * destinationPixelsPerInch,
+    y: direction.y * thicknessInches * destinationPixelsPerInch,
+  };
+  return {
+    capDrop,
     depthInches,
-    textureScale,
-    "top",
-  );
+    destinationPixelsPerInch,
+    frontLeftFloor,
+    frontLeftTop,
+    frontRightFloor,
+    frontRightTop,
+    rearLeftTop,
+    rearRightTop,
+    riserHeight: Math.max(0, configuration.fireplaceElevation - thicknessInches),
+  };
+}
+
+async function drawProjectedHearth(
+  context: CanvasRenderingContext2D,
+  quad: Point[],
+  project: RoomProject,
+  configuration: FeatureWallConfiguration,
+) {
+  if (!configuration.hearthEnabled || configuration.fireplaceElevation < 1.5) return;
+  const stone = catalogRepository.getStone(configuration.stoneId);
+  const [hearthImage, wallStoneImage] = await Promise.all([
+    cachedImage(stone.hearthstone.assets[0]!.localPath),
+    cachedImage(stone.assets[0]!.localPath),
+  ]);
+  const geometry = projectedHearthGeometry(quad, project, configuration);
+  const {
+    capDrop,
+    depthInches,
+    destinationPixelsPerInch,
+    frontLeftFloor,
+    frontLeftTop,
+    frontRightFloor,
+    frontRightTop,
+    rearLeftTop,
+    rearRightTop,
+    riserHeight,
+  } = geometry;
+  const frontLeftCapBottom = {
+    x: frontLeftTop.x + capDrop.x,
+    y: frontLeftTop.y + capDrop.y,
+  };
+  const frontRightCapBottom = {
+    x: frontRightTop.x + capDrop.x,
+    y: frontRightTop.y + capDrop.y,
+  };
+  const textureScale = Math.max(6, destinationPixelsPerInch);
 
   context.save();
-  context.shadowColor = "rgba(0,0,0,.42)";
-  context.shadowBlur = Math.max(4, projectedDepth * 0.3);
-  context.shadowOffsetY = Math.max(2, projectedDepth * 0.14);
-  projectLayer(context, riser, [
-    frontLeftTop,
-    frontRightTop,
-    frontRightBottom,
-    frontLeftBottom,
-  ]);
+  context.fillStyle = "rgba(0,0,0,.22)";
+  context.filter = `blur(${Math.max(3, destinationPixelsPerInch * 0.9)}px)`;
+  context.beginPath();
+  context.moveTo(frontLeftFloor.x, frontLeftFloor.y);
+  context.lineTo(frontRightFloor.x, frontRightFloor.y);
+  context.lineTo(frontRightFloor.x + capDrop.x * 2.2, frontRightFloor.y + capDrop.y * 2.2);
+  context.lineTo(frontLeftFloor.x + capDrop.x * 2.2, frontLeftFloor.y + capDrop.y * 2.2);
+  context.closePath();
+  context.fill();
   context.restore();
-  projectLayer(context, top, [rearLeftTop, rearRightTop, frontRightTop, frontLeftTop]);
+
+  if (riserHeight > 0.05) {
+    const riser = stoneRiserCanvas(
+      wallStoneImage,
+      configuration.stoneWidth,
+      riserHeight,
+      textureScale,
+    );
+    context.save();
+    context.shadowColor = "rgba(0,0,0,.38)";
+    context.shadowBlur = Math.max(3, destinationPixelsPerInch * 1.1);
+    context.shadowOffsetY = Math.max(1, destinationPixelsPerInch * 0.35);
+    projectLayer(context, riser, [
+      frontLeftCapBottom,
+      frontRightCapBottom,
+      frontRightFloor,
+      frontLeftFloor,
+    ]);
+    context.restore();
+  }
+
+  const segments = getHearthStoneSegments(configuration.stoneWidth);
+  segments.forEach((segment, index) => {
+    const leftProgress =
+      (segment.centerX - segment.width / 2 + configuration.stoneWidth / 2) /
+      configuration.stoneWidth;
+    const rightProgress =
+      (segment.centerX + segment.width / 2 + configuration.stoneWidth / 2) /
+      configuration.stoneWidth;
+    const cap = hearthCapCanvas(hearthImage, segment.width, depthInches, textureScale, index);
+    projectLayer(context, cap, [
+      interpolatePoint(rearLeftTop, rearRightTop, leftProgress),
+      interpolatePoint(rearLeftTop, rearRightTop, rightProgress),
+      interpolatePoint(frontLeftTop, frontRightTop, rightProgress),
+      interpolatePoint(frontLeftTop, frontRightTop, leftProgress),
+    ]);
+    const nose = hearthCapCanvas(
+      hearthImage,
+      segment.width,
+      stone.hearthstone.dimensions.thickness,
+      textureScale,
+      index + 2,
+    );
+    projectLayer(context, nose, [
+      interpolatePoint(frontLeftTop, frontRightTop, leftProgress),
+      interpolatePoint(frontLeftTop, frontRightTop, rightProgress),
+      interpolatePoint(frontLeftCapBottom, frontRightCapBottom, rightProgress),
+      interpolatePoint(frontLeftCapBottom, frontRightCapBottom, leftProgress),
+    ]);
+  });
+
   context.save();
-  context.strokeStyle = "rgba(245,235,220,.24)";
-  context.lineWidth = Math.max(1, destinationPixelsPerInch * 0.3);
+  context.strokeStyle = "rgba(250,243,232,.33)";
+  context.lineWidth = Math.max(1, destinationPixelsPerInch * 0.18);
   context.beginPath();
   context.moveTo(frontLeftTop.x, frontLeftTop.y);
   context.lineTo(frontRightTop.x, frontRightTop.y);
@@ -618,6 +796,9 @@ export async function renderRoomProject(
   const context = canvas.getContext("2d");
   if (!context) throw new Error("The customer room canvas is unavailable.");
   const room = await cachedImage(project.source.dataUrl);
+  const cleanedRoom = project.cleanedSource
+    ? await cachedImage(project.cleanedSource.dataUrl)
+    : null;
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
   context.drawImage(room, 0, 0, canvas.width, canvas.height);
@@ -636,8 +817,9 @@ export async function renderRoomProject(
     context.beginPath();
     context.rect(0, 0, canvas.width * comparison, canvas.height);
     context.clip();
+    if (cleanedRoom) context.drawImage(cleanedRoom, 0, 0, canvas.width, canvas.height);
     projectLayer(context, design, wallQuad);
-    await drawProjectedHearth(context, wallQuad, configuration);
+    await drawProjectedHearth(context, wallQuad, project, configuration);
     context.restore();
   }
   if (project.scenario === "insert" && project.openingQuad.length === 4) {
@@ -671,6 +853,7 @@ export async function renderRoomProject(
     context.beginPath();
     context.rect(0, 0, canvas.width * comparison, canvas.height);
     context.clip();
+    if (cleanedRoom) context.drawImage(cleanedRoom, 0, 0, canvas.width, canvas.height);
     projectLayer(context, face.canvas, target);
     context.restore();
   }

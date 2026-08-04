@@ -124,6 +124,13 @@ export const roomAccessoriesSchema = z.object({
   right: builtInSideSchema,
 });
 
+const cleanedRoomSourceSchema = z.object({
+  dataUrl: z.string().startsWith("data:image/"),
+  fileName: z.string().min(1),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+});
+
 export type BuiltInSide = z.infer<typeof builtInSideSchema>;
 export type RoomAccessories = z.infer<typeof roomAccessoriesSchema>;
 
@@ -150,9 +157,15 @@ export const DEFAULT_ROOM_ACCESSORIES: RoomAccessories = {
   },
 };
 
-export const roomProjectSchema = roomProjectV5Schema.extend({
+const roomProjectV6Schema = roomProjectV5Schema.extend({
   schemaVersion: z.literal(6),
   accessories: roomAccessoriesSchema,
+});
+
+export const roomProjectSchema = roomProjectV6Schema.extend({
+  schemaVersion: z.literal(7),
+  hearthFrontCenter: normalizedPointSchema.nullable(),
+  cleanedSource: cleanedRoomSourceSchema.nullable(),
 });
 
 export type RoomProject = z.infer<typeof roomProjectSchema>;
@@ -169,7 +182,7 @@ export function createRoomProject(
     showDimensions: false,
   });
   return roomProjectSchema.parse({
-    schemaVersion: 6,
+    schemaVersion: 7,
     id: crypto.randomUUID(),
     name: "Customer fireplace concept",
     createdAt: timestamp,
@@ -188,6 +201,8 @@ export function createRoomProject(
     foregroundPolygons: [],
     configuration: projectConfiguration,
     accessories: DEFAULT_ROOM_ACCESSORIES,
+    hearthFrontCenter: null,
+    cleanedSource: null,
   });
 }
 
@@ -197,7 +212,7 @@ function migrateVersionFour(
 ): RoomProject {
   return roomProjectSchema.parse({
     ...project,
-    schemaVersion: 6,
+    schemaVersion: 7,
     configuration: normalizeConfiguration({
       ...configuration,
       wallWidth: project.referenceInches,
@@ -205,14 +220,27 @@ function migrateVersionFour(
       showDimensions: false,
     }),
     accessories: DEFAULT_ROOM_ACCESSORIES,
+    hearthFrontCenter: null,
+    cleanedSource: null,
   });
 }
 
 function migrateVersionFive(project: z.infer<typeof roomProjectV5Schema>): RoomProject {
   return roomProjectSchema.parse({
     ...project,
-    schemaVersion: 6,
+    schemaVersion: 7,
     accessories: DEFAULT_ROOM_ACCESSORIES,
+    hearthFrontCenter: null,
+    cleanedSource: null,
+  });
+}
+
+function migrateVersionSix(project: z.infer<typeof roomProjectV6Schema>): RoomProject {
+  return roomProjectSchema.parse({
+    ...project,
+    schemaVersion: 7,
+    hearthFrontCenter: null,
+    cleanedSource: null,
   });
 }
 
@@ -222,6 +250,8 @@ export function parseRoomProject(
 ): RoomProject {
   const current = roomProjectSchema.safeParse(candidate);
   if (current.success) return current.data;
+  const versionSix = roomProjectV6Schema.safeParse(candidate);
+  if (versionSix.success) return migrateVersionSix(versionSix.data);
   const versionFive = roomProjectV5Schema.safeParse(candidate);
   if (versionFive.success) return migrateVersionFive(versionFive.data);
   const versionFour = roomProjectV4Schema.safeParse(candidate);

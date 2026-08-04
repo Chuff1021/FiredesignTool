@@ -658,6 +658,51 @@ select:focus-visible {
   min-width: 80px;
 }
 
+.room-cleanup-status {
+  align-items: center;
+  background: #171513;
+  border: 1px solid var(--line);
+  display: flex;
+  gap: 0.55rem;
+  grid-column: 1 / -1;
+  padding: 0.55rem 0.7rem;
+}
+
+.room-cleanup-status[data-active="true"] {
+  border-color: rgba(110, 169, 131, 0.38);
+}
+
+.room-cleanup-status > span {
+  margin-right: auto;
+}
+
+.room-cleanup-status strong,
+.room-cleanup-status small {
+  display: block;
+}
+
+.room-cleanup-status strong {
+  color: var(--ink);
+  font-size: 0.6rem;
+  font-weight: 610;
+}
+
+.room-cleanup-status small {
+  color: var(--muted-2);
+  font-size: 0.51rem;
+  margin-top: 0.13rem;
+}
+
+.room-cleanup-status button {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.52rem;
+  min-height: 30px;
+  padding: 0 0.55rem;
+}
+
 .room-accessories {
   background: #171513;
   border: 1px solid var(--line);

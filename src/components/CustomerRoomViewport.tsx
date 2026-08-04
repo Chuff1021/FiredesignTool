@@ -58,7 +58,13 @@ import {
 } from "@/lib/storageHealth";
 import { useConfigurationStore } from "@/store/configurationStore";
 
-type CalibrationTool = "wall" | "measurement" | "opening" | "foreground" | "view";
+type CalibrationTool =
+  | "wall"
+  | "measurement"
+  | "opening"
+  | "hearth-depth"
+  | "foreground"
+  | "view";
 
 const fitDimensionLabels: Record<InsertFitDimension, string> = {
   frontWidth: "front width",
@@ -90,6 +96,7 @@ function variantLabel(value: string): string {
 export function CustomerRoomViewport() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cleanedPhotoInputRef = useRef<HTMLInputElement>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
   const projectRef = useRef<RoomProject | null>(null);
   const [project, setProject] = useState<RoomProject | null>(null);
@@ -212,7 +219,7 @@ export function CustomerRoomViewport() {
     setRendering(true);
     void renderRoomProject(canvasRef.current, project, configuration, {
       comparison: project.comparison,
-      markers: tool !== "view" && tool !== "foreground",
+      markers: tool !== "view" && tool !== "foreground" && tool !== "hearth-depth",
       foregroundDraft: tool === "foreground" ? foregroundDraft : undefined,
     })
       .catch((error) => {
@@ -282,6 +289,34 @@ export function CustomerRoomViewport() {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCleanedPhoto = async (file: File | undefined) => {
+    if (!file || !project) return;
+    setRendering(true);
+    setMessage(null);
+    try {
+      const cleanedSource = await prepareRoomImage(file);
+      const originalAspect = project.source.width / project.source.height;
+      const cleanedAspect = cleanedSource.width / cleanedSource.height;
+      if (Math.abs(cleanedAspect - originalAspect) / originalAspect > 0.01) {
+        throw new Error(
+          "The cleaned photograph must keep the same crop and camera angle as the original.",
+        );
+      }
+      updateProject({ ...project, cleanedSource });
+      setMessage(
+        "Cleaned room photograph added. The original remains protected for Before view.",
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "The cleaned photograph could not be prepared.",
+      );
+    } finally {
+      setRendering(false);
     }
   };
 
@@ -413,6 +448,10 @@ export function CustomerRoomViewport() {
         return;
       }
       setForegroundDraft([...foregroundDraft, point]);
+    } else if (tool === "hearth-depth") {
+      updateProject({ ...project, hearthFrontCenter: point });
+      setTool("view");
+      setMessage("Hearth depth perspective updated for this photograph.");
     } else if (tool === "wall") {
       const wallQuad = [...project.wallQuad, point].slice(0, 4);
       updateProject({ ...project, wallQuad });
@@ -433,7 +472,13 @@ export function CustomerRoomViewport() {
 
   const resetCalibration = () => {
     if (!project) return;
-    updateProject({ ...project, wallQuad: [], referenceSegment: [], openingQuad: [] });
+    updateProject({
+      ...project,
+      wallQuad: [],
+      referenceSegment: [],
+      openingQuad: [],
+      hearthFrontCenter: null,
+    });
     setTool("wall");
   };
 
@@ -475,6 +520,11 @@ export function CustomerRoomViewport() {
 
   const undoPoint = () => {
     if (!project) return;
+    if (tool === "hearth-depth") {
+      updateProject({ ...project, hearthFrontCenter: null });
+      setTool("view");
+      return;
+    }
     if (tool === "foreground") {
       setForegroundDraft(foregroundDraft.slice(0, -1));
       return;
@@ -760,6 +810,13 @@ export function CustomerRoomViewport() {
             <UiIcon name="image" /> Replace photo
           </button>
           <button
+            className="secondary-action"
+            onClick={() => cleanedPhotoInputRef.current?.click()}
+            type="button"
+          >
+            <UiIcon name="image" /> {project.cleanedSource ? "Replace retouch" : "Add retouch"}
+          </button>
+          <button
             className="primary-action"
             disabled={!ready || rendering}
             onClick={() => void exportDesign("image")}
@@ -783,6 +840,17 @@ export function CustomerRoomViewport() {
           data-testid="room-photo-input"
           onChange={(event) => {
             void handleFile(event.target.files?.[0], true);
+            event.target.value = "";
+          }}
+          type="file"
+        />
+        <input
+          ref={cleanedPhotoInputRef}
+          accept="image/jpeg,image/png,image/heic,image/heif"
+          className="sr-only"
+          data-testid="room-cleaned-photo-input"
+          onChange={(event) => {
+            void handleCleanedPhoto(event.target.files?.[0]);
             event.target.value = "";
           }}
           type="file"
@@ -873,6 +941,16 @@ export function CustomerRoomViewport() {
               <span>
                 Click around its outside edge in order, then finish the outline. Use this for
                 furniture, fireplace tools, or décor that should cover the design.
+              </span>
+            </>
+          ) : null}
+          {tool === "hearth-depth" ? (
+            <>
+              <strong>Set the front center of the hearth.</strong>
+              <span>
+                Click where the middle of the 20-inch hearth front edge should land on the
+                floor. This corrects the room photo perspective without changing its physical
+                width.
               </span>
             </>
           ) : null}
@@ -1028,6 +1106,29 @@ export function CustomerRoomViewport() {
           />
           <span>After</span>
         </label>
+        <div className="room-cleanup-status" data-active={Boolean(project.cleanedSource)}>
+          <span>
+            <strong>
+              {project.cleanedSource ? "Cleaned background active" : "Room cleanup"}
+            </strong>
+            <small>
+              {project.cleanedSource
+                ? "Before keeps the original; After uses the retouched photograph."
+                : "Upload a same-angle retouched copy with pets and clutter removed."}
+            </small>
+          </span>
+          <button onClick={() => cleanedPhotoInputRef.current?.click()} type="button">
+            {project.cleanedSource ? "Replace" : "Add cleaned photo"}
+          </button>
+          {project.cleanedSource ? (
+            <button
+              onClick={() => updateProject({ ...project, cleanedSource: null })}
+              type="button"
+            >
+              Remove
+            </button>
+          ) : null}
+        </div>
         {project.scenario === "full-remodel" ? (
           <RoomAccessoriesPanel
             accessories={project.accessories}
@@ -1072,6 +1173,13 @@ export function CustomerRoomViewport() {
               Trace foreground
             </button>
           )}
+          {configuration.hearthEnabled && project.scenario === "full-remodel" ? (
+            <button disabled={!ready} onClick={() => setTool("hearth-depth")} type="button">
+              {project.hearthFrontCenter
+                ? "Adjust hearth perspective"
+                : "Set hearth perspective"}
+            </button>
+          ) : null}
           {project.foregroundPolygons.length > 0 ? (
             <button onClick={clearForeground} type="button">
               Clear foreground ({project.foregroundPolygons.length})
