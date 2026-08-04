@@ -128,7 +128,7 @@ export function ControlPanel({
       <section className="product-summary">
         <div className="product-summary__visual">
           <div className="product-summary__glow" />
-          <span>{fireplace.shortLabel.startsWith("4237") ? "4237" : "864"}</span>
+          <span>{fireplace.model.split(" ")[0]}</span>
         </div>
         <div className="product-summary__copy">
           <p className="eyebrow">{fireplace.manufacturer}</p>

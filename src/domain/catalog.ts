@@ -154,7 +154,7 @@ export const stoneProductSchema = z.object({
   }),
 });
 
-const retrievedAt = "2026-07-30";
+const retrievedAt = "2026-08-04";
 
 const officialLayer = (localPath: string, sourceUrl: string, label: string) => ({
   localPath,
@@ -163,7 +163,220 @@ const officialLayer = (localPath: string, sourceUrl: string, label: string) => (
   label,
 });
 
+const mantelClearance564 = [
+  { depth: 0.75, minimumHeight: 35.5 },
+  { depth: 2, minimumHeight: 36 },
+  { depth: 4, minimumHeight: 36.5 },
+  { depth: 6, minimumHeight: 37 },
+  { depth: 8, minimumHeight: 37.5 },
+  { depth: 10, minimumHeight: 38 },
+  { depth: 12, minimumHeight: 38.5 },
+];
+
+const faceDefinitions564 = [
+  {
+    id: "classic-arch",
+    name: "Classic Arch · Black",
+    shape: "arched" as const,
+    sku: "95400402",
+    visibleFace: { width: 36.125, height: 29 },
+    mediaWindow: { width: 29.08, height: 16.01, offsetX: 0.02, offsetY: -0.17 },
+  },
+  {
+    id: "french-country",
+    name: "French Country · Black",
+    shape: "arched" as const,
+    sku: "95400408",
+    visibleFace: { width: 36.125, height: 29 },
+    mediaWindow: { width: 29.03, height: 15.94, offsetX: 0, offsetY: -0.1 },
+  },
+  {
+    id: "metropolitan",
+    name: "Metropolitan · Black",
+    shape: "rectangular" as const,
+    sku: "95400411",
+    visibleFace: { width: 36.125, height: 29 },
+    mediaWindow: { width: 29.15, height: 16.15, offsetX: 0.02, offsetY: -0.03 },
+  },
+  {
+    id: "rectangle-double-door",
+    name: "Rectangle Double Door · Black",
+    shape: "rectangular" as const,
+    sku: "95400467",
+    visibleFace: { width: 36.125, height: 29.125 },
+    mediaWindow: { width: 29.56, height: 16.64, offsetX: 0.02, offsetY: -0.1 },
+  },
+];
+
+function faces564(modelAssetId: "trv-25k" | "tv-35k", baseSku: string) {
+  return faceDefinitions564.map((face) => ({
+    ...face,
+    asset: officialLayer(
+      `/assets/fpx-564-${modelAssetId}-${face.id}.png`,
+      `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${baseSku}_94500626.png`,
+      `Official 1800 px Travis FireBuilder ${modelAssetId} Oak layer composited with the official ${face.name} face`,
+    ),
+    overlayAsset: officialLayer(
+      `/assets/fpx-564-${face.id}-overlay.png`,
+      `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${face.sku}.png`,
+      `Complete official Travis FireBuilder ${face.name} layer`,
+    ),
+    maskAsset: officialLayer(
+      `/assets/fpx-564-${face.id}-media-mask.png`,
+      `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${face.sku}.png`,
+      `Glass mask extracted from the enclosed opening of the official ${face.name} layer`,
+    ),
+  }));
+}
+
+function cleanFace564(modelAssetId: "trv-25k" | "tv-35k", baseSku: string) {
+  return {
+    id: "clean-face",
+    name: "2″ Clean Face Trim · Black",
+    shape: "clean" as const,
+    sku: "95900370",
+    visibleFace: { width: 36, height: 23.6875 },
+    mediaWindow: { width: 29.375, height: 16.375, offsetX: 0.14, offsetY: -0.26 },
+    asset: officialLayer(
+      `/assets/fpx-564-${modelAssetId}-clean-face.png`,
+      `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${baseSku}_94500626.png`,
+      `Official 1800 px Travis FireBuilder ${modelAssetId} Oak layer with 2-inch clean-face trim`,
+    ),
+    overlayAsset: officialLayer(
+      "/assets/fpx-564-clean-face-overlay.png",
+      "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95900370.png",
+      "Complete official Travis FireBuilder 2-inch clean-face trim layer",
+    ),
+    maskAsset: officialLayer(
+      "/assets/fpx-564-clean-face-media-mask.png",
+      "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95900370.png",
+      "Rectangular glass mask extracted from the official 2-inch clean-face trim layer",
+    ),
+  };
+}
+
+function burnMedia564(model: "25k" | "35k") {
+  const is25k = model === "25k";
+  const sourceUrl = is25k
+    ? "https://www.travisindustries.com/download/BurningVideos/FPX_BurningFootage/F_564TRV25K_MissionFootage.mp4"
+    : "https://www.travisindustries.com/download/BurningVideos/FPX_BurningFootage/564TV35KCF_BurningFootage.mp4";
+  return {
+    video: officialLayer(
+      `/assets/fpx-564-${model}-burn.mp4`,
+      sourceUrl,
+      `Calibrated glass-area loop from official Travis Industries 564 ${model.toUpperCase()} burn footage`,
+    ),
+    poster: officialLayer(
+      `/assets/fpx-564-${model}-burn-poster.webp`,
+      is25k
+        ? "https://www.travisindustries.com/download/Dragon/56425K_LogSets/Oak/564SSCF_OakLogs_HandMadeBrick_S_ON_638.tif"
+        : "https://www.travisindustries.com/download/Dragon/564_35K_Images/Oak/564_35K_Oak_Handmade_S_674.tif",
+      `High-resolution official Travis ${model.toUpperCase()} Oak and handmade-brick fallback master`,
+    ),
+    codec: "H.264/AVC" as const,
+    durationSeconds: is25k ? 10 : 12,
+    logSet: "Classic Oak",
+    sourceTimecode: is25k ? "00:16–00:26" : "00:08–00:20",
+  };
+}
+
 export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
+  {
+    id: "564-trv-25k-deluxe",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "564 TRV 25K Deluxe",
+    shortLabel: "564 25K Designer Face",
+    sku: "98500277",
+    status: "approved",
+    applianceType: "fireplace",
+    fuel: "gas",
+    style: "traditional",
+    viewingArea: { width: 29.375, height: 16.375 },
+    defaultFaceOptionId: "classic-arch",
+    faceOptions: faces564("trv-25k", "98500277"),
+    mantelRule: {
+      datum: "fireplace-base",
+      manualUrl: "https://www.travisindustries.com/docs/100-01564.pdf",
+      manualPage: 47,
+      manualRevision: "2024-04-02",
+      depthToMinimumHeight: mantelClearance564,
+      note: "The manual measures mantel height from the fireplace base; a 6″ mantel requires 37″ and an 8″ mantel requires 37½″.",
+    },
+    burnMedia: burnMedia564("25k"),
+  },
+  {
+    id: "564-trv-25k-clean-face",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "564 TRV 25K Clean Face Deluxe",
+    shortLabel: "564 25K Clean Face",
+    sku: "98500278",
+    status: "approved",
+    applianceType: "fireplace",
+    fuel: "gas",
+    style: "traditional",
+    viewingArea: { width: 29.375, height: 16.375 },
+    defaultFaceOptionId: "clean-face",
+    faceOptions: [cleanFace564("trv-25k", "98500278")],
+    mantelRule: {
+      datum: "fireplace-base",
+      manualUrl: "https://www.travisindustries.com/docs/100-01565.pdf",
+      manualPage: 42,
+      manualRevision: "2024-04-02",
+      depthToMinimumHeight: mantelClearance564,
+      note: "The manual measures mantel height from the fireplace base; a 6″ mantel requires 37″ and an 8″ mantel requires 37½″.",
+    },
+    burnMedia: burnMedia564("25k"),
+  },
+  {
+    id: "564-tv-35k-deluxe",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "564 TV 35K Deluxe",
+    shortLabel: "564 35K Designer Face",
+    sku: "98500297",
+    status: "approved",
+    applianceType: "fireplace",
+    fuel: "gas",
+    style: "traditional",
+    viewingArea: { width: 29.375, height: 16.375 },
+    defaultFaceOptionId: "classic-arch",
+    faceOptions: faces564("tv-35k", "98500297"),
+    mantelRule: {
+      datum: "fireplace-base",
+      manualUrl: "https://www.travisindustries.com/docs/100-01551.pdf",
+      manualPage: 42,
+      manualRevision: "2024-04-02",
+      depthToMinimumHeight: mantelClearance564,
+      note: "The manual measures mantel height from the fireplace base; a 6″ mantel requires 37″ and an 8″ mantel requires 37½″.",
+    },
+    burnMedia: burnMedia564("35k"),
+  },
+  {
+    id: "564-tv-35k-clean-face",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "564 TV 35K Clean Face Deluxe",
+    shortLabel: "564 35K Clean Face",
+    sku: "98500298",
+    status: "approved",
+    applianceType: "fireplace",
+    fuel: "gas",
+    style: "traditional",
+    viewingArea: { width: 29.375, height: 16.375 },
+    defaultFaceOptionId: "clean-face",
+    faceOptions: [cleanFace564("tv-35k", "98500298")],
+    mantelRule: {
+      datum: "fireplace-base",
+      manualUrl: "https://www.travisindustries.com/docs/100-01552.pdf",
+      manualPage: 37,
+      manualRevision: "2024-04-02",
+      depthToMinimumHeight: mantelClearance564,
+      note: "The manual measures mantel height from the fireplace base; a 6″ mantel requires 37″ and an 8″ mantel requires 37½″.",
+    },
+    burnMedia: burnMedia564("35k"),
+  },
   {
     id: "864-trv-31k-clean-face",
     brandId: "fireplace-xtrordinair",
@@ -873,7 +1086,7 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export const APP_VERSION = "0.20.0";
+export const APP_VERSION = "0.21.0";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

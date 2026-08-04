@@ -136,7 +136,7 @@ export function FireboxMedia({
   // enclosed-opening mask keeps moving footage out of face and door pixels.
   return (
     <group name={`burn-media-${faceOptionId}`}>
-      <mesh renderOrder={2}>
+      <mesh position={[0, 0, 0]} renderOrder={2}>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial
           alphaMap={mask}
@@ -147,7 +147,7 @@ export function FireboxMedia({
           transparent
         />
       </mesh>
-      <mesh renderOrder={3}>
+      <mesh position={[0, 0, 0.01]} renderOrder={3}>
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial
           alphaMap={mask}

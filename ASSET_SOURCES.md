@@ -1,9 +1,31 @@
 # Manufacturer asset sources
 
 Every customer-facing product visual is derived from manufacturer-published
-material retrieved on 2026-07-30. No generative image system is used.
+material retrieved or reverified on 2026-08-04. No generative image system is used.
 
 ## Fireplace Xtrordinair
+
+### 564 TRV 25K and 564 TV 35K
+
+- Appliance SKUs: Designer `98500277` / Clean Face `98500278` for 25K;
+  Designer `98500297` / Clean Face `98500298` for 35K
+- Published viewing area for all four models: 29-3/8 in W × 16-3/8 in H
+- Official 1800 px FireBuilder face layers: Classic Arch `95400402`, French
+  Country `95400408`, Metropolitan `95400411`, and Rectangle Double Door
+  `95400467`
+- Official 1800 px Clean Face trim: `95900370`
+- 25K lossless Oak/handmade-brick master:
+  `https://www.travisindustries.com/download/Dragon/56425K_LogSets/Oak/564SSCF_OakLogs_HandMadeBrick_S_ON_638.tif`
+- 35K lossless Oak/handmade-brick master:
+  `https://www.travisindustries.com/download/Dragon/564_35K_Images/Oak/564_35K_Oak_Handmade_S_674.tif`
+- Installation manuals: `100-01564` page 47, `100-01565` page 42,
+  `100-01551` page 42, and `100-01552` page 37; all revision 2024-04-02
+- Mantel datum: fireplace base. A 6-inch projection requires 37 inches and an
+  8-inch projection requires 37-1/2 inches above the base.
+
+The exact transparent openings are extracted from each official face or trim
+layer. The lossless product photography supplies a sharp 1880 × 1048 Oak
+fallback inside the calibrated glass area; no product pixels are generated.
 
 ### 864 TRV 31K Clean Face Deluxe
 
@@ -54,6 +76,12 @@ official face and trim pixels are isolated above the published glass opening.
 
 ### Official burn footage
 
+- 564 25K source: official Travis
+  `F_564TRV25K_MissionFootage.mp4`; stable segment 00:16–00:26 is perspective-corrected
+  from the installed glass plane and calibrated to 29-3/8 × 16-3/8 inches
+- 564 35K source: official Travis `564TV35KCF_BurningFootage.mp4`; segment
+  00:08–00:20 is cropped strictly to the installed glass plane and calibrated
+  to 29-3/8 × 16-3/8 inches
 - 864 source: Travis Industries’ official `FireplaceX® 864 40K Clean Face Gas
 Fireplace` video, `https://vimeo.com/468202425`
 - 864 approved segment: 00:08–00:20, Classic Oak with the official brick
@@ -66,7 +94,7 @@ ft. Ember-Glo™`, `https://vimeo.com/639273752`
   calibrated to the published 39-7/8 × 34-7/8 inch ratio. No pixels are stretched
   or extended above the source frame; the result is exported at 1600 × 1400.
 
-Both loops contain only manufacturer-recorded frames. Each uses a minimal
+All loops contain only manufacturer-recorded frames. Each uses a minimal
 real-frame dissolve between end/start frames, H.264 video without audio,
 and a poster extracted from that exact output. There is no generation, frame
 interpolation, flame reconstruction, color replacement, or synthetic effect.

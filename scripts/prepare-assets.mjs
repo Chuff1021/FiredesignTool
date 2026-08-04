@@ -121,6 +121,137 @@ for (const [sku, filename] of standardFaces) {
   await makeExactDesignerFace(sku, filename);
 }
 
+async function alphaBounds(input) {
+  const { data, info } = await sharp(input)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  let minX = info.width;
+  let minY = info.height;
+  let maxX = -1;
+  let maxY = -1;
+  for (let y = 0; y < info.height; y += 1) {
+    for (let x = 0; x < info.width; x += 1) {
+      if (data[(y * info.width + x) * 4 + 3] <= 16) continue;
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+    }
+  }
+  if (maxX < minX || maxY < minY) throw new Error("Transparent asset has no visible pixels.");
+  return { left: minX, top: minY, width: maxX - minX + 1, height: maxY - minY + 1 };
+}
+
+async function enclosedOpeningMask(face, filename) {
+  const { data, info } = await sharp(face)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const pixelCount = info.width * info.height;
+  const visited = new Uint8Array(pixelCount);
+  const components = [];
+
+  for (let start = 0; start < pixelCount; start += 1) {
+    if (visited[start] || data[start * 4 + 3] > 16) continue;
+    const stack = [start];
+    const pixels = [];
+    visited[start] = 1;
+    let touchesBorder = false;
+    let minX = info.width;
+    let minY = info.height;
+    let maxX = 0;
+    let maxY = 0;
+
+    while (stack.length > 0) {
+      const pixel = stack.pop();
+      if (pixel === undefined) continue;
+      const x = pixel % info.width;
+      const y = Math.floor(pixel / info.width);
+      pixels.push(pixel);
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+      if (x === 0 || y === 0 || x === info.width - 1 || y === info.height - 1) {
+        touchesBorder = true;
+      }
+      for (const neighbor of [pixel - 1, pixel + 1, pixel - info.width, pixel + info.width]) {
+        if (neighbor < 0 || neighbor >= pixelCount || visited[neighbor]) continue;
+        const neighborX = neighbor % info.width;
+        if (Math.abs(neighborX - x) > 1 || data[neighbor * 4 + 3] > 16) continue;
+        visited[neighbor] = 1;
+        stack.push(neighbor);
+      }
+    }
+
+    if (!touchesBorder && pixels.length > 30_000) {
+      components.push({ pixels, minX, minY, maxX, maxY });
+    }
+  }
+
+  if (components.length === 0)
+    throw new Error(`No enclosed glass opening found for ${filename}.`);
+  const bounds = components.reduce(
+    (result, component) => ({
+      minX: Math.min(result.minX, component.minX),
+      minY: Math.min(result.minY, component.minY),
+      maxX: Math.max(result.maxX, component.maxX),
+      maxY: Math.max(result.maxY, component.maxY),
+    }),
+    { minX: info.width, minY: info.height, maxX: 0, maxY: 0 },
+  );
+  const mask = Buffer.alloc(pixelCount);
+  for (const component of components) {
+    for (const pixel of component.pixels) mask[pixel] = 255;
+  }
+  await sharp(mask, { raw: { width: info.width, height: info.height, channels: 1 } })
+    .extract({
+      left: bounds.minX,
+      top: bounds.minY,
+      width: bounds.maxX - bounds.minX + 1,
+      height: bounds.maxY - bounds.minY + 1,
+    })
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(path.join(output, filename));
+}
+
+const face564Sources = [
+  { id: "classic-arch", source: "fpx-564-face-95400402-1800.png" },
+  { id: "french-country", source: "fpx-564-face-95400408-1800.png" },
+  { id: "metropolitan", source: "fpx-564-face-95400411-1800.png" },
+  { id: "rectangle-double-door", source: "fpx-564-face-95400467-1800.png" },
+  { id: "clean-face", source: "fpx-564-trim-95900370-1800.png" },
+];
+
+for (const faceDefinition of face564Sources) {
+  const rawFace = path.join(source, faceDefinition.source);
+  const bounds = await alphaBounds(rawFace);
+  const face = await sharp(rawFace).extract(bounds).ensureAlpha().png().toBuffer();
+  await sharp(face)
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(path.join(output, `fpx-564-${faceDefinition.id}-overlay.png`));
+  await enclosedOpeningMask(face, `fpx-564-${faceDefinition.id}-media-mask.png`);
+
+  for (const model of [
+    { id: "trv-25k", source: "fpx-564-25k-oak-1800.png" },
+    { id: "tv-35k", source: "fpx-564-35k-oak-1800.png" },
+  ]) {
+    const base = await sharp(path.join(source, model.source)).extract(bounds).png().toBuffer();
+    await sharp(base)
+      .composite([{ input: face }])
+      .png({ compressionLevel: 9, adaptiveFiltering: true })
+      .toFile(path.join(output, `fpx-564-${model.id}-${faceDefinition.id}.png`));
+  }
+}
+
+await sharp(path.join(source, "fpx-564-25k-poster-master.webp"))
+  .webp({ quality: 94, smartSubsample: true, effort: 6 })
+  .toFile(path.join(output, "fpx-564-25k-burn-poster.webp"));
+await sharp(path.join(source, "fpx-564-35k-poster-master.webp"))
+  .webp({ quality: 94, smartSubsample: true, effort: 6 })
+  .toFile(path.join(output, "fpx-564-35k-burn-poster.webp"));
+
 await sharp(path.join(source, "fpx-4237-clean-birch-900.png"))
   .extract({ left: 155, top: 205, width: 600, height: 518 })
   .png({ compressionLevel: 9, adaptiveFiltering: true })

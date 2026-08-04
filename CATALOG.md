@@ -125,19 +125,20 @@ for catalog-related pull requests. Each run retains a JSON evidence report for
 the installed showroom application or its Vercel build depend on a manufacturer
 website being available.
 
-The 564 TRV 25K designer-face and clean-face models were the first FPX batch
-to reach `documents-verified`. Their official SKUs, FireBuilder IDs, viewing
-area, current installation manuals, mantel-rule page, and visible option SKUs
-are recorded. The 32 DVS, 430, 34 DVL, and 616 Deluxe Ember-Glo inserts have
-reached the same gate. Their manual-published masonry-opening profiles, glass
+The complete 564 gas family is approved in release `2026.08.04-1`: TRV 25K and
+TV 35K, each in Designer and Clean Face form. Their official SKUs, FireBuilder
+IDs, 29-3/8 × 16-3/8-inch viewing area, current manuals, base-referenced mantel
+curves, face/trim SKUs, transparent masks, lossless Travis firebox masters, and
+local official burn loops are recorded. The 32 DVS, 430, 34 DVL, and 616
+Deluxe Ember-Glo inserts remain at `documents-verified`. Their
+manual-published masonry-opening profiles, glass
 areas, surround projections, facing requirements, hearth relationships,
 base-referenced mantel curves, and current FireBuilder option SKUs are
 structured for the room designer. The 32 DVS and 34 DVL retain separate
 standard-face and arched-face depth requirements for both trimmed and
-untrimmed installations. These products remain blocked from the live catalog
-because the insert layers are only 960 px and the 564 layers use 1800 px square
-canvases that remain below the required 2400 px isolated-product width. None
-passes the 4K visual gate.
+untrimmed installations. The insert products remain blocked from the live
+catalog because their isolated layers are only 960 px and do not pass the 4K
+visual gate.
 
 The insert-fit screening domain compares the four measured masonry-opening
 dimensions against each exact manufacturer variant. It reports per-dimension

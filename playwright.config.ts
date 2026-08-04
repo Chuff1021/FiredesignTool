@@ -9,6 +9,10 @@ export default defineConfig({
   // so parallel WebKit workers do not fail after the UI is already usable.
   timeout: 120_000,
   fullyParallel: false,
+  // Each project verifies and decodes the complete showroom release. Running
+  // browser engines concurrently creates artificial memory/decoder pressure
+  // that does not exist in the single-display showroom deployment.
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
   reporter: [["list"], ["html", { open: "never" }]],

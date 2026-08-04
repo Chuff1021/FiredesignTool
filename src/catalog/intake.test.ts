@@ -10,12 +10,12 @@ describe("FPX catalog intake queue", () => {
     const summary = summarizeCatalogIntake(FPX_CURRENT_INTAKE);
     expect(summary).toMatchObject({
       totalFamilies: 36,
-      approvedCatalogProducts: 3,
-      remainingFamilies: 34,
+      approvedCatalogProducts: 7,
+      remainingFamilies: 30,
     });
-    expect(summary.byStage.approved).toBe(2);
-    expect(summary.byStage["documents-verified"]).toBe(6);
-    expect(summary.byStage["source-indexed"]).toBe(28);
+    expect(summary.byStage.approved).toBe(6);
+    expect(summary.byStage["documents-verified"]).toBe(4);
+    expect(summary.byStage["source-indexed"]).toBe(26);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")
@@ -45,13 +45,15 @@ describe("FPX catalog intake queue", () => {
     expect(() => catalogIntakeSchema.parse(duplicate)).toThrow(/Duplicate intake product ID/);
 
     const premature = structuredClone(FPX_CURRENT_INTAKE);
-    premature.products[0]!.approvedCatalogIds = ["864-trv-31k-clean-face"];
+    const queued = premature.products.find((product) => product.id === "864-tv-40k-clean-face");
+    if (!queued) throw new Error("Queued intake fixture is missing");
+    queued.approvedCatalogIds = ["864-trv-31k-clean-face"];
     expect(() => catalogIntakeSchema.parse(premature)).toThrow(
       /Unapproved intake product .* cannot map to a live catalog product/,
     );
   });
 
-  it("holds verified 564 data behind the high-resolution visual gate", () => {
+  it("publishes the verified 564 family through the high-resolution visual gate", () => {
     const models = FPX_CURRENT_INTAKE.products.filter((product) =>
       product.id.startsWith("564-trv-25k"),
     );
@@ -66,12 +68,12 @@ describe("FPX catalog intake queue", () => {
     expect(
       models.every(
         (product) =>
-          product.stage === "documents-verified" &&
+          product.stage === "approved" &&
           product.evidence &&
           "viewingArea" in product.evidence &&
           product.evidence.viewingArea.width === 29.375 &&
           product.evidence.viewingArea.height === 16.375 &&
-          product.evidence.assetQualityGate === "blocked-high-resolution-master",
+          product.evidence.assetQualityGate === "approved",
       ),
     ).toBe(true);
     expect(
@@ -80,7 +82,7 @@ describe("FPX catalog intake queue", () => {
           ? product.evidence.maximumOfficialLayerPixels
           : undefined,
       ),
-    ).toEqual([1800, 1800]);
+    ).toEqual([4603, 4603]);
     expect(
       models.every(
         (product) =>
@@ -387,19 +389,16 @@ describe("FPX catalog intake queue", () => {
     if (!evidence || !("visualMaster" in evidence)) {
       throw new Error("Visual master evidence is missing");
     }
-    evidence.assetQualityGate = "approved";
+    const candidate = evidence.visualMaster.candidates[0]!;
+    candidate.transparentMediaOpening = false;
     expect(() => catalogIntakeSchema.parse(intake)).toThrow(
       /cannot be approved without a qualifying recorded candidate/,
     );
 
-    const candidate = evidence.visualMaster.candidates[0]!;
-    candidate.width = 2400;
-    candidate.height = 1800;
     candidate.transparentMediaOpening = true;
-    evidence.maximumOfficialLayerPixels = 2400;
     expect(catalogIntakeSchema.parse(intake)).toBeTruthy();
 
-    evidence.maximumOfficialLayerPixels = 2399;
+    evidence.maximumOfficialLayerPixels = 4602;
     expect(() => catalogIntakeSchema.parse(intake)).toThrow(
       /must match the largest recorded candidate edge/,
     );

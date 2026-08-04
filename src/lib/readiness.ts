@@ -152,24 +152,36 @@ export async function runReadinessChecks(
   const manifest = assetManifestSchema.parse(await manifestResponse.json());
 
   let verifiedAssets = 0;
-  for (const file of manifest.files) {
-    const response = await fetch(file.path);
-    if (!response.ok) {
-      throw new Error(`Required showroom asset failed to load: ${file.path}`);
+  let nextAssetIndex = 0;
+  const verifyNextAsset = async () => {
+    while (nextAssetIndex < manifest.files.length) {
+      const file = manifest.files[nextAssetIndex];
+      nextAssetIndex += 1;
+      if (!file) return;
+      const response = await fetch(file.path);
+      if (!response.ok) {
+        throw new Error(`Required showroom asset failed to load: ${file.path}`);
+      }
+      const bytes = await response.arrayBuffer();
+      if (bytes.byteLength !== file.size) {
+        throw new Error(`Required showroom asset has an unexpected size: ${file.path}`);
+      }
+      const digest = bytesToHex(await crypto.subtle.digest("SHA-256", bytes));
+      if (digest !== file.sha256) {
+        throw new Error(`Required showroom asset failed its integrity check: ${file.path}`);
+      }
+      await verifyImage(bytes, response.headers.get("content-type"));
+      await verifyVideo(bytes, response.headers.get("content-type"));
+      verifiedAssets += 1;
+      onProgress?.(verifiedAssets, manifest.files.length);
     }
-    const bytes = await response.arrayBuffer();
-    if (bytes.byteLength !== file.size) {
-      throw new Error(`Required showroom asset has an unexpected size: ${file.path}`);
-    }
-    const digest = bytesToHex(await crypto.subtle.digest("SHA-256", bytes));
-    if (digest !== file.sha256) {
-      throw new Error(`Required showroom asset failed its integrity check: ${file.path}`);
-    }
-    await verifyImage(bytes, response.headers.get("content-type"));
-    await verifyVideo(bytes, response.headers.get("content-type"));
-    verifiedAssets += 1;
-    onProgress?.(verifiedAssets, manifest.files.length);
-  }
+  };
+
+  // A small bounded pool keeps 4K startup inside the showroom target without
+  // flooding Safari's decoders or allocating the entire release at once.
+  await Promise.all(
+    Array.from({ length: Math.min(4, manifest.files.length) }, () => verifyNextAsset()),
+  );
 
   return { manifest, graphics, verifiedAssets };
 }

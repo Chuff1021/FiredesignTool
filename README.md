@@ -5,13 +5,17 @@ manufacturer-sourced product material.
 
 The current approved catalog contains:
 
+- Fireplace Xtrordinair 564 TRV 25K Deluxe and Clean Face Deluxe (`98500277`,
+  `98500278`)
+- Fireplace Xtrordinair 564 TV 35K Deluxe and Clean Face Deluxe (`98500297`,
+  `98500298`), with four official Designer faces on each Deluxe model
 - Fireplace Xtrordinair 864 TRV 31K Clean Face Deluxe (`98500187`)
 - Fireplace Xtrordinair 864 TRV 31K Deluxe (`98500186`) with two arched and
   two rectangular official designer faces
 - Fireplace Xtrordinair 4237 Ember-Glo Clean Face Deluxe (`98500344`)
-- Muted, automatically looping official Travis Industries burn footage: Classic
-  Oak for the 864 and 4237, with matching local posters
-  and offline fallback
+- Muted, automatically looping official Travis Industries burn footage for the
+  564, 864, and 4237 families, with local high-resolution fallback masters and
+  complete offline playback
 - Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
 - Centurion #860 hearthstones in matching Kentucky and Brown colors, laid out
   across the exact selected stone-field width with centered field cuts
@@ -130,8 +134,8 @@ or physical-sample approval.
   a manufacturer or product no longer requires extending a TypeScript enum.
 - `src/catalog/intakeSchema.ts` and `src/catalog/intakeRegistry.ts` hold the
   manufacturer-neutral pre-release gates. The current queue indexes 85 FPX,
-  Superior, and Majestic fireplace/insert families while exposing only three
-  fully approved FPX products to customers.
+  Superior, and Majestic fireplace/insert families while exposing seven fully
+  approved FPX products to customers.
   FPX 430 and 616 Deluxe Ember-Glo, Superior DRI2000, and Majestic Ruby Platinum
   have verified model-specific opening, clearance, facade, surround, and manual
   evidence. All remain hidden until approved isolated high-resolution visual
@@ -174,6 +178,8 @@ field-cut end caps where the selected width is not an exact multiple.
 Mantel placement is measured from the fireplace base, matching the datum in
 the selected Travis Industries installation manual:
 
+- All four 564 variants: a 6-inch-deep shelf requires a 37-inch minimum and an
+  8-inch-deep shelf requires a 37-1/2-inch minimum above the fireplace base.
 - Both 864 variants: an 8-inch-deep shelf requires a 44-3/4-inch minimum
   height and a 9-inch-deep shelf requires a 45-3/4-inch minimum above the
   fireplace base.
@@ -187,13 +193,11 @@ only. Confirm the current fireplace manual, the shelf instructions, the
 complete wall assembly, and local code before installation. It is a sales aid,
 not an installation approval.
 
-The isolated official product layers remain below the required resolution for
-a final 4K release. The largest processed layers are 624×468, 660×570, and
-600×518 pixels. They are suitable for configurator and scale validation, but
-**this release remains preview-only for 4K customer presentation until
-approved higher-resolution isolated product masters or usable manufacturer
-CAD/BIM files are supplied**. The software does not disguise that limitation
-with generative enhancement.
+The 564 release combines official transparent 1800-pixel face layers with
+lossless 4603- and 4870-pixel Travis firebox photography. Older 864 and 4237
+face composites retain their recorded lower-resolution source limitation and
+remain subject to the 4K manual review gate. The software does not disguise
+source limitations with generative enhancement.
 
 See [ASSET_SOURCES.md](./ASSET_SOURCES.md) for provenance and
 [CATALOG.md](./CATALOG.md) for the intake contract, and

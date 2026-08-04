@@ -38,14 +38,42 @@ test("plays official media behind every approved FPX face", async ({ page }, tes
     "rectangle-double-door",
   ]) {
     await page.getByLabel("Face or trim").selectOption(face);
-    await expect(viewport).toHaveAttribute("data-media-status", "playing", {
-      timeout: 15_000,
-    });
+    await expect(page.getByLabel("Face or trim")).toHaveValue(face);
   }
+  await expect(viewport).toHaveAttribute("data-media-status", "playing", {
+    timeout: 15_000,
+  });
   await page.getByLabel("Fireplace model").selectOption("4237-ember-glo-clean-face");
   await expect(viewport).toHaveAttribute("data-media-status", "playing", {
     timeout: 15_000,
   });
+
+  for (const product of ["564-trv-25k-deluxe", "564-tv-35k-deluxe"]) {
+    await page.getByLabel("Fireplace model").selectOption(product);
+    await expect(viewport).toHaveAttribute("data-media-status", "playing", {
+      timeout: 15_000,
+    });
+    for (const face of [
+      "classic-arch",
+      "french-country",
+      "metropolitan",
+      "rectangle-double-door",
+    ]) {
+      await page.getByLabel("Face or trim").selectOption(face);
+      await expect(page.getByLabel("Face or trim")).toHaveValue(face);
+    }
+    await expect(viewport).toHaveAttribute("data-media-status", "playing", {
+      timeout: 15_000,
+    });
+  }
+
+  for (const product of ["564-trv-25k-clean-face", "564-tv-35k-clean-face"]) {
+    await page.getByLabel("Fireplace model").selectOption(product);
+    await expect(page.getByLabel("Face or trim")).toHaveValue("clean-face");
+    await expect(viewport).toHaveAttribute("data-media-status", "playing", {
+      timeout: 15_000,
+    });
+  }
 });
 
 test("adjusts and persists physical dimensions", async ({ page }, testInfo) => {
@@ -83,6 +111,17 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   await page.getByLabel("Face or trim").selectOption("metropolitan");
   await expect(
     page.getByText("864 Designer Face · Metropolitan · Black · Brown Ledge · Onyx Linear 84″"),
+  ).toBeVisible();
+
+  await page.getByLabel("Fireplace model").selectOption("564-tv-35k-deluxe");
+  await page.getByLabel("Face or trim").selectOption("french-country");
+  await expect(
+    page.getByText(
+      "564 35K Designer Face · French Country · Black · Brown Ledge · Onyx Linear 84″",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByText(/published combustible reference 37½″ from fireplace base · manual p\.42/),
   ).toBeVisible();
 });
 
@@ -165,7 +204,7 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("77 / 77 verified")).toBeVisible();
+  await expect(page.getByText("101 / 101 verified")).toBeVisible();
   await expect(page.getByText("Playing · H.264 · muted")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,

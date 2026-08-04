@@ -68,6 +68,126 @@
       "size": 495873
     },
     {
+      "path": "/assets/fpx-564-25k-burn-poster.webp",
+      "sha256": "0f47cd364f297528f82402403c892431974eaf4d443566fe784386260d373b0e",
+      "size": 753944
+    },
+    {
+      "path": "/assets/fpx-564-25k-burn.mp4",
+      "sha256": "8af958525d9d38c593493449c3d594c643e59ecd3187ca44853ee1e7c0965b95",
+      "size": 3979770
+    },
+    {
+      "path": "/assets/fpx-564-35k-burn-poster.webp",
+      "sha256": "e0f53f96430b052cd272b3474b0dfcce5e70d2afcbfd0c2fdde9786ed44fbc7d",
+      "size": 709340
+    },
+    {
+      "path": "/assets/fpx-564-35k-burn.mp4",
+      "sha256": "3721839b00bf5c3d93197dc32a714a095144d751318aae45c96c78f2992a2440",
+      "size": 9163138
+    },
+    {
+      "path": "/assets/fpx-564-classic-arch-media-mask.png",
+      "sha256": "9408e5397ec2c117aac8ee4782677a9bd2af8e514c7bdf891efe470753b776ca",
+      "size": 2212
+    },
+    {
+      "path": "/assets/fpx-564-classic-arch-overlay.png",
+      "sha256": "579109490b4ae34dca35c6aba59fc83fa6c9823c8f3030077809449d60ef0f1b",
+      "size": 495120
+    },
+    {
+      "path": "/assets/fpx-564-clean-face-media-mask.png",
+      "sha256": "b09d9101de0d74f997cb5bdc44d06c5410df2bd50969fee74b2ef2b4b0d24d75",
+      "size": 1963
+    },
+    {
+      "path": "/assets/fpx-564-clean-face-overlay.png",
+      "sha256": "d2375f7997adc7541c2a68929ec87f8488199ef4d6f00e32e04f8450b191fcee",
+      "size": 389166
+    },
+    {
+      "path": "/assets/fpx-564-french-country-media-mask.png",
+      "sha256": "3d06f28882f058b9afdb46004517292dcc6da4ddb4f4b04dd7266eddc37bae3f",
+      "size": 2189
+    },
+    {
+      "path": "/assets/fpx-564-french-country-overlay.png",
+      "sha256": "78a2c791c0212e0a9004d1cd444ccfa3cb03e4e32b427d086f4a101acd10fff3",
+      "size": 501325
+    },
+    {
+      "path": "/assets/fpx-564-metropolitan-media-mask.png",
+      "sha256": "1c58e960b3bc741c3428acec5fe8f982d639b7d6a71ac680c4bf53802a0553f3",
+      "size": 1990
+    },
+    {
+      "path": "/assets/fpx-564-metropolitan-overlay.png",
+      "sha256": "73bba7c93605e22e2f92cac59e4c403f26980867bfebd3de6835e90dc9fcea47",
+      "size": 867531
+    },
+    {
+      "path": "/assets/fpx-564-rectangle-double-door-media-mask.png",
+      "sha256": "dcc051852cb14eba126bb246dccb3e8bb8fc296a1503133e976c96fc21a35f5c",
+      "size": 2079
+    },
+    {
+      "path": "/assets/fpx-564-rectangle-double-door-overlay.png",
+      "sha256": "7a9dcddd65e1723170f88ced90c60de922f9f984275a7a79cbe389c76cdbae3d",
+      "size": 1035526
+    },
+    {
+      "path": "/assets/fpx-564-trv-25k-classic-arch.png",
+      "sha256": "120d7f0d79908d4c71cbc0be1d50647deead6c3b126deb5792354fd36bce3812",
+      "size": 1426090
+    },
+    {
+      "path": "/assets/fpx-564-trv-25k-clean-face.png",
+      "sha256": "31ecf300d157295ce215d8aa73cf4c506b70f7a73136a960ca8fbc0fb3a01cad",
+      "size": 1311504
+    },
+    {
+      "path": "/assets/fpx-564-trv-25k-french-country.png",
+      "sha256": "ea590094a5548e238d7d344e1a7dc0d1feab0e4d1acfc88cf5c799c21f2fb1bd",
+      "size": 1426610
+    },
+    {
+      "path": "/assets/fpx-564-trv-25k-metropolitan.png",
+      "sha256": "6f8cc824b711973f5d24ab474b3b1fa49bae4c493bdd6e6ec60d4d639f5e202c",
+      "size": 1783227
+    },
+    {
+      "path": "/assets/fpx-564-trv-25k-rectangle-double-door.png",
+      "sha256": "555249aef1146ec5058955d10cd1560ebcc6f1a3bcad8d614f89586cf19a72d6",
+      "size": 1842713
+    },
+    {
+      "path": "/assets/fpx-564-tv-35k-classic-arch.png",
+      "sha256": "ecb02106c2e8d90d6a213714d9b7d3dbab6805be919ef5e166079d0feedc90cf",
+      "size": 1380416
+    },
+    {
+      "path": "/assets/fpx-564-tv-35k-clean-face.png",
+      "sha256": "8e24d4cd514b55ff09e0bfaff7edfa57ea6ea0b37d62daa3972b23034c014650",
+      "size": 1259141
+    },
+    {
+      "path": "/assets/fpx-564-tv-35k-french-country.png",
+      "sha256": "3070b2cd425825432135514103c51e658a987154ae1c68ab553fdde55ec5538e",
+      "size": 1381938
+    },
+    {
+      "path": "/assets/fpx-564-tv-35k-metropolitan.png",
+      "sha256": "b72d3cd6baf2e0ac5f14f25fde19649650dbe659c3ed0890452636d4ee60a8c4",
+      "size": 1727342
+    },
+    {
+      "path": "/assets/fpx-564-tv-35k-rectangle-double-door.png",
+      "sha256": "d315b862b7e32457c93495ea245a8fa38aa51284b105ec920400834bd4d3effb",
+      "size": 1796607
+    },
+    {
       "path": "/assets/fpx-864-arched-french-country-media-mask.png",
       "sha256": "54030624e2005e1204f5966ca667a0d722693a4030e049e0cff43f98aafdd9bf",
       "size": 1274

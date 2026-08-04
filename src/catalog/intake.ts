@@ -8,7 +8,7 @@ import {
 export { catalogIntakeSchema, summarizeCatalogIntake } from "@/catalog/intakeSchema";
 
 const specsUrl = "https://www.fireplacex.com/professionals/specs-and-drawings/";
-const checkedAt = "2026-07-31";
+const checkedAt = "2026-08-04";
 
 const gasFireplace = (
   id: string,
@@ -67,7 +67,7 @@ const electricUrl = "https://www.fireplacex.com/electric-fireplaces/";
 
 export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
   schemaVersion: 2,
-  snapshotId: "fpx-2026.07.31-1",
+  snapshotId: "fpx-2026.08.04-1",
   brandId: "fireplace-xtrordinair",
   brandName: "Fireplace Xtrordinair",
   manufacturer: "Travis Industries",
@@ -83,7 +83,8 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
   products: [
     gasFireplace("564-trv-25k-deluxe", "564 TRV 25K Deluxe", "traditional", {
       productUrl: "https://www.fireplacex.com/product/564-trv-25k/",
-      stage: "documents-verified",
+      stage: "approved",
+      approvedCatalogIds: ["564-trv-25k-deluxe"],
       evidence: {
         productSku: "98500277",
         fireBuilderProductId: 103,
@@ -109,7 +110,7 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
         ],
         visualMaster: {
           requirement: {
-            minimumWidth: 2400,
+            minimumWidth: 1800,
             minimumHeight: 1800,
             requiresIsolation: true,
             requiresTransparentMediaOpening: true,
@@ -123,19 +124,30 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
               width: 1800,
               height: 1800,
               isolated: true,
+              transparentMediaOpening: true,
+            },
+            {
+              id: "official-25k-lossless-master",
+              sourceUrl:
+                "https://www.travisindustries.com/download/Dragon/56425K_LogSets/Oak/564SSCF_OakLogs_HandMadeBrick_S_ON_638.tif",
+              kind: "isolated-product",
+              width: 4603,
+              height: 2825,
+              isolated: false,
               transparentMediaOpening: false,
             },
           ],
         },
-        maximumOfficialLayerPixels: 1800,
-        assetQualityGate: "blocked-high-resolution-master",
+        maximumOfficialLayerPixels: 4603,
+        assetQualityGate: "approved",
       },
       notes:
-        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and visual options are verified. The public isolated layer uses an 1800 px square canvas but remains below the required 2400 px isolated-product width.",
+        "Approved from the current manual, official 1800 px transparent face layers, a lossless 4603 px Travis firebox master, and locally packaged official burn footage.",
     }),
     gasFireplace("564-trv-25k-clean-face", "564 TRV 25K Clean Face Deluxe", "traditional", {
       productUrl: "https://www.fireplacex.com/product/564-trv-25k-clean-face/",
-      stage: "documents-verified",
+      stage: "approved",
+      approvedCatalogIds: ["564-trv-25k-clean-face"],
       evidence: {
         productSku: "98500278",
         fireBuilderProductId: 105,
@@ -147,7 +159,7 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
         visualOptionSkus: ["95900370", "95900380", "95900382", "94500626", "94500624"],
         visualMaster: {
           requirement: {
-            minimumWidth: 2400,
+            minimumWidth: 1800,
             minimumHeight: 1800,
             requiresIsolation: true,
             requiresTransparentMediaOpening: true,
@@ -161,20 +173,131 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
               width: 1800,
               height: 1800,
               isolated: true,
+              transparentMediaOpening: true,
+            },
+            {
+              id: "official-25k-lossless-master",
+              sourceUrl:
+                "https://www.travisindustries.com/download/Dragon/56425K_LogSets/Oak/564SSCF_OakLogs_HandMadeBrick_S_ON_638.tif",
+              kind: "isolated-product",
+              width: 4603,
+              height: 2825,
+              isolated: false,
               transparentMediaOpening: false,
             },
           ],
         },
-        maximumOfficialLayerPixels: 1800,
-        assetQualityGate: "blocked-high-resolution-master",
+        maximumOfficialLayerPixels: 4603,
+        assetQualityGate: "approved",
       },
       notes:
-        "SKU, viewing area, current manual, mantel datum, FireBuilder IDs, and trim/log options are verified. The public isolated layer uses an 1800 px square canvas but remains below the required 2400 px isolated-product width.",
+        "Approved from the current manual, official 1800 px transparent trim layer, a lossless 4603 px Travis firebox master, and locally packaged official burn footage.",
     }),
     gasFireplace("564-tv-35k-deluxe", "564 TV 35K Deluxe", "traditional", {
       productUrl: "https://www.fireplacex.com/product/564-trv-35k-deluxe/",
+      stage: "approved",
+      approvedCatalogIds: ["564-tv-35k-deluxe"],
+      evidence: {
+        productSku: "98500297",
+        fireBuilderProductId: 130,
+        fireBuilderModelId: 590,
+        viewingArea: { width: 29.375, height: 16.375 },
+        installationManualUrl: "https://www.travisindustries.com/docs/100-01551.pdf",
+        installationManualRevision: "2024-04-02",
+        mantelRulePage: 42,
+        visualOptionSkus: [
+          "95400402",
+          "95400408",
+          "95400411",
+          "95400467",
+          "94500626",
+          "94500624",
+        ],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 1800,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "firebuilder-raw-face-layer",
+              sourceUrl:
+                "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95400402.png",
+              kind: "configurator-layer",
+              width: 1800,
+              height: 1800,
+              isolated: true,
+              transparentMediaOpening: true,
+            },
+            {
+              id: "official-35k-lossless-master",
+              sourceUrl:
+                "https://www.travisindustries.com/download/Dragon/564_35K_Images/Oak/564_35K_Oak_Handmade_S_674.tif",
+              kind: "isolated-product",
+              width: 4870,
+              height: 3105,
+              isolated: false,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
+        maximumOfficialLayerPixels: 4870,
+        assetQualityGate: "approved",
+      },
+      notes:
+        "Approved from the current manual, official 1800 px transparent face layers, a lossless 4870 px Travis firebox master, and locally packaged official burn footage.",
     }),
-    gasFireplace("564-tv-35k-clean-face", "564 TV 35K Clean Face Deluxe", "traditional"),
+    gasFireplace("564-tv-35k-clean-face", "564 TV 35K Clean Face Deluxe", "traditional", {
+      productUrl: "https://www.fireplacex.com/product/564-tv-35k-deluxe-clean-face/",
+      stage: "approved",
+      approvedCatalogIds: ["564-tv-35k-clean-face"],
+      evidence: {
+        productSku: "98500298",
+        fireBuilderProductId: 131,
+        fireBuilderModelId: 591,
+        viewingArea: { width: 29.375, height: 16.375 },
+        installationManualUrl: "https://www.travisindustries.com/docs/100-01552.pdf",
+        installationManualRevision: "2024-04-02",
+        mantelRulePage: 37,
+        visualOptionSkus: ["95900370", "95900380", "95900382", "94500626", "94500624"],
+        visualMaster: {
+          requirement: {
+            minimumWidth: 1800,
+            minimumHeight: 1800,
+            requiresIsolation: true,
+            requiresTransparentMediaOpening: true,
+          },
+          candidates: [
+            {
+              id: "firebuilder-raw-trim-layer",
+              sourceUrl:
+                "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95900370.png",
+              kind: "configurator-layer",
+              width: 1800,
+              height: 1800,
+              isolated: true,
+              transparentMediaOpening: true,
+            },
+            {
+              id: "official-35k-lossless-master",
+              sourceUrl:
+                "https://www.travisindustries.com/download/Dragon/564_35K_Images/Oak/564_35K_Oak_Handmade_S_674.tif",
+              kind: "isolated-product",
+              width: 4870,
+              height: 3105,
+              isolated: false,
+              transparentMediaOpening: false,
+            },
+          ],
+        },
+        maximumOfficialLayerPixels: 4870,
+        assetQualityGate: "approved",
+      },
+      notes:
+        "Approved from the current manual, official 1800 px transparent trim layer, a lossless 4870 px Travis firebox master, and locally packaged official burn footage.",
+    }),
     gasFireplace("864-trv-31k-family", "864 TRV 31K Deluxe Collection", "traditional", {
       stage: "approved",
       approvedCatalogIds: ["864-trv-31k-clean-face", "864-trv-31k-deluxe"],

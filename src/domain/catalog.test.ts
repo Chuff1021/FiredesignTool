@@ -12,12 +12,19 @@ import { APPROVED_ASSET_PATHS } from "@/domain/catalogRepository";
 describe("approved product catalog", () => {
   it("validates the expanded manufacturer catalog", () => {
     expect(fireplaceProducts.map((product) => product.sku)).toEqual([
+      "98500277",
+      "98500278",
+      "98500297",
+      "98500298",
       "98500187",
       "98500186",
       "98500344",
     ]);
     expect(
       fireplaceProducts.find((product) => product.sku === "98500186")?.faceOptions,
+    ).toHaveLength(4);
+    expect(
+      fireplaceProducts.find((product) => product.sku === "98500277")?.faceOptions,
     ).toHaveLength(4);
     expect(mantelProducts.map((product) => product.id)).toEqual([
       "zachary-smooth",
@@ -56,16 +63,23 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(APPROVED_ASSET_PATHS).toHaveLength(77);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(101);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
     expect(APPROVED_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });
 
   it("maps each fireplace to an approved local burn loop and matching poster", () => {
-    expect(fireplaceProducts[0]?.burnMedia.video.localPath).toBe(
-      fireplaceProducts[1]?.burnMedia.video.localPath,
+    expect(
+      fireplaceProducts.find((product) => product.id === "564-trv-25k-deluxe")?.burnMedia.video
+        .localPath,
+    ).toBe(
+      fireplaceProducts.find((product) => product.id === "564-trv-25k-clean-face")?.burnMedia
+        .video.localPath,
     );
-    expect(fireplaceProducts[2]?.burnMedia.video.localPath).toBe("/assets/fpx-4237-burn.mp4");
+    expect(
+      fireplaceProducts.find((product) => product.id === "4237-ember-glo-clean-face")?.burnMedia
+        .video.localPath,
+    ).toBe("/assets/fpx-4237-burn.mp4");
     expect(
       fireplaceProducts.every(
         (product) =>
@@ -83,7 +97,10 @@ describe("approved product catalog", () => {
         ),
       ),
     ).toBe(true);
-    expect(fireplaceProducts[2]?.burnMedia.sourceTimecode).toBe("02:23–02:29");
+    expect(
+      fireplaceProducts.find((product) => product.id === "4237-ember-glo-clean-face")?.burnMedia
+        .sourceTimecode,
+    ).toBe("02:23–02:29");
   });
 
   it("rejects unchecked substitutions", () => {
