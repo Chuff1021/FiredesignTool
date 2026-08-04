@@ -1,6 +1,6 @@
 {
-  "version": "2026.07.31-5",
-  "generatedAt": "2026-07-31T00:00:00.000Z",
+  "version": "2026.08.04-1",
+  "generatedAt": "2026-08-04T00:00:00.000Z",
   "files": [
     {
       "path": "/assets/centurion-brown-ledge-bump.webp",
@@ -49,13 +49,13 @@
     },
     {
       "path": "/assets/fpx-4237-burn-poster.webp",
-      "sha256": "006ef8ab67b3b8902de7b745c5661a2fb97ae4bf8445ea7f90a4f5122821b029",
-      "size": 172966
+      "sha256": "f980f875f4f214b28943d6032083a8b73e40f4c5d689d1197d96243a4d1111b9",
+      "size": 285030
     },
     {
       "path": "/assets/fpx-4237-burn.mp4",
-      "sha256": "4bf5d801f9ef5f731516bbf4603e7be7b7305b8eadf81abcd6e02040b8dd743c",
-      "size": 11388912
+      "sha256": "40f867f9369d961ae31187658ebcbeb209a3b0fc7829e138f5b7810c40b20537",
+      "size": 7593592
     },
     {
       "path": "/assets/fpx-4237-clean-face-overlay.png",

@@ -454,9 +454,9 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
         "Poster extracted from the approved 4237 burn loop",
       ),
       codec: "H.264/AVC",
-      durationSeconds: 12,
-      logSet: "Birch",
-      sourceTimecode: "01:42–01:54",
+      durationSeconds: 6,
+      logSet: "Classic Oak",
+      sourceTimecode: "02:23–02:29",
     },
   },
 ]);
@@ -873,7 +873,7 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export const APP_VERSION = "0.18.0";
+export const APP_VERSION = "0.19.0";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

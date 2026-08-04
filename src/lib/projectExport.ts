@@ -71,6 +71,18 @@ export async function createProjectPdf(
   line("Mantel", `${finish.name} ${mantel.shortLabel} · ${configuration.mantelWidth} in`);
   line("Installation concept", project.scenario === "insert" ? "Insert only" : "Full remodel");
   line("Measured wall", `${project.referenceInches} in · four-corner calibrated`);
+  if (project.scenario === "full-remodel") {
+    const activeBuiltIns = (["left", "right"] as const)
+      .filter((side) => project.accessories[side].enabled)
+      .map((side) => {
+        const builtIn = project.accessories[side];
+        return `${side} ${builtIn.width} × ${builtIn.height} in ${builtIn.style.replace("-", " ")}`;
+      });
+    line(
+      "Architectural accessories",
+      activeBuiltIns.length > 0 ? activeBuiltIns.join(" · ") : "None selected",
+    );
+  }
   if (project.scenario === "insert") {
     line(
       "Existing opening",

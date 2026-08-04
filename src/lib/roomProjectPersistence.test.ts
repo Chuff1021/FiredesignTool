@@ -178,7 +178,7 @@ describe("local customer project library", () => {
     expect((await readAllRoomProjects())[0]?.source.dataUrl).toBe(legacy.source.dataUrl);
     const recovered = await readCurrentRoomProject();
     expect(recovered).toMatchObject({
-      schemaVersion: 5,
+      schemaVersion: 6,
       source: { dataUrl: legacy.source.dataUrl },
       openingQuad: [],
       openingWidthInches: 36,

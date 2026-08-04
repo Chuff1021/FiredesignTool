@@ -50,6 +50,13 @@ application version, asset version, preview URL, and deployment ID.
       produce a perspective-aligned design within 2% of the marked plane.
 - [ ] Full-remodel and insert-only modes preserve the expected portions of the
       customer photograph.
+- [ ] Full-remodel millwork can be enabled independently left/right, remains
+      within the measured wall space beside the stone, survives refresh and
+      backup, and appears in export/PDF. Bookcases, base cabinets, and floating
+      shelves retain scale and perspective at approved resolutions.
+- [ ] Raised room hearth shows a distinct projected top, front riser, cap joints,
+      and depth edge; it matches the stone width and does not read as a flat
+      textured rectangle.
 - [ ] Insert-only mode requires four ordered existing-opening corners plus its
       measured width and height, scales the appliance face from that opening,
       and prevents export until the opening is complete.
@@ -59,7 +66,7 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Insert-fit screening is bound to the selected approved insert and reports
       each exact manufacturer variant independently. A built-in fireplace visual
       produces no fit claim, and the same conservative result appears in the PDF.
-- [ ] Version 1 through version 4 customer-room records migrate to the current
+- [ ] Version 1 through version 5 customer-room records migrate to the current
       schema with their original photo, calibration, name, comparison, traced
       foreground objects, and the best available last-known design intact.
 - [ ] Before/after comparison and high-resolution JPEG export contain no

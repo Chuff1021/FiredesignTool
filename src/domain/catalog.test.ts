@@ -83,7 +83,7 @@ describe("approved product catalog", () => {
         ),
       ),
     ).toBe(true);
-    expect(fireplaceProducts[2]?.burnMedia.sourceTimecode).toBe("01:42–01:54");
+    expect(fireplaceProducts[2]?.burnMedia.sourceTimecode).toBe("02:23–02:29");
   });
 
   it("rejects unchecked substitutions", () => {

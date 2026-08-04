@@ -31,6 +31,7 @@ import {
   type InsertFitResult,
 } from "@/domain/insertFit";
 import { findApprovedIntakeProduct } from "@/catalog/intakeRegistry";
+import { RoomAccessoriesPanel } from "@/components/RoomAccessoriesPanel";
 import { UiIcon } from "@/components/UiIcon";
 import { prepareRoomImage } from "@/lib/roomImage";
 import {
@@ -1027,6 +1028,14 @@ export function CustomerRoomViewport() {
           />
           <span>After</span>
         </label>
+        {project.scenario === "full-remodel" ? (
+          <RoomAccessoriesPanel
+            accessories={project.accessories}
+            onChange={(accessories) => updateProject({ ...project, accessories })}
+            stoneWidth={configuration.stoneWidth}
+            wallWidth={configuration.wallWidth}
+          />
+        ) : null}
         <div className="room-calibration-actions">
           <button onClick={undoPoint} type="button">
             Undo point

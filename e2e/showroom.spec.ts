@@ -300,6 +300,66 @@ test("preserves a true 4K customer photograph", async ({ page }, testInfo) => {
     .toEqual({ width: 3840, height: 2160 });
 });
 
+test("adds measured built-ins independently and persists them", async ({ page }, testInfo) => {
+  test.skip(
+    testInfo.project.name === "showroom-4k",
+    "Architectural accessory controls are covered in both desktop browser engines.",
+  );
+  const photograph = await sharp({
+    create: {
+      width: 1600,
+      height: 900,
+      channels: 3,
+      background: { r: 206, g: 198, b: 184 },
+    },
+  })
+    .jpeg({ quality: 94 })
+    .toBuffer();
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await page.getByTestId("room-photo-input").setInputFiles({
+    name: "built-in-room.jpg",
+    mimeType: "image/jpeg",
+    buffer: photograph,
+  });
+  const canvas = page.getByTestId("room-canvas");
+  await expect(canvas).toBeVisible({ timeout: 20_000 });
+  const box = await canvas.boundingBox();
+  expect(box).not.toBeNull();
+  if (!box) return;
+  const click = async (x: number, y: number) => {
+    await canvas.click({ position: { x: box.width * x, y: box.height * y } });
+  };
+  await click(0.06, 0.05);
+  await click(0.94, 0.05);
+  await click(0.94, 0.94);
+  await click(0.06, 0.94);
+  await page.getByLabel("Known measurement in inches").fill("180");
+  await click(0.06, 0.75);
+  await click(0.94, 0.75);
+  await expect(page.getByText("Dimensionally scaled")).toBeVisible();
+  await page.getByText("Built-ins & shelves").click();
+  await page.getByLabel("Left side").check();
+  await page.getByLabel("Left width").fill("42");
+  await page.getByLabel("Left accessory finish").selectOption("white-oak");
+  await page.getByRole("button", { name: "Match right side to left" }).click();
+  await page.getByLabel("Add raised hearth").evaluate((element: HTMLInputElement) => {
+    element.click();
+  });
+  await expect(page.getByLabel("Right side")).toBeChecked();
+  await expect(page.getByLabel("Right width")).toHaveValue("42");
+  await expect(page.getByLabel("Add raised hearth")).toBeChecked();
+  await expect(page.getByLabel("Fireplace elevation")).toHaveValue("12");
+  await expect(page.locator(".room-rendering")).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
+  await page.getByRole("button", { name: /Customer room/ }).click();
+  await page.getByText("Built-ins & shelves").click();
+  await expect(page.getByLabel("Left side")).toBeChecked();
+  await expect(page.getByLabel("Right side")).toBeChecked();
+  await expect(page.getByLabel("Left accessory finish")).toHaveValue("white-oak");
+  await expect(page.getByLabel("Add raised hearth")).toBeChecked();
+});
+
 test("restores and persists a traced foreground object", async ({ page }, testInfo) => {
   test.skip(
     testInfo.project.name === "showroom-4k",

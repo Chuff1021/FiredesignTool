@@ -1,8 +1,10 @@
 import { catalogRepository } from "@/domain/catalogRepository";
 import { getMantelBottom, type FeatureWallConfiguration } from "@/domain/configuration";
 import {
+  builtInAvailableWidth,
   faceBoundsWithinOpening,
   imagePoint,
+  type BuiltInSide,
   type NormalizedPoint,
   type RoomProject,
 } from "@/domain/roomProject";
@@ -77,9 +79,182 @@ function drawTexturedRect(
   context.restore();
 }
 
+const builtInFinishes: Record<
+  BuiltInSide["finish"],
+  { face: string; recess: string; edge: string }
+> = {
+  "warm-white": { face: "#e8e2d7", recess: "#cfc8bd", edge: "#f5f1e9" },
+  "white-oak": { face: "#b89a70", recess: "#846b4d", edge: "#d2b78f" },
+  walnut: { face: "#6d4934", recess: "#3f2c22", edge: "#8b6549" },
+  charcoal: { face: "#4a4a46", recess: "#292a28", edge: "#666660" },
+};
+
+function addWoodGrain(
+  context: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  pixelsPerInch: number,
+) {
+  context.save();
+  context.globalAlpha = 0.09;
+  context.strokeStyle = "#2a1d14";
+  context.lineWidth = Math.max(1, pixelsPerInch * 0.08);
+  for (let line = x + pixelsPerInch * 1.5; line < x + width; line += pixelsPerInch * 2.8) {
+    context.beginPath();
+    context.moveTo(line, y);
+    context.bezierCurveTo(
+      line + pixelsPerInch * 0.7,
+      y + height * 0.3,
+      line - pixelsPerInch * 0.6,
+      y + height * 0.7,
+      line + pixelsPerInch * 0.25,
+      y + height,
+    );
+    context.stroke();
+  }
+  context.restore();
+}
+
+function drawBuiltIn(
+  context: CanvasRenderingContext2D,
+  side: BuiltInSide,
+  x: number,
+  floorY: number,
+  width: number,
+  pixelsPerInch: number,
+) {
+  if (!side.enabled || width < 18) return;
+  const finish = builtInFinishes[side.finish];
+  const height = side.height * pixelsPerInch;
+  const top = floorY - height;
+  const frame = Math.max(2.25 * pixelsPerInch, width * 0.045);
+  const shelfThickness = Math.max(1.25 * pixelsPerInch, 4);
+  const baseHeight = side.baseCabinet && side.style === "bookcase" ? 30 * pixelsPerInch : 0;
+
+  context.save();
+  context.shadowColor = "rgba(0,0,0,.32)";
+  context.shadowBlur = 2.4 * pixelsPerInch;
+  context.shadowOffsetY = 0.8 * pixelsPerInch;
+
+  if (side.style === "floating-shelves") {
+    const shelfWidth = width * 0.9;
+    const shelfLeft = x + width * 0.05;
+    for (let index = 0; index < side.shelfCount; index += 1) {
+      const shelfY = floorY - ((index + 1) / (side.shelfCount + 1)) * height;
+      context.fillStyle = finish.face;
+      context.fillRect(shelfLeft, shelfY, shelfWidth, shelfThickness);
+      context.fillStyle = "rgba(0,0,0,.22)";
+      context.fillRect(
+        shelfLeft,
+        shelfY + shelfThickness * 0.72,
+        shelfWidth,
+        shelfThickness * 0.28,
+      );
+      if (side.finish === "white-oak" || side.finish === "walnut") {
+        addWoodGrain(context, shelfLeft, shelfY, shelfWidth, shelfThickness, pixelsPerInch);
+      }
+    }
+    context.restore();
+    return;
+  }
+
+  context.fillStyle = finish.face;
+  context.fillRect(x, top, width, height);
+  const openingTop = top + frame;
+  const openingBottom = floorY - baseHeight - frame;
+  context.fillStyle = finish.recess;
+  context.fillRect(x + frame, openingTop, width - frame * 2, openingBottom - openingTop);
+  const recessShade = context.createLinearGradient(x + frame, 0, x + width - frame, 0);
+  recessShade.addColorStop(0, "rgba(0,0,0,.2)");
+  recessShade.addColorStop(0.18, "rgba(255,255,255,.04)");
+  recessShade.addColorStop(1, "rgba(0,0,0,.08)");
+  context.fillStyle = recessShade;
+  context.fillRect(x + frame, openingTop, width - frame * 2, openingBottom - openingTop);
+
+  const shelfArea = openingBottom - openingTop;
+  for (let index = 1; index <= side.shelfCount; index += 1) {
+    const shelfY = openingTop + (index / (side.shelfCount + 1)) * shelfArea;
+    context.fillStyle = finish.edge;
+    context.fillRect(x + frame * 0.72, shelfY, width - frame * 1.44, shelfThickness);
+    context.fillStyle = "rgba(0,0,0,.2)";
+    context.fillRect(
+      x + frame * 0.72,
+      shelfY + shelfThickness * 0.72,
+      width - frame * 1.44,
+      shelfThickness * 0.28,
+    );
+  }
+
+  if (baseHeight > 0) {
+    const cabinetTop = floorY - baseHeight;
+    context.fillStyle = finish.face;
+    context.fillRect(x, cabinetTop, width, baseHeight);
+    const doorGap = Math.max(1, pixelsPerInch * 0.18);
+    const doorWidth = (width - frame * 1.5 - doorGap) / 2;
+    for (let index = 0; index < 2; index += 1) {
+      const doorX = x + frame * 0.75 + index * (doorWidth + doorGap);
+      context.strokeStyle = "rgba(30,25,20,.28)";
+      context.lineWidth = Math.max(1, pixelsPerInch * 0.12);
+      context.strokeRect(doorX, cabinetTop + frame * 0.65, doorWidth, baseHeight - frame * 1.3);
+    }
+  }
+  if (side.finish === "white-oak" || side.finish === "walnut") {
+    addWoodGrain(context, x, top, width, height, pixelsPerInch);
+  }
+  context.fillStyle = "rgba(255,255,255,.16)";
+  context.fillRect(x, top, Math.max(1, pixelsPerInch * 0.22), height);
+  context.restore();
+}
+
+function drawStoneField(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  x: number,
+  width: number,
+  height: number,
+  pixelsPerInch: number,
+) {
+  context.save();
+  context.beginPath();
+  context.rect(x, 0, width, height);
+  context.clip();
+  const tileWidth = Math.max(36 * pixelsPerInch, Math.min(66 * pixelsPerInch, width));
+  const tileHeight = tileWidth * (image.naturalHeight / image.naturalWidth);
+  let row = 0;
+  for (let top = -tileHeight; top < height + tileHeight; top += tileHeight) {
+    const offset = row % 2 === 0 ? 0 : -tileWidth * 0.47;
+    let column = 0;
+    for (let left = x + offset - tileWidth; left < x + width + tileWidth; left += tileWidth) {
+      context.save();
+      context.globalAlpha = 0.97 + ((row + column) % 3) * 0.01;
+      if ((row + column) % 2 === 0) {
+        context.translate(left + tileWidth, top);
+        context.scale(-1, 1);
+        context.drawImage(image, 0, 0, tileWidth + 1, tileHeight + 1);
+      } else {
+        context.drawImage(image, left, top, tileWidth + 1, tileHeight + 1);
+      }
+      context.restore();
+      column += 1;
+    }
+    row += 1;
+  }
+  const depth = context.createLinearGradient(x, 0, x + width, 0);
+  depth.addColorStop(0, "rgba(0,0,0,.1)");
+  depth.addColorStop(0.08, "rgba(255,255,255,.025)");
+  depth.addColorStop(0.92, "rgba(255,255,255,.02)");
+  depth.addColorStop(1, "rgba(0,0,0,.11)");
+  context.fillStyle = depth;
+  context.fillRect(x, 0, width, height);
+  context.restore();
+}
+
 async function createDesignLayer(
   configuration: FeatureWallConfiguration,
   scenario: RoomProject["scenario"],
+  accessories: RoomProject["accessories"],
   pixelsPerInch: number,
 ): Promise<HTMLCanvasElement> {
   const canvas = document.createElement("canvas");
@@ -101,12 +276,10 @@ async function createDesignLayer(
     configuration.mantelProductId,
     configuration.mantelFinishId,
   );
-  const hearthstone = stone.hearthstone;
-  const [stoneImage, fireplaceImage, mantelImage, hearthImage] = await Promise.all([
+  const [stoneImage, fireplaceImage, mantelImage] = await Promise.all([
     cachedImage(stone.assets[0]!.localPath),
     cachedImage(face.asset.localPath),
     cachedImage(mantelFinish.assets[0]!.localPath),
-    cachedImage(hearthstone.assets[0]!.localPath),
   ]);
   const toX = (inches: number) => (configuration.wallWidth / 2 + inches) * pixelsPerInch;
   const toY = (inches: number) => canvas.height - inches * pixelsPerInch;
@@ -114,32 +287,35 @@ async function createDesignLayer(
   const stoneLeft = toX(-configuration.stoneWidth / 2);
   const stoneWidth = configuration.stoneWidth * pixelsPerInch;
   if (scenario === "full-remodel") {
-    drawTexturedRect(context, stoneImage, stoneLeft, 0, stoneWidth, canvas.height, 0.52);
-    context.fillStyle = "rgba(20, 16, 12, .07)";
-    context.fillRect(stoneLeft, 0, stoneWidth, canvas.height);
-  }
-
-  if (
-    scenario === "full-remodel" &&
-    configuration.hearthEnabled &&
-    configuration.fireplaceElevation >= 1.5
-  ) {
-    const hearthHeight = configuration.fireplaceElevation * pixelsPerInch;
-    const hearthLeft = toX(-configuration.stoneWidth / 2);
-    const hearthTop = toY(configuration.fireplaceElevation);
-    context.fillStyle = "#514941";
-    context.fillRect(hearthLeft, hearthTop, stoneWidth, hearthHeight);
-    drawTexturedRect(
-      context,
-      hearthImage,
-      hearthLeft,
-      hearthTop,
-      stoneWidth,
-      hearthHeight,
-      0.42,
+    const leftAvailable = builtInAvailableWidth(
+      configuration.wallWidth,
+      configuration.stoneWidth,
+      accessories.left,
     );
-    context.fillStyle = "rgba(255,255,255,.16)";
-    context.fillRect(hearthLeft, hearthTop, stoneWidth, Math.max(3, 1.5 * pixelsPerInch));
+    const rightAvailable = builtInAvailableWidth(
+      configuration.wallWidth,
+      configuration.stoneWidth,
+      accessories.right,
+    );
+    const leftWidth = Math.min(accessories.left.width, leftAvailable) * pixelsPerInch;
+    const rightWidth = Math.min(accessories.right.width, rightAvailable) * pixelsPerInch;
+    drawBuiltIn(
+      context,
+      accessories.left,
+      stoneLeft - accessories.left.gap * pixelsPerInch - leftWidth,
+      canvas.height,
+      leftWidth,
+      pixelsPerInch,
+    );
+    drawBuiltIn(
+      context,
+      accessories.right,
+      stoneLeft + stoneWidth + accessories.right.gap * pixelsPerInch,
+      canvas.height,
+      rightWidth,
+      pixelsPerInch,
+    );
+    drawStoneField(context, stoneImage, stoneLeft, stoneWidth, canvas.height, pixelsPerInch);
   }
 
   const faceWidth = face.visibleFace.width * pixelsPerInch;
@@ -297,6 +473,136 @@ function projectLayer(
   }
 }
 
+function averageFloorDirection(quad: Point[]): Point {
+  const [topLeft, topRight, bottomRight, bottomLeft] = quad;
+  if (!topLeft || !topRight || !bottomRight || !bottomLeft) return { x: 0, y: 1 };
+  const left = { x: bottomLeft.x - topLeft.x, y: bottomLeft.y - topLeft.y };
+  const right = { x: bottomRight.x - topRight.x, y: bottomRight.y - topRight.y };
+  const x = left.x + right.x;
+  const y = left.y + right.y;
+  const length = Math.hypot(x, y) || 1;
+  return { x: x / length, y: y / length };
+}
+
+function wallPhysicalPoint(
+  quad: Point[],
+  configuration: FeatureWallConfiguration,
+  xFromCenter: number,
+  yFromFloor: number,
+): Point {
+  return bilinear(
+    quad,
+    (configuration.wallWidth / 2 + xFromCenter) / configuration.wallWidth,
+    1 - yFromFloor / configuration.wallHeight,
+  );
+}
+
+function textureCanvas(
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+  pixelsPerInch: number,
+  treatment: "top" | "riser",
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(2, Math.round(width * pixelsPerInch));
+  canvas.height = Math.max(2, Math.round(height * pixelsPerInch));
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("The hearth renderer could not start.");
+  drawTexturedRect(context, image, 0, 0, canvas.width, canvas.height, 0.48);
+  const shade = context.createLinearGradient(0, 0, 0, canvas.height);
+  if (treatment === "top") {
+    shade.addColorStop(0, "rgba(255,255,255,.2)");
+    shade.addColorStop(1, "rgba(0,0,0,.08)");
+  } else {
+    shade.addColorStop(0, "rgba(0,0,0,.08)");
+    shade.addColorStop(1, "rgba(0,0,0,.27)");
+  }
+  context.fillStyle = shade;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.strokeStyle = treatment === "top" ? "rgba(255,255,255,.22)" : "rgba(0,0,0,.2)";
+  context.lineWidth = Math.max(1, pixelsPerInch * 0.12);
+  const capWidth = 20 * pixelsPerInch;
+  for (let x = capWidth; x < canvas.width; x += capWidth) {
+    context.beginPath();
+    context.moveTo(x, 0);
+    context.lineTo(x, canvas.height);
+    context.stroke();
+  }
+  return canvas;
+}
+
+async function drawProjectedHearth(
+  context: CanvasRenderingContext2D,
+  quad: Point[],
+  configuration: FeatureWallConfiguration,
+) {
+  if (!configuration.hearthEnabled || configuration.fireplaceElevation < 1.5) return;
+  const stone = catalogRepository.getStone(configuration.stoneId);
+  const hearthImage = await cachedImage(stone.hearthstone.assets[0]!.localPath);
+  const bottomWidth = pointDistance(quad[3]!, quad[2]!);
+  const destinationPixelsPerInch = bottomWidth / configuration.wallWidth;
+  const direction = averageFloorDirection(quad);
+  const depthInches = 20;
+  const projectedDepth = Math.max(4, depthInches * destinationPixelsPerInch * 0.38);
+  const offset = { x: direction.x * projectedDepth, y: direction.y * projectedDepth };
+  const halfWidth = configuration.stoneWidth / 2;
+  const rearLeftTop = wallPhysicalPoint(
+    quad,
+    configuration,
+    -halfWidth,
+    configuration.fireplaceElevation,
+  );
+  const rearRightTop = wallPhysicalPoint(
+    quad,
+    configuration,
+    halfWidth,
+    configuration.fireplaceElevation,
+  );
+  const rearLeftBottom = wallPhysicalPoint(quad, configuration, -halfWidth, 0);
+  const rearRightBottom = wallPhysicalPoint(quad, configuration, halfWidth, 0);
+  const frontLeftTop = { x: rearLeftTop.x + offset.x, y: rearLeftTop.y + offset.y };
+  const frontRightTop = { x: rearRightTop.x + offset.x, y: rearRightTop.y + offset.y };
+  const frontLeftBottom = { x: rearLeftBottom.x + offset.x, y: rearLeftBottom.y + offset.y };
+  const frontRightBottom = { x: rearRightBottom.x + offset.x, y: rearRightBottom.y + offset.y };
+  const textureScale = Math.max(4, destinationPixelsPerInch);
+  const riser = textureCanvas(
+    hearthImage,
+    configuration.stoneWidth,
+    configuration.fireplaceElevation,
+    textureScale,
+    "riser",
+  );
+  const top = textureCanvas(
+    hearthImage,
+    configuration.stoneWidth,
+    depthInches,
+    textureScale,
+    "top",
+  );
+
+  context.save();
+  context.shadowColor = "rgba(0,0,0,.42)";
+  context.shadowBlur = Math.max(4, projectedDepth * 0.3);
+  context.shadowOffsetY = Math.max(2, projectedDepth * 0.14);
+  projectLayer(context, riser, [
+    frontLeftTop,
+    frontRightTop,
+    frontRightBottom,
+    frontLeftBottom,
+  ]);
+  context.restore();
+  projectLayer(context, top, [rearLeftTop, rearRightTop, frontRightTop, frontLeftTop]);
+  context.save();
+  context.strokeStyle = "rgba(245,235,220,.24)";
+  context.lineWidth = Math.max(1, destinationPixelsPerInch * 0.3);
+  context.beginPath();
+  context.moveTo(frontLeftTop.x, frontLeftTop.y);
+  context.lineTo(frontRightTop.x, frontRightTop.y);
+  context.stroke();
+  context.restore();
+}
+
 export async function renderRoomProject(
   canvas: HTMLCanvasElement,
   project: RoomProject,
@@ -323,6 +629,7 @@ export async function renderRoomProject(
     const design = await createDesignLayer(
       configuration,
       "full-remodel",
+      project.accessories,
       projectedPixelsPerInch(wallQuad, configuration.wallWidth, configuration.wallHeight),
     );
     context.save();
@@ -330,6 +637,7 @@ export async function renderRoomProject(
     context.rect(0, 0, canvas.width * comparison, canvas.height);
     context.clip();
     projectLayer(context, design, wallQuad);
+    await drawProjectedHearth(context, wallQuad, configuration);
     context.restore();
   }
   if (project.scenario === "insert" && project.openingQuad.length === 4) {

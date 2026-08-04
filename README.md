@@ -10,7 +10,7 @@ The current approved catalog contains:
   two rectangular official designer faces
 - Fireplace Xtrordinair 4237 Ember-Glo Clean Face Deluxe (`98500344`)
 - Muted, automatically looping official Travis Industries burn footage: Classic
-  Oak for both 864 variants and Birch for the 4237, with matching local posters
+  Oak for the 864 and 4237, with matching local posters
   and offline fallback
 - Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
 - Centurion #860 hearthstones in matching Kentucky and Brown colors, laid out
@@ -43,6 +43,15 @@ export, automatic project recovery after a refresh, and manually traced
 foreground restoration. Foreground outlines preserve original room pixels over
 the projected design for furniture, fireplace tools, décor, or other objects
 that should remain visually in front without generative inpainting.
+
+Full-remodel projects can add measured millwork independently on the left and
+right of the stone field. Each side supports a framed bookcase with optional
+base cabinets or a floating-shelf layout, plus configurable width, height,
+shelf count, gap, and representative warm-white, white-oak, walnut, or charcoal
+finish. The renderer preserves the original photographed wall outside the
+selected stone field, flags and constrains overlapping layouts, and renders a
+raised hearth as a projected 20-inch-deep top and riser instead of a flat wall
+texture.
 
 Each customer project stores its own complete fireplace, face, stone, mantel,
 hearth, and dimensional configuration. Opening one project cannot inherit the
@@ -78,7 +87,7 @@ the project identity, and deletion requires a second explicit confirmation.
 The complete measured wall width and a four-corner wall plane are required
 before a full remodel is labeled dimensionally scaled. Insert-only projects
 also require a measured four-corner existing opening. Version 1 through version
-4 customer room records migrate automatically to the new schema without losing
+5 customer room records migrate automatically to the new schema without losing
 their photo or available configuration. Missing depth and rear-width
 measurements remain explicitly unknown. This remains a conceptual sales
 visualization, not an installation or fit approval.

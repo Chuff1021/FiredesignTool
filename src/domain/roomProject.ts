@@ -103,9 +103,56 @@ const roomProjectV4Schema = roomProjectV3Schema.extend({
   openingRearWidthInches: z.number().positive().max(240).nullable(),
 });
 
-export const roomProjectSchema = roomProjectV4Schema.extend({
+const roomProjectV5Schema = roomProjectV4Schema.extend({
   schemaVersion: z.literal(5),
   configuration: featureWallConfigurationSchema,
+});
+
+export const builtInSideSchema = z.object({
+  enabled: z.boolean(),
+  style: z.enum(["bookcase", "floating-shelves"]),
+  finish: z.enum(["warm-white", "white-oak", "walnut", "charcoal"]),
+  width: z.number().min(18).max(72),
+  height: z.number().min(48).max(120),
+  gap: z.number().min(0).max(36),
+  shelfCount: z.number().int().min(2).max(8),
+  baseCabinet: z.boolean(),
+});
+
+export const roomAccessoriesSchema = z.object({
+  left: builtInSideSchema,
+  right: builtInSideSchema,
+});
+
+export type BuiltInSide = z.infer<typeof builtInSideSchema>;
+export type RoomAccessories = z.infer<typeof roomAccessoriesSchema>;
+
+export const DEFAULT_ROOM_ACCESSORIES: RoomAccessories = {
+  left: {
+    enabled: false,
+    style: "bookcase",
+    finish: "warm-white",
+    width: 36,
+    height: 84,
+    gap: 6,
+    shelfCount: 4,
+    baseCabinet: true,
+  },
+  right: {
+    enabled: false,
+    style: "bookcase",
+    finish: "warm-white",
+    width: 36,
+    height: 84,
+    gap: 6,
+    shelfCount: 4,
+    baseCabinet: true,
+  },
+};
+
+export const roomProjectSchema = roomProjectV5Schema.extend({
+  schemaVersion: z.literal(6),
+  accessories: roomAccessoriesSchema,
 });
 
 export type RoomProject = z.infer<typeof roomProjectSchema>;
@@ -122,7 +169,7 @@ export function createRoomProject(
     showDimensions: false,
   });
   return roomProjectSchema.parse({
-    schemaVersion: 5,
+    schemaVersion: 6,
     id: crypto.randomUUID(),
     name: "Customer fireplace concept",
     createdAt: timestamp,
@@ -140,6 +187,7 @@ export function createRoomProject(
     openingRearWidthInches: null,
     foregroundPolygons: [],
     configuration: projectConfiguration,
+    accessories: DEFAULT_ROOM_ACCESSORIES,
   });
 }
 
@@ -149,13 +197,22 @@ function migrateVersionFour(
 ): RoomProject {
   return roomProjectSchema.parse({
     ...project,
-    schemaVersion: 5,
+    schemaVersion: 6,
     configuration: normalizeConfiguration({
       ...configuration,
       wallWidth: project.referenceInches,
       cameraMode: "front",
       showDimensions: false,
     }),
+    accessories: DEFAULT_ROOM_ACCESSORIES,
+  });
+}
+
+function migrateVersionFive(project: z.infer<typeof roomProjectV5Schema>): RoomProject {
+  return roomProjectSchema.parse({
+    ...project,
+    schemaVersion: 6,
+    accessories: DEFAULT_ROOM_ACCESSORIES,
   });
 }
 
@@ -165,6 +222,8 @@ export function parseRoomProject(
 ): RoomProject {
   const current = roomProjectSchema.safeParse(candidate);
   if (current.success) return current.data;
+  const versionFive = roomProjectV5Schema.safeParse(candidate);
+  if (versionFive.success) return migrateVersionFive(versionFive.data);
   const versionFour = roomProjectV4Schema.safeParse(candidate);
   if (versionFour.success) return migrateVersionFour(versionFour.data, legacyConfiguration);
   const versionThree = roomProjectV3Schema.safeParse(candidate);
@@ -206,6 +265,18 @@ export function parseRoomProject(
     }),
     legacyConfiguration,
   );
+}
+
+export function builtInAvailableWidth(
+  wallWidth: number,
+  stoneWidth: number,
+  side: BuiltInSide,
+): number {
+  return Math.max(0, (wallWidth - stoneWidth) / 2 - side.gap);
+}
+
+export function builtInFits(wallWidth: number, stoneWidth: number, side: BuiltInSide): boolean {
+  return !side.enabled || side.width <= builtInAvailableWidth(wallWidth, stoneWidth, side);
 }
 
 export function imagePoint(

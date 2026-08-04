@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import {
   calibrationLabel,
+  builtInAvailableWidth,
+  builtInFits,
   createRoomProject,
   faceBoundsWithinOpening,
   isInsertOpeningCalibrated,
@@ -26,12 +28,13 @@ describe("customer room projects", () => {
       new Date("2026-07-31T12:00:00.000Z"),
     );
     expect(roomProjectSchema.parse(project).id).toBe("project-1");
-    expect(project.schemaVersion).toBe(5);
+    expect(project.schemaVersion).toBe(6);
     expect(project.scenario).toBe("full-remodel");
     expect(project.openingQuad).toEqual([]);
     expect(project.openingDepthInches).toBeNull();
     expect(project.openingRearWidthInches).toBeNull();
     expect(project.foregroundPolygons).toEqual([]);
+    expect(project.accessories.left.enabled).toBe(false);
     expect(project.configuration).toMatchObject({
       fireplaceId: "864-trv-31k-clean-face",
       wallWidth: 144,
@@ -61,7 +64,7 @@ describe("customer room projects", () => {
       scenario: "insert",
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 5,
+      schemaVersion: 6,
       id: "legacy-project",
       comparison: 0.75,
       openingQuad: [],
@@ -97,7 +100,7 @@ describe("customer room projects", () => {
       openingHeightInches: 30,
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 5,
+      schemaVersion: 6,
       id: "version-two-project",
       openingWidthInches: 40,
       openingDepthInches: null,
@@ -136,7 +139,7 @@ describe("customer room projects", () => {
       ],
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 5,
+      schemaVersion: 6,
       openingDepthInches: null,
       openingRearWidthInches: null,
     });
@@ -185,7 +188,7 @@ describe("customer room projects", () => {
       },
     );
     expect(migrated).toMatchObject({
-      schemaVersion: 5,
+      schemaVersion: 6,
       configuration: {
         wallWidth: 180,
         fireplaceId: "4237-ember-glo-clean-face",
@@ -193,6 +196,38 @@ describe("customer room projects", () => {
         stoneId: "brown-ledge",
       },
     });
+  });
+
+  it("migrates version 5 designs with safe, disabled architectural accessories", () => {
+    const current = createRoomProject(
+      {
+        dataUrl: "data:image/jpeg;base64,AA==",
+        fileName: "room.jpg",
+        width: 1600,
+        height: 900,
+      },
+      new Date("2026-07-31T12:00:00.000Z"),
+    );
+    const migrated = parseRoomProject({ ...current, schemaVersion: 5, accessories: undefined });
+    expect(migrated.schemaVersion).toBe(6);
+    expect(migrated.accessories.left.enabled).toBe(false);
+    expect(migrated.accessories.right.enabled).toBe(false);
+  });
+
+  it("checks measured built-ins against the space beside the stone", () => {
+    const side = {
+      enabled: true,
+      style: "bookcase" as const,
+      finish: "warm-white" as const,
+      width: 36,
+      height: 84,
+      gap: 6,
+      shelfCount: 4,
+      baseCabinet: true,
+    };
+    expect(builtInAvailableWidth(144, 60, side)).toBe(36);
+    expect(builtInFits(144, 60, side)).toBe(true);
+    expect(builtInFits(132, 60, side)).toBe(false);
   });
 
   it("accepts ordered foreground outlines and rejects crossing or tiny masks", () => {
