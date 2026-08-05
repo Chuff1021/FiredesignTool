@@ -14,6 +14,12 @@ const manifest = manifestDocument.files;
 const manifestByPath = new Map(manifest.map((entry) => [entry.path, entry]));
 const failures: string[] = [];
 
+if (manifestDocument.version !== catalogRepository.release.version) {
+  failures.push(
+    `Asset manifest release ${manifestDocument.version} does not match catalog release ${catalogRepository.release.version}`,
+  );
+}
+
 for (const assetPath of APPROVED_ASSET_PATHS) {
   const manifestEntry = manifestByPath.get(assetPath);
   if (!manifestEntry) {

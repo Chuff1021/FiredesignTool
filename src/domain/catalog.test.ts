@@ -39,6 +39,9 @@ describe("approved product catalog", () => {
       "98400376",
       "98400120",
       "98400121",
+      "98500115",
+      "98500109",
+      "98500114",
     ]);
     expect(
       fireplaceProducts.find((product) => product.sku === "98500186")?.faceOptions,
@@ -83,7 +86,7 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(APPROVED_ASSET_PATHS).toHaveLength(123);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(131);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
     expect(APPROVED_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });

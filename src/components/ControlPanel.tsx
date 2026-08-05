@@ -17,6 +17,7 @@ import {
   WALL_WIDTH_RANGE,
   getHearthStoneSegments,
   getMinimumMantelHeight,
+  getMinimumNonCombustibleMantelHeight,
   getMinimumStoneWidth,
   inchesLabel,
 } from "@/domain/configuration";
@@ -86,7 +87,8 @@ export function ControlPanel({
   );
   const hearthstone = stone.hearthstone;
   const minimumMantelHeight = getMinimumMantelHeight(fireplaceId, mantelSize.depth);
-  const minimumStoneWidth = getMinimumStoneWidth();
+  const minimumNonCombustibleMantelHeight = getMinimumNonCombustibleMantelHeight(fireplaceId);
+  const minimumStoneWidth = getMinimumStoneWidth(fireplaceId);
   const hearthWidth = stoneWidth;
   const hearthSegments = getHearthStoneSegments(stoneWidth);
 
@@ -234,17 +236,25 @@ export function ControlPanel({
           <RangeControl
             description="Fireplace base above finished floor"
             label="Fireplace elevation"
-            max={FIREPLACE_ELEVATION_RANGE.max}
-            min={hearthEnabled ? 1.5 : FIREPLACE_ELEVATION_RANGE.min}
+            max={fireplace.hearthRule?.maximumRaisedHeight ?? FIREPLACE_ELEVATION_RANGE.max}
+            min={
+              hearthEnabled && !fireplace.hearthRule?.required
+                ? 1.5
+                : FIREPLACE_ELEVATION_RANGE.min
+            }
             onChange={setFireplaceElevation}
             step={FIREPLACE_ELEVATION_RANGE.step}
             value={fireplaceElevation}
           />
           <RangeControl
-            description="From fireplace base · free placement for non-combustible shelves"
+            description={
+              minimumNonCombustibleMantelHeight > 0
+                ? "From fireplace base · manufacturer minimum enforced"
+                : "From fireplace base · free placement for non-combustible shelves"
+            }
             label="Mantel height"
             max={MANTEL_HEIGHT_RANGE.max}
-            min={MANTEL_HEIGHT_RANGE.min}
+            min={Math.max(MANTEL_HEIGHT_RANGE.min, minimumNonCombustibleMantelHeight)}
             onChange={setMantelHeightAboveBase}
             step={MANTEL_HEIGHT_RANGE.step}
             value={mantelHeightAboveBase}
@@ -252,12 +262,13 @@ export function ControlPanel({
           <div className="rule-note">
             <UiIcon name="warning" size={15} />
             <span>
-              Showroom override: no minimum is enforced for this ASTM E136 non-combustible
-              shelf.
+              {minimumNonCombustibleMantelHeight > 0
+                ? `Manual requirement: non-combustible mantel at ${inchesLabel(minimumNonCombustibleMantelHeight)} or higher from the fireplace base.`
+                : "Showroom override: no minimum is enforced for this ASTM E136 non-combustible shelf."}
               <small>
-                Confirm local code and manufacturer instructions before installation · published
-                combustible reference {inchesLabel(minimumMantelHeight)} from fireplace base ·
-                manual p.{fireplace.mantelRule.manualPage}
+                {minimumNonCombustibleMantelHeight > 0
+                  ? `Maximum non-combustible depth ${inchesLabel(fireplace.mantelRule.maximumNonCombustibleDepth ?? mantelSize.depth)} · manual p.${fireplace.mantelRule.manualPage}`
+                  : `Confirm local code and manufacturer instructions before installation · published combustible reference ${inchesLabel(minimumMantelHeight)} from fireplace base · manual p.${fireplace.mantelRule.manualPage}`}
               </small>
             </span>
           </div>
@@ -380,6 +391,7 @@ export function ControlPanel({
               <input
                 aria-label="Add raised hearth"
                 checked={hearthEnabled}
+                disabled={fireplace.hearthRule?.required}
                 onChange={(event) => setHearthEnabled(event.target.checked)}
                 type="checkbox"
               />
@@ -387,9 +399,11 @@ export function ControlPanel({
             </label>
           </div>
           <p className="section-description">
-            {hearthEnabled
-              ? `Centurion #860 hearthstones match the ${inchesLabel(stoneWidth)} stone field and align to the ${inchesLabel(fireplaceElevation)} fireplace base.`
-              : "Add a stone riser and matching Centurion hearthstones for a raised fireplace."}
+            {fireplace.hearthRule
+              ? `Required wood-fireplace hearth · minimum ${inchesLabel(fireplace.hearthRule.minimumWidth)} wide × ${inchesLabel(fireplace.hearthRule.floorExtension)} forward · R-${fireplace.hearthRule.minimumRValue} minimum. Current Centurion layout is locked on.`
+              : hearthEnabled
+                ? `Centurion #860 hearthstones match the ${inchesLabel(stoneWidth)} stone field and align to the ${inchesLabel(fireplaceElevation)} fireplace base.`
+                : "Add a stone riser and matching Centurion hearthstones for a raised fireplace."}
           </p>
           {hearthEnabled ? (
             <div className="hearth-spec">
@@ -404,8 +418,11 @@ export function ControlPanel({
                   {hearthstone.colorName} Hearthstone · {inchesLabel(hearthWidth)}
                 </strong>
                 <small>
-                  {hearthSegments.length} pieces · centered end cuts as needed · 20″ deep × 1½″
-                  thick
+                  {hearthSegments.length} pieces · centered end cuts as needed ·{" "}
+                  {inchesLabel(
+                    fireplace.hearthRule?.floorExtension ?? hearthstone.dimensions.depth,
+                  )}{" "}
+                  deep × {inchesLabel(hearthstone.dimensions.thickness)} thick
                 </small>
               </p>
             </div>

@@ -125,11 +125,12 @@ for catalog-related pull requests. Each run retains a JSON evidence report for
 the installed showroom application or its Vercel build depend on a manufacturer
 website being available.
 
-Release `2026.08.04-2` contains all 27 models and factory variants in FPX's
-current marketed gas-fireplace and gas-insert collections as checked on
-2026-08-04: ten premium traditional fireplaces, two premium linear fireplaces,
+Release `2026.08.05-1` contains all 27 models and factory variants in FPX's
+current marketed gas-fireplace and gas-insert collections plus all three
+current wood fireplaces as checked on 2026-08-05: ten premium traditional fireplaces, two premium linear fireplaces,
 five traditional ProBuilder fireplaces, four linear ProBuilder fireplaces, and
-six gas inserts. Current marketing status and current factory availability are
+six gas inserts, plus the 42 Apex, 36 Elite, and 44 Elite NexGen-Hybrid wood
+fireplaces. Current marketing status and current factory availability are
 stored separately, so the 430 Mod-Fyre can be labeled limited stock and the 616
 Mod-Fyre factory sold out without silently removing either current marketed
 model. ProBuilder 24, 564 TV High Output, 3615 High Output, and 4415 See-Thru
@@ -143,6 +144,15 @@ left-heavy framing without moving or scaling the face, glass opening, or
 physical appliance. Newly added models use exact static Travis/FireBuilder
 composites until a model-specific burn loop and transparent opening receive a
 separate visual approval.
+
+The wood records preserve each current FireBuilder face/door combination and
+manual-specific requirements rather than applying one generic wood rule. The
+42 Apex requires a non-combustible mantel at least 47-3/8 inches from the
+fireplace base and a 44-inch minimum hearth. The 36 and 44 Elite manuals give
+non-combustible mantels no minimum height, while their combustible reference is
+23 inches above the faceplate; both Elite models require a 60-inch hearth.
+Wood hearths are locked on in the designer and use each manual's forward
+extension, R-value, and maximum raised-height data.
 
 The 32 DVS, 430, 34 DVL, and 616 Ember-Glo inserts retain their
 manual-published masonry-opening profiles, glass areas, surround projections,

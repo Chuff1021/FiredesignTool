@@ -143,6 +143,65 @@ async function alphaBounds(input) {
   return { left: minX, top: minY, width: maxX - minX + 1, height: maxY - minY + 1 };
 }
 
+async function prepareStaticWoodFireplace({ face, door, outputName }) {
+  const facePath = path.join(source, face);
+  const composite = door
+    ? await sharp(facePath)
+        .ensureAlpha()
+        .composite([{ input: path.join(source, door) }])
+        .png()
+        .toBuffer()
+    : await sharp(facePath).ensureAlpha().png().toBuffer();
+  const bounds = await alphaBounds(composite);
+
+  await sharp(composite)
+    .extract(bounds)
+    .png({ compressionLevel: 9, adaptiveFiltering: true })
+    .toFile(path.join(output, outputName));
+}
+
+for (const fireplace of [
+  {
+    face: "fpx-42-apex-face-95500451.png",
+    outputName: "fpx-42-apex-timberline.png",
+  },
+  {
+    face: "fpx-42-apex-face-95500452.png",
+    outputName: "fpx-42-apex-metropolitan.png",
+  },
+  {
+    face: "fpx-42-apex-face-95500453.png",
+    outputName: "fpx-42-apex-universal.png",
+  },
+  {
+    face: "fpx-36-elite-face-98500556.png",
+    door: "fpx-36-elite-door-98500458.png",
+    outputName: "fpx-36-elite-classic-single-door.png",
+  },
+  {
+    face: "fpx-36-elite-face-98500556.png",
+    door: "fpx-36-elite-door-98500456.png",
+    outputName: "fpx-36-elite-classic-double-door.png",
+  },
+  {
+    face: "fpx-36-elite-face-98500559.png",
+    door: "fpx-36-elite-door-98500459.png",
+    outputName: "fpx-36-elite-artisan-single-door.png",
+  },
+  {
+    face: "fpx-44-elite-face-98500575.png",
+    door: "fpx-44-elite-door-98500471.png",
+    outputName: "fpx-44-elite-classic-double-door.png",
+  },
+  {
+    face: "fpx-44-elite-face-98500590.png",
+    door: "fpx-44-elite-door-98500472.png",
+    outputName: "fpx-44-elite-artisan-double-door.png",
+  },
+]) {
+  await prepareStaticWoodFireplace(fireplace);
+}
+
 async function enclosedOpeningMask(face, filename) {
   const { data, info } = await sharp(face)
     .ensureAlpha()

@@ -10,12 +10,12 @@ describe("FPX catalog intake queue", () => {
     const summary = summarizeCatalogIntake(FPX_CURRENT_INTAKE);
     expect(summary).toMatchObject({
       totalFamilies: 41,
-      approvedCatalogProducts: 27,
-      remainingFamilies: 14,
+      approvedCatalogProducts: 30,
+      remainingFamilies: 11,
     });
-    expect(summary.byStage.approved).toBe(27);
+    expect(summary.byStage.approved).toBe(30);
     expect(summary.byStage["documents-verified"]).toBe(0);
-    expect(summary.byStage["source-indexed"]).toBe(14);
+    expect(summary.byStage["source-indexed"]).toBe(11);
     expect(
       FPX_CURRENT_INTAKE.products
         .filter((product) => product.stage !== "approved")

@@ -154,6 +154,9 @@ const clearanceRulesSchema = z.object({
         .min(1)
         .optional(),
       minimumThickness: z.number().positive().optional(),
+      minimumWidth: z.number().positive().optional(),
+      maximumRaisedHeight: z.number().positive().optional(),
+      minimumRValue: z.number().positive().optional(),
       minimumFrontGap: z.number().nonnegative().optional(),
       minimumApplianceFloorGap: z.number().nonnegative().optional(),
       mustRemainBelowSurround: z.boolean().optional(),

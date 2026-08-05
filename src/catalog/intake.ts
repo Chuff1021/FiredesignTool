@@ -8,7 +8,7 @@ import {
 export { catalogIntakeSchema, summarizeCatalogIntake } from "@/catalog/intakeSchema";
 
 const specsUrl = "https://www.fireplacex.com/professionals/specs-and-drawings/";
-const checkedAt = "2026-08-04";
+const checkedAt = "2026-08-05";
 
 const gasFireplace = (
   id: string,
@@ -63,11 +63,105 @@ const indexedProduct = (
     "Official current product page is indexed; dimensions, current manual revision, options, and production visuals remain gated.",
 });
 
+const verifiedWoodFireplace = (options: {
+  id: string;
+  model: string;
+  productUrl: string;
+  sku: string;
+  fireBuilderProductId: number;
+  fireBuilderModelId: number;
+  variants: { id: string; viewingArea: { width: number; height: number } }[];
+  manualUrl: string;
+  manualRevision: string;
+  dimensionPage: number;
+  mantelPage: number;
+  hearthPage: number;
+  mantelProfiles: {
+    material: "combustible" | "non-combustible";
+    points: { projection: number; minimumClearance: number }[];
+  }[];
+  hearth: {
+    minimumWidth: number;
+    maximumRaisedHeight: number;
+    minimumRValue: number;
+    placementProfiles: { applianceElevation: number; minimumHorizontalExtension: number }[];
+  };
+  visualOptionIds: string[];
+  visualSourceSku: string;
+}) => ({
+  ...indexedProduct(
+    options.id,
+    options.model,
+    "fireplace",
+    "wood",
+    "traditional",
+    options.productUrl,
+    "https://www.fireplacex.com/products/wood-fireplaces/",
+  ),
+  stage: "approved" as const,
+  approvedCatalogIds: [options.id],
+  notes:
+    "Current model identity, manual dimensions, mantel and hearth rules, live FireBuilder options, and exact official static composites are verified. The 960 px isolated configurator master remains below the 4K visual-source gate.",
+  evidence: {
+    productIdentifiers: [
+      { id: options.sku, kind: "sku" as const },
+      { id: options.model, kind: "model" as const },
+    ],
+    variants: options.variants,
+    installationManualUrl: options.manualUrl,
+    installationManualRevision: options.manualRevision,
+    dimensionPages: [options.dimensionPage],
+    clearanceRulePages: [options.mantelPage, options.hearthPage],
+    clearanceRules: {
+      mantel: {
+        measurementFrom: "appliance-base" as const,
+        profiles: options.mantelProfiles,
+      },
+      hearth: {
+        measurementFrom: "appliance-base" as const,
+        placementProfiles: options.hearth.placementProfiles,
+        minimumThickness: 1,
+        minimumWidth: options.hearth.minimumWidth,
+        maximumRaisedHeight: options.hearth.maximumRaisedHeight,
+        minimumRValue: options.hearth.minimumRValue,
+      },
+    },
+    optionPages: [],
+    visualOptionIds: options.visualOptionIds,
+    visualSourceUrls: [
+      `https://firebuilder.travisindustries.com/api/product/${options.fireBuilderProductId}/pl/1/cy/1`,
+      `https://firebuilder.travisindustries.com/api/product/${options.fireBuilderProductId}/pl/1/accessory`,
+      `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${options.visualSourceSku}.png`,
+    ],
+    visualMaster: {
+      requirement: {
+        minimumWidth: 2400,
+        minimumHeight: 1800,
+        requiresIsolation: true,
+        requiresTransparentMediaOpening: false,
+      },
+      candidates: [
+        {
+          id: `firebuilder-${options.visualSourceSku}`,
+          sourceUrl: `https://firebuilder.travisindustries.com/fbimages/LayeredImages/${options.visualSourceSku}.png`,
+          kind: "configurator-layer" as const,
+          width: 960,
+          height: 960,
+          isolated: true,
+          transparentMediaOpening: false,
+        },
+      ],
+    },
+    maximumOfficialLayerPixels: 960,
+    assetQualityGate: "blocked-high-resolution-master" as const,
+  },
+});
+
 const electricUrl = "https://www.fireplacex.com/electric-fireplaces/";
 
 export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
   schemaVersion: 2,
-  snapshotId: "fpx-2026.08.04-2",
+  snapshotId: "fpx-2026.08.05-1",
   brandId: "fireplace-xtrordinair",
   brandName: "Fireplace Xtrordinair",
   manufacturer: "Travis Industries",
@@ -435,30 +529,119 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
       "linear",
       electricUrl,
     ),
-    indexedProduct(
-      "42-apex-nexgen-hybrid",
-      "42 Apex NexGen-Hybrid",
-      "fireplace",
-      "wood",
-      "traditional",
-      "https://www.fireplacex.com/product/42-apex/",
-    ),
-    indexedProduct(
-      "36-elite-nexgen-hybrid",
-      "36 Elite NexGen-Hybrid",
-      "fireplace",
-      "wood",
-      "traditional",
-      "https://www.fireplacex.com/product/36-elite-nexgen-hybrid/",
-    ),
-    indexedProduct(
-      "44-elite-nexgen-hybrid",
-      "44 Elite NexGen-Hybrid",
-      "fireplace",
-      "wood",
-      "traditional",
-      "https://www.fireplacex.com/product/44-elite-nexgen-hybrid/",
-    ),
+    verifiedWoodFireplace({
+      id: "42-apex-nexgen-hybrid",
+      model: "42 Apex NexGen-Hybrid",
+      productUrl: "https://www.fireplacex.com/product/42-apex/",
+      sku: "98500115",
+      fireBuilderProductId: 138,
+      fireBuilderModelId: 682,
+      variants: [{ id: "designer-face", viewingArea: { width: 25.625, height: 12.875 } }],
+      manualUrl: "https://www.travisindustries.com/docs/100-01577.pdf",
+      manualRevision: "100-01577, 4/13/2021",
+      dimensionPage: 5,
+      mantelPage: 32,
+      hearthPage: 33,
+      mantelProfiles: [
+        {
+          material: "non-combustible",
+          points: [
+            { projection: 1, minimumClearance: 47.375 },
+            { projection: 18, minimumClearance: 47.375 },
+          ],
+        },
+      ],
+      hearth: {
+        minimumWidth: 44,
+        maximumRaisedHeight: 6.375,
+        minimumRValue: 1,
+        placementProfiles: [
+          { applianceElevation: 0, minimumHorizontalExtension: 20 },
+          { applianceElevation: 6, minimumHorizontalExtension: 18 },
+        ],
+      },
+      visualOptionIds: ["95500451", "95500452", "95500453"],
+      visualSourceSku: "95500452",
+    }),
+    verifiedWoodFireplace({
+      id: "36-elite-nexgen-hybrid",
+      model: "36 Elite NexGen-Hybrid",
+      productUrl: "https://www.fireplacex.com/product/36-elite-nexgen-hybrid/",
+      sku: "98500109",
+      fireBuilderProductId: 160,
+      fireBuilderModelId: 720,
+      variants: [
+        { id: "single-door", viewingArea: { width: 25.25, height: 14.5 } },
+        { id: "double-door", viewingArea: { width: 22.5, height: 14.5 } },
+      ],
+      manualUrl: "https://www.travisindustries.com/docs/100-01584.pdf",
+      manualRevision: "100-01584, 5/20/2024",
+      dimensionPage: 6,
+      mantelPage: 30,
+      hearthPage: 32,
+      mantelProfiles: [
+        {
+          material: "combustible",
+          points: [
+            { projection: 1, minimumClearance: 57.5 },
+            { projection: 8.5, minimumClearance: 57.5 },
+          ],
+        },
+        {
+          material: "non-combustible",
+          points: [{ projection: 0, minimumClearance: 0 }],
+        },
+      ],
+      hearth: {
+        minimumWidth: 60,
+        maximumRaisedHeight: 6.5,
+        minimumRValue: 0.78,
+        placementProfiles: [
+          { applianceElevation: 0, minimumHorizontalExtension: 20 },
+          { applianceElevation: 6.5, minimumHorizontalExtension: 18 },
+        ],
+      },
+      visualOptionIds: ["98500556", "98500559", "98500458", "98500456", "98500459"],
+      visualSourceSku: "98500556",
+    }),
+    verifiedWoodFireplace({
+      id: "44-elite-nexgen-hybrid",
+      model: "44 Elite NexGen-Hybrid",
+      productUrl: "https://www.fireplacex.com/product/44-elite-nexgen-hybrid/",
+      sku: "98500114",
+      fireBuilderProductId: 141,
+      fireBuilderModelId: 690,
+      variants: [{ id: "double-door", viewingArea: { width: 28.75, height: 18.25 } }],
+      manualUrl: "https://www.travisindustries.com/docs/100-01582.pdf",
+      manualRevision: "100-01582, 10/30/2024",
+      dimensionPage: 6,
+      mantelPage: 30,
+      hearthPage: 32,
+      mantelProfiles: [
+        {
+          material: "combustible",
+          points: [
+            { projection: 1, minimumClearance: 61 },
+            { projection: 8.5, minimumClearance: 61 },
+          ],
+        },
+        {
+          material: "non-combustible",
+          points: [{ projection: 0, minimumClearance: 0 }],
+        },
+      ],
+      hearth: {
+        minimumWidth: 60,
+        maximumRaisedHeight: 6.5,
+        minimumRValue: 0.78,
+        placementProfiles: [
+          { applianceElevation: 0, minimumHorizontalExtension: 20 },
+          { applianceElevation: 6.5, minimumHorizontalExtension: 18 },
+        ],
+      },
+      visualOptionIds: ["98500575", "98500590", "98500471", "98500472"],
+      visualSourceSku: "98500575",
+    }),
     {
       ...indexedProduct(
         "32-dvs-deluxe-ember-glo",

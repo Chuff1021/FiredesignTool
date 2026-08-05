@@ -125,6 +125,57 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   ).toBeVisible();
 });
 
+test("configures every approved FPX wood fireplace with its manual limits", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+
+  const fireplaceModel = page.getByLabel("Fireplace model");
+  const face = page.getByLabel("Face or trim");
+  const hearth = page.getByLabel("Add raised hearth");
+  const stoneWidth = page.getByLabel("Stone width");
+  const elevation = page.getByLabel("Fireplace elevation");
+  const mantelHeight = page.getByLabel("Mantel height");
+
+  await fireplaceModel.selectOption("42-apex-nexgen-hybrid");
+  await expect(face.locator("option")).toHaveText([
+    "Metropolitan · Charcoal",
+    "Universal · Charcoal",
+    "Timberline · Charcoal",
+  ]);
+  await face.selectOption("timberline");
+  await expect(hearth).toBeChecked();
+  await expect(hearth).toBeDisabled();
+  await expect(stoneWidth).toHaveAttribute("min", "50");
+  await expect(elevation).toHaveAttribute("min", "0");
+  await expect(elevation).toHaveAttribute("max", "6.375");
+  await expect(mantelHeight).toHaveAttribute("min", "47.375");
+
+  await fireplaceModel.selectOption("36-elite-nexgen-hybrid");
+  await expect(face.locator("option")).toHaveText([
+    "Classic Arch · Single Door · Black",
+    "Classic Arch · Double Door · Black",
+    "Artisan · Single Door · Charcoal",
+  ]);
+  await face.selectOption("artisan-single-door");
+  await expect(stoneWidth).toHaveAttribute("min", "60");
+  await expect(elevation).toHaveAttribute("min", "0");
+  await expect(elevation).toHaveAttribute("max", "6.5");
+  await expect(mantelHeight).toHaveAttribute("min", "0");
+
+  await fireplaceModel.selectOption("44-elite-nexgen-hybrid");
+  await expect(face.locator("option")).toHaveText([
+    "Classic Arch · Double Door · Black",
+    "Artisan · Double Door · Charcoal",
+  ]);
+  await face.selectOption("artisan-double-door");
+  await expect(hearth).toBeChecked();
+  await expect(hearth).toBeDisabled();
+  await expect(stoneWidth).toHaveAttribute("min", "60");
+  await expect(elevation).toHaveAttribute("min", "0");
+  await expect(elevation).toHaveAttribute("max", "6.5");
+});
+
 test("matches the raised Centurion hearth to the selected stone width", async ({
   page,
 }, testInfo) => {
@@ -204,7 +255,7 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("123 / 123 verified")).toBeVisible();
+  await expect(page.getByText("131 / 131 verified")).toBeVisible();
   await expect(page.getByText("Playing · H.264 · muted")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,

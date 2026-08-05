@@ -52,6 +52,23 @@ const mantelRuleSchema = z.object({
     )
     .min(2),
   note: z.string().min(1),
+  nonCombustibleMinimumHeight: z.number().nonnegative().finite().default(0),
+  maximumCombustibleDepth: positiveInches.optional(),
+  maximumNonCombustibleDepth: positiveInches.optional(),
+  nonCombustibleOnly: z.boolean().default(false),
+});
+
+const hearthRuleSchema = z.object({
+  required: z.literal(true),
+  manualPage: z.number().int().positive(),
+  minimumWidth: positiveInches,
+  floorExtension: positiveInches,
+  raisedExtension: positiveInches,
+  raisedThreshold: positiveInches,
+  maximumRaisedHeight: positiveInches,
+  minimumThickness: positiveInches,
+  minimumRValue: positiveInches,
+  note: z.string().min(1),
 });
 
 export const burnMediaSchema = z.object({
@@ -97,6 +114,7 @@ export const fireplaceProductSchema = z.object({
   faceOptions: z.array(faceOptionSchema).min(1),
   defaultFaceOptionId: faceOptionIdSchema,
   mantelRule: mantelRuleSchema,
+  hearthRule: hearthRuleSchema.optional(),
   burnMedia: burnMediaSchema.optional(),
 });
 
@@ -170,7 +188,7 @@ export const stoneProductSchema = z.object({
   }),
 });
 
-const retrievedAt = "2026-08-04";
+const retrievedAt = "2026-08-05";
 
 const officialLayer = (localPath: string, sourceUrl: string, label: string) => ({
   localPath,
@@ -973,6 +991,222 @@ const expandedFpxGasProducts = [
   ),
 ];
 
+const expandedFpxWoodProducts = [
+  {
+    id: "42-apex-nexgen-hybrid",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "42 Apex NexGen-Hybrid",
+    shortLabel: "42 Apex Wood",
+    sku: "98500115",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "wood" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 25.625, height: 12.875 },
+    defaultFaceOptionId: "metropolitan",
+    faceOptions: [
+      staticFace(
+        "metropolitan",
+        "Metropolitan · Charcoal",
+        "rectangular",
+        "95500452",
+        { width: 42, height: 36.28 },
+        { width: 25.625, height: 12.875 },
+        "/assets/fpx-42-apex-metropolitan.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95500452.png",
+        "Exact official 42 Apex Metropolitan FireBuilder composite",
+      ),
+      staticFace(
+        "universal",
+        "Universal · Charcoal",
+        "rectangular",
+        "95500453",
+        { width: 42, height: 36.28 },
+        { width: 25.625, height: 12.875 },
+        "/assets/fpx-42-apex-universal.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95500453.png",
+        "Exact official 42 Apex Universal FireBuilder composite",
+      ),
+      staticFace(
+        "timberline",
+        "Timberline · Charcoal",
+        "rectangular",
+        "95500451",
+        { width: 42, height: 36.15 },
+        { width: 25.625, height: 12.875 },
+        "/assets/fpx-42-apex-timberline.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/95500451.png",
+        "Exact official 42 Apex Timberline FireBuilder composite",
+      ),
+    ],
+    mantelRule: {
+      ...staticMantelRule(
+        "https://www.travisindustries.com/docs/100-01577.pdf",
+        32,
+        "100-01577, 2021-04-13",
+        [
+          { depth: 1, minimumHeight: 47.375 },
+          { depth: 18, minimumHeight: 47.375 },
+        ],
+        "The 42 Apex manual requires a non-combustible mantel at least 47⅜″ above the fireplace base, with an 18″ maximum depth.",
+      ),
+      nonCombustibleMinimumHeight: 47.375,
+      maximumNonCombustibleDepth: 18,
+      nonCombustibleOnly: true,
+    },
+    hearthRule: {
+      required: true as const,
+      manualPage: 33,
+      minimumWidth: 44,
+      floorExtension: 20,
+      raisedExtension: 18,
+      raisedThreshold: 6,
+      maximumRaisedHeight: 6.375,
+      minimumThickness: 1,
+      minimumRValue: 1,
+      note: "The hearth must extend 8″ beyond both sides of the door opening; floor hearths extend 20″ and hearths raised at least 6″ extend 18″.",
+    },
+  },
+  {
+    id: "36-elite-nexgen-hybrid",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "36 Elite NexGen-Hybrid",
+    shortLabel: "36 Elite Wood",
+    sku: "98500109",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "wood" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 25.25, height: 14.5 },
+    defaultFaceOptionId: "classic-arch-single-door",
+    faceOptions: [
+      staticFace(
+        "classic-arch-single-door",
+        "Classic Arch · Single Door · Black",
+        "arched",
+        "98500556+98500458",
+        { width: 42, height: 34.5 },
+        { width: 25.25, height: 14.5 },
+        "/assets/fpx-36-elite-classic-single-door.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500556.png",
+        "Exact official 36 Elite Classic Arch face with black single door",
+      ),
+      staticFace(
+        "classic-arch-double-door",
+        "Classic Arch · Double Door · Black",
+        "arched",
+        "98500556+98500456",
+        { width: 42, height: 34.5 },
+        { width: 22.5, height: 14.5 },
+        "/assets/fpx-36-elite-classic-double-door.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500556.png",
+        "Exact official 36 Elite Classic Arch face with black double doors",
+      ),
+      staticFace(
+        "artisan-single-door",
+        "Artisan · Single Door · Charcoal",
+        "arched",
+        "98500559+98500459",
+        { width: 42, height: 34.5 },
+        { width: 25.25, height: 14.5 },
+        "/assets/fpx-36-elite-artisan-single-door.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500559.png",
+        "Exact official 36 Elite Artisan face with charcoal single door",
+      ),
+    ],
+    mantelRule: {
+      ...staticMantelRule(
+        "https://www.travisindustries.com/docs/100-01584.pdf",
+        30,
+        "100-01584, 2024-05-20",
+        [
+          { depth: 1, minimumHeight: 57.5 },
+          { depth: 8.5, minimumHeight: 57.5 },
+        ],
+        "A combustible mantel is 23″ above the faceplate (57½″ from the fireplace base) and no deeper than 8½″; the manual gives non-combustible mantels no minimum height or maximum depth.",
+      ),
+      maximumCombustibleDepth: 8.5,
+    },
+    hearthRule: {
+      required: true as const,
+      manualPage: 32,
+      minimumWidth: 60,
+      floorExtension: 20,
+      raisedExtension: 18,
+      raisedThreshold: 6.5,
+      maximumRaisedHeight: 6.5,
+      minimumThickness: 1,
+      minimumRValue: 0.78,
+      note: "The hearth must be at least 60″ wide; floor hearths extend 20″ and a 6½″ raised hearth extends 18″.",
+    },
+  },
+  {
+    id: "44-elite-nexgen-hybrid",
+    brandId: "fireplace-xtrordinair",
+    manufacturer: "Fireplace Xtrordinair",
+    model: "44 Elite NexGen-Hybrid",
+    shortLabel: "44 Elite Wood",
+    sku: "98500114",
+    status: "approved" as const,
+    applianceType: "fireplace" as const,
+    fuel: "wood" as const,
+    style: "traditional" as const,
+    viewingArea: { width: 28.75, height: 18.25 },
+    defaultFaceOptionId: "classic-arch-double-door",
+    faceOptions: [
+      staticFace(
+        "classic-arch-double-door",
+        "Classic Arch · Double Door · Black",
+        "arched",
+        "98500575+98500471",
+        { width: 49, height: 38 },
+        { width: 28.75, height: 18.25 },
+        "/assets/fpx-44-elite-classic-double-door.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500575.png",
+        "Exact official 44 Elite Classic Arch face with black double doors",
+      ),
+      staticFace(
+        "artisan-double-door",
+        "Artisan · Double Door · Charcoal",
+        "arched",
+        "98500590+98500472",
+        { width: 49, height: 38 },
+        { width: 28.75, height: 18.25 },
+        "/assets/fpx-44-elite-artisan-double-door.png",
+        "https://firebuilder.travisindustries.com/fbimages/LayeredImages/98500590.png",
+        "Exact official 44 Elite Artisan face with charcoal double doors",
+      ),
+    ],
+    mantelRule: {
+      ...staticMantelRule(
+        "https://www.travisindustries.com/docs/100-01582.pdf",
+        30,
+        "100-01582, 2024-10-30",
+        [
+          { depth: 1, minimumHeight: 61 },
+          { depth: 8.5, minimumHeight: 61 },
+        ],
+        "A combustible mantel is 23″ above the faceplate (61″ from the fireplace base) and no deeper than 8½″; the manual gives non-combustible mantels no minimum height or maximum depth.",
+      ),
+      maximumCombustibleDepth: 8.5,
+    },
+    hearthRule: {
+      required: true as const,
+      manualPage: 32,
+      minimumWidth: 60,
+      floorExtension: 20,
+      raisedExtension: 18,
+      raisedThreshold: 6.5,
+      maximumRaisedHeight: 6.5,
+      minimumThickness: 1,
+      minimumRValue: 0.78,
+      note: "The hearth must be at least 60″ wide; floor hearths extend 20″ and a 6½″ raised hearth extends 18″.",
+    },
+  },
+];
+
 export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
   {
     id: "564-trv-25k-deluxe",
@@ -1366,6 +1600,7 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
     },
   },
   ...expandedFpxGasProducts,
+  ...expandedFpxWoodProducts,
 ]);
 
 const finishAssets = (
@@ -1780,7 +2015,7 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export const APP_VERSION = "0.22.0";
+export const APP_VERSION = "0.23.0";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

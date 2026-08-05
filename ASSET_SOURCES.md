@@ -1,7 +1,7 @@
 # Manufacturer asset sources
 
 Every customer-facing product visual is derived from manufacturer-published
-material retrieved or reverified on 2026-08-04. No generative image system is used.
+material retrieved or reverified through 2026-08-05. No generative image system is used.
 
 ## Fireplace Xtrordinair
 
@@ -100,6 +100,28 @@ is checked against FPX's premium traditional, premium linear, ProBuilder
 traditional, ProBuilder linear, gas-insert, and professional-specification
 pages. It keeps current marketed products separate from supported legacy
 models and retains FireBuilder's limited-stock/factory-sold-out qualifiers.
+
+### Complete current FPX wood fireplace catalog
+
+Release `2026.08.05-1` adds the three current wood fireplaces published on the
+official FPX wood collection page:
+
+- 42 Apex NexGen-Hybrid, appliance `98500115`, with Timberline `95500451`,
+  Metropolitan `95500452`, and Universal `95500453` faces
+- 36 Elite NexGen-Hybrid, appliance `98500109`, with Classic Arch face
+  `98500556`, Artisan face `98500559`, black single door `98500458`, black
+  double door `98500456`, and Artisan single door `98500459`
+- 44 Elite NexGen-Hybrid, appliance `98500114`, with Classic Arch face
+  `98500575`, Artisan face `98500590`, black double doors `98500471`, and
+  Artisan double doors `98500472`
+
+The local PNGs are lossless deterministic composites of those exact live
+FireBuilder layers. No logs, fire, facework, or doors are redrawn. Current
+installation manuals are `100-01577` (42 Apex), `100-01584` (36 Elite), and
+`100-01582` (44 Elite). The approved static assets remain source-limited to the
+official 960-pixel configurator canvas, which is recorded as blocked at the 4K
+visual-master gate even though the exact products are available for showroom
+configuration.
 
 ### Official burn footage
 

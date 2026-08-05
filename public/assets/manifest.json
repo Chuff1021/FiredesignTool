@@ -1,6 +1,6 @@
 {
-  "version": "2026.08.04-2",
-  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "version": "2026.08.05-1",
+  "generatedAt": "2026-08-05T00:00:00.000Z",
   "files": [
     {
       "path": "/assets/centurion-brown-ledge-bump.webp",
@@ -58,6 +58,36 @@
       "size": 532666
     },
     {
+      "path": "/assets/fpx-36-elite-artisan-single-door.png",
+      "sha256": "cc1c300b27ffbfd1e700444b9f1eb8be3d89724be3edee1d0b7a84769bc9ab18",
+      "size": 588037
+    },
+    {
+      "path": "/assets/fpx-36-elite-classic-double-door.png",
+      "sha256": "723af0c52de8110783c6ac9e0a20041d409c8a2f83415d4db95e57527bb92d88",
+      "size": 333216
+    },
+    {
+      "path": "/assets/fpx-36-elite-classic-single-door.png",
+      "sha256": "7bb2a14d71917765587bce1550b8e6ca856bdc401dc4c23bab72a3ff5976a7ee",
+      "size": 386329
+    },
+    {
+      "path": "/assets/fpx-42-apex-metropolitan.png",
+      "sha256": "d833545e37e4eb5eb5555c6ead4b5b63e1f6764115498ddfe34a24b87461f072",
+      "size": 390212
+    },
+    {
+      "path": "/assets/fpx-42-apex-timberline.png",
+      "sha256": "36ed75652f9c698a0167de4160a56e0a9b529a85bf97bff72f77422bf80ba5fb",
+      "size": 455844
+    },
+    {
+      "path": "/assets/fpx-42-apex-universal.png",
+      "sha256": "4bf583543742c6343b6283d7180f54f640283dfa4c29a88895570d8fc67c3d09",
+      "size": 355693
+    },
+    {
       "path": "/assets/fpx-4237-burn-poster.webp",
       "sha256": "f980f875f4f214b28943d6032083a8b73e40f4c5d689d1197d96243a4d1111b9",
       "size": 285030
@@ -91,6 +121,16 @@
       "path": "/assets/fpx-430-mod-insert.png",
       "sha256": "445c277669a4aa9bf1c8c55763d19c7fcaaa1d3f93f3bbc9f60531c80898110c",
       "size": 277142
+    },
+    {
+      "path": "/assets/fpx-44-elite-artisan-double-door.png",
+      "sha256": "98150ef3a283f6c41d0c1aba8e8ab622ca5f2a661ad01f3eacca55bbe2b65177",
+      "size": 722625
+    },
+    {
+      "path": "/assets/fpx-44-elite-classic-double-door.png",
+      "sha256": "f0629243c0fab02750737d7691624743f9935f040392cc8e329169e04243b1b3",
+      "size": 550465
     },
     {
       "path": "/assets/fpx-4415-high-output.png",

@@ -3,7 +3,8 @@
 Showroom-grade, dimensionally accurate visualization built from deterministic,
 manufacturer-sourced product material.
 
-The current approved catalog contains the complete 27-product FPX gas scope:
+The current approved catalog contains all 27 current FPX gas models plus the
+complete three-model FPX wood-fireplace lineup:
 
 - Fireplace Xtrordinair 564 TRV 25K Deluxe and Clean Face Deluxe (`98500277`,
   `98500278`)
@@ -21,6 +22,10 @@ The current approved catalog contains the complete 27-product FPX gas scope:
 - ProBuilder linear: 42 Deluxe, 54 Deluxe, 72 GSB, and 72 Deluxe
 - Gas inserts: 32 DVS Deluxe Ember-Glo, 430 Deluxe Ember-Glo, 430 Mod-Fyre,
   34 DVL Deluxe Ember-Glo, 616 Deluxe Ember-Glo, and 616 Mod-Fyre
+- Wood fireplaces: 42 Apex NexGen-Hybrid with Metropolitan, Universal, and
+  Timberline faces; 36 Elite NexGen-Hybrid with Classic Arch single/double
+  door and Artisan single-door combinations; and 44 Elite NexGen-Hybrid with
+  Classic Arch and Artisan double-door combinations
 - Muted, automatically looping official Travis Industries burn footage for the
   564, 864, and 4237 families, with local high-resolution fallback masters and
   complete offline playback
@@ -143,7 +148,7 @@ or physical-sample approval.
 - `src/catalog/intakeSchema.ts` and `src/catalog/intakeRegistry.ts` hold the
   manufacturer-neutral pre-release gates. The current queue indexes 90 FPX,
   Superior, and Majestic fireplace/insert families while exposing all 27
-  current marketed FPX gas models and variants.
+  current marketed FPX gas models and all three current FPX wood fireplaces.
   FPX inserts, Superior DRI2000, and Majestic Ruby Platinum have verified
   model-specific opening, clearance, facade, surround, and manual evidence.
   Ruby Platinum remains hidden until an approved isolated high-resolution

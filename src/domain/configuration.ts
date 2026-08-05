@@ -96,8 +96,19 @@ export function getMinimumMantelHeight(
   return last.minimumHeight;
 }
 
-export function getMinimumStoneWidth(): number {
-  return STONE_WIDTH_RANGE.min;
+export function getMinimumNonCombustibleMantelHeight(
+  fireplaceId: FeatureWallConfiguration["fireplaceId"],
+): number {
+  return catalogRepository.getFireplace(fireplaceId).mantelRule.nonCombustibleMinimumHeight;
+}
+
+export function getMinimumStoneWidth(
+  fireplaceId?: FeatureWallConfiguration["fireplaceId"],
+): number {
+  const requiredHearthWidth = fireplaceId
+    ? catalogRepository.getFireplace(fireplaceId).hearthRule?.minimumWidth
+    : undefined;
+  return Math.max(STONE_WIDTH_RANGE.min, requiredHearthWidth ?? 0);
 }
 
 export function getHearthWidth(configuration: FeatureWallConfiguration): number {
@@ -165,12 +176,14 @@ export function normalizeConfiguration(
   const mantelFinishId = mantelProduct.finishIds.includes(requestedMantelFinishId)
     ? requestedMantelFinishId
     : mantelProduct.defaultFinishId;
-  const hearthEnabled = candidate.hearthEnabled ?? DEFAULT_CONFIGURATION.hearthEnabled;
+  const hearthEnabled = fireplace.hearthRule?.required
+    ? true
+    : (candidate.hearthEnabled ?? DEFAULT_CONFIGURATION.hearthEnabled);
   const wallWidth = clampToRange(
     candidate.wallWidth ?? DEFAULT_CONFIGURATION.wallWidth,
     WALL_WIDTH_RANGE,
   );
-  const minimumStoneWidth = getMinimumStoneWidth();
+  const minimumStoneWidth = getMinimumStoneWidth(fireplaceId);
   const stoneWidth = clampToRange(candidate.stoneWidth ?? DEFAULT_CONFIGURATION.stoneWidth, {
     min: minimumStoneWidth,
     max: Math.min(STONE_WIDTH_RANGE.max, wallWidth),
@@ -178,10 +191,14 @@ export function normalizeConfiguration(
   const fireplaceElevation = clampToRange(
     candidate.fireplaceElevation ?? DEFAULT_CONFIGURATION.fireplaceElevation,
     {
-      min: hearthEnabled ? 1.5 : FIREPLACE_ELEVATION_RANGE.min,
-      max: FIREPLACE_ELEVATION_RANGE.max,
+      // A required wood-fireplace hearth may sit flush with the finished floor.
+      // The 1.5-inch minimum only applies to the optional raised-hearth treatment.
+      min:
+        hearthEnabled && !fireplace.hearthRule?.required ? 1.5 : FIREPLACE_ELEVATION_RANGE.min,
+      max: fireplace.hearthRule?.maximumRaisedHeight ?? FIREPLACE_ELEVATION_RANGE.max,
     },
   );
+  const minimumNonCombustibleMantelHeight = getMinimumNonCombustibleMantelHeight(fireplaceId);
 
   const normalized: FeatureWallConfiguration = {
     schemaVersion: 5,
@@ -195,7 +212,10 @@ export function normalizeConfiguration(
     fireplaceElevation,
     mantelHeightAboveBase: clampToRange(
       candidate.mantelHeightAboveBase ?? DEFAULT_CONFIGURATION.mantelHeightAboveBase,
-      MANTEL_HEIGHT_RANGE,
+      {
+        min: Math.max(MANTEL_HEIGHT_RANGE.min, minimumNonCombustibleMantelHeight),
+        max: MANTEL_HEIGHT_RANGE.max,
+      },
     ),
     fireplaceId,
     faceOptionId,

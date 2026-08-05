@@ -6,6 +6,7 @@ import {
   getMantelBottom,
   getMantelCenter,
   getMinimumMantelHeight,
+  getMinimumNonCombustibleMantelHeight,
   getHearthWidth,
   inchesLabel,
   normalizeConfiguration,
@@ -95,6 +96,53 @@ describe("feature wall dimensions", () => {
       { centerX: 0, width: 18 },
       { centerX: 17, width: 16 },
     ]);
+  });
+
+  it("enforces the wood manuals' mantel, hearth, and raised-height limits", () => {
+    const apex = normalizeConfiguration({
+      ...DEFAULT_CONFIGURATION,
+      fireplaceId: "42-apex-nexgen-hybrid",
+      faceOptionId: "metropolitan",
+      stoneWidth: 50,
+      fireplaceElevation: 20,
+      mantelHeightAboveBase: 10,
+      hearthEnabled: false,
+    });
+    expect(apex).toMatchObject({
+      hearthEnabled: true,
+      stoneWidth: 50,
+      fireplaceElevation: 6.375,
+      mantelHeightAboveBase: 47.375,
+    });
+    expect(getMinimumNonCombustibleMantelHeight(apex.fireplaceId)).toBe(47.375);
+
+    const elite = normalizeConfiguration({
+      ...DEFAULT_CONFIGURATION,
+      fireplaceId: "36-elite-nexgen-hybrid",
+      faceOptionId: "classic-arch-single-door",
+      stoneWidth: 50,
+      fireplaceElevation: 20,
+      hearthEnabled: false,
+    });
+    expect(elite).toMatchObject({
+      hearthEnabled: true,
+      stoneWidth: 60,
+      fireplaceElevation: 6.5,
+    });
+    expect(getMinimumNonCombustibleMantelHeight(elite.fireplaceId)).toBe(0);
+  });
+
+  it("allows a required wood-fireplace hearth to remain flush with the floor", () => {
+    const configuration = normalizeConfiguration({
+      ...DEFAULT_CONFIGURATION,
+      fireplaceId: "36-elite-nexgen-hybrid",
+      faceOptionId: "classic-arch-single-door",
+      fireplaceElevation: 0,
+      hearthEnabled: false,
+    });
+
+    expect(configuration.hearthEnabled).toBe(true);
+    expect(configuration.fireplaceElevation).toBe(0);
   });
 
   it("clamps every adjustable physical dimension to its approved range", () => {

@@ -13,8 +13,8 @@ describe("manufacturer-neutral catalog intake registry", () => {
     const summary = summarizeIntakeRegistry();
     expect(summary).toMatchObject({
       totalFamilies: 90,
-      approvedCatalogProducts: 27,
-      remainingFamilies: 63,
+      approvedCatalogProducts: 30,
+      remainingFamilies: 60,
     });
     expect(summary.brands.map((brand) => brand.brandId)).toEqual([
       "fireplace-xtrordinair",
