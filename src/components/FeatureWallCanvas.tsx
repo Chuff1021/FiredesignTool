@@ -308,6 +308,7 @@ function FeatureWall({
   }, [configuration.fireplaceElevation, hearthWidth, stone.assets, textures]);
 
   const fireTexture = requireTexture(textures, fireback.asset.localPath);
+  const faceTexture = requireTexture(textures, face.asset.localPath);
   const faceOverlayTexture = requireTexture(textures, face.overlayAsset.localPath);
   const fireboxMaskTexture = requireTexture(textures, face.maskAsset.localPath);
   const burnPosterTexture = fireplace.burnMedia
@@ -381,18 +382,31 @@ function FeatureWall({
         <boxGeometry args={[fireplace.viewingArea.width, fireplace.viewingArea.height, 1.2]} />
         <meshStandardMaterial color="#171513" metalness={0.34} roughness={0.38} />
       </mesh>
-      <mesh
-        position={[
-          fireback.renderMode === "base-layer" ? face.mediaWindow.offsetX : 0,
-          configuration.fireplaceElevation +
-            face.visibleFace.height / 2 +
-            (fireback.renderMode === "base-layer" ? face.mediaWindow.offsetY : 0),
-          0.9,
-        ]}
-      >
-        <planeGeometry args={[fireback.display.width, fireback.display.height]} />
-        <meshBasicMaterial alphaTest={0.02} map={fireTexture} toneMapped={false} transparent />
+      <mesh position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 0.9]}>
+        <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
+        <meshBasicMaterial alphaTest={0.02} map={faceTexture} toneMapped={false} transparent />
       </mesh>
+      {fireback.renderMode === "base-layer" ? (
+        <mesh
+          position={[
+            face.mediaWindow.offsetX,
+            configuration.fireplaceElevation +
+              face.visibleFace.height / 2 +
+              face.mediaWindow.offsetY,
+            0.95,
+          ]}
+          renderOrder={1}
+        >
+          <planeGeometry args={[face.mediaWindow.width, face.mediaWindow.height]} />
+          <meshBasicMaterial
+            alphaMap={fireboxMaskTexture}
+            alphaTest={0.01}
+            map={fireTexture}
+            toneMapped={false}
+            transparent
+          />
+        </mesh>
+      ) : null}
       {liveBurnEnabled && fireplace.burnMedia && burnPosterTexture ? (
         <>
           <group

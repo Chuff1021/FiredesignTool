@@ -9,7 +9,7 @@ export type OfficialFirebackSet = {
   modelSku: string;
   defaultMediaSkus: readonly string[];
   defaultFirebackId: string;
-  display: { width: number; height: number };
+  viewingArea: { width: number; height: number };
   options: readonly OfficialFirebackDefinition[];
 };
 
@@ -92,13 +92,13 @@ const set = (
   modelSku: string,
   defaultMediaSkus: readonly string[],
   defaultFirebackId: string,
-  display: { width: number; height: number },
+  viewingArea: { width: number; height: number },
   options: readonly OfficialFirebackDefinition[],
 ): OfficialFirebackSet => ({
   modelSku,
   defaultMediaSkus,
   defaultFirebackId,
-  display,
+  viewingArea,
   options,
 });
 
@@ -107,70 +107,70 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500277",
     ["94500626"],
     "handmade-brick",
-    { width: 36, height: 23.6875 },
+    { width: 29.375, height: 16.375 },
     firebacks564,
   ),
   "564-trv-25k-clean-face": set(
     "98500278",
     ["94500626"],
     "handmade-brick",
-    { width: 36, height: 23.6875 },
+    { width: 29.375, height: 16.375 },
     firebacks564,
   ),
   "564-tv-35k-deluxe": set(
     "98500297",
     ["94500626"],
     "handmade-brick",
-    { width: 36, height: 23.6875 },
+    { width: 29.375, height: 16.375 },
     firebacks564,
   ),
   "564-tv-35k-clean-face": set(
     "98500298",
     ["94500626"],
     "handmade-brick",
-    { width: 36, height: 23.6875 },
+    { width: 29.375, height: 16.375 },
     firebacks564,
   ),
   "864-trv-31k-deluxe": set(
     "98500186",
     ["94500721"],
     "common-brick",
-    { width: 41, height: 30.75 },
+    { width: 34.25, height: 22.25 },
     firebacks864,
   ),
   "864-trv-31k-clean-face": set(
     "98500187",
     ["94500721"],
     "common-brick",
-    { width: 41, height: 30.75 },
+    { width: 34.25, height: 22.25 },
     firebacks864,
   ),
   "864-tv-40k-deluxe": set(
     "98500188",
     ["94500721"],
     "common-brick",
-    { width: 41, height: 30.75 },
+    { width: 34.25, height: 22.25 },
     firebacks864,
   ),
   "864-tv-40k-clean-face": set(
     "98500189",
     ["94500721"],
     "common-brick",
-    { width: 41, height: 30.75 },
+    { width: 34.25, height: 22.25 },
     firebacks864,
   ),
   "4237-ember-glo-clean-face": set(
     "98500344",
     ["94500983"],
     "handmade-brick",
-    { width: 43.75, height: 39 },
+    { width: 39.875, height: 34.875 },
     firebacks4237,
   ),
   "4415-high-output-deluxe": set(
     "98500328",
     ["94500580"],
     "black-glass",
-    { width: 44, height: 15 },
+    { width: 42.125, height: 13 },
     [
       option("black-painted", "Black Painted", "96100973"),
       option("ledgestone", "Ledgestone", "96100974"),
@@ -182,7 +182,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500334",
     ["94500580"],
     "black-glass",
-    { width: 60, height: 15 },
+    { width: 58.125, height: 13 },
     [
       option("black-painted", "Black Painted", "96100983"),
       option("ledgestone", "Ledgestone", "96100984"),
@@ -194,7 +194,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500222",
     ["94500626"],
     "common-brick",
-    { width: 36, height: 33.1875 },
+    { width: 30.125, height: 26.125 },
     [
       option("black-glass", "Black Glass", "96100851"),
       option("common-brick", "Common Brick", "96100852"),
@@ -204,7 +204,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500223",
     ["94500626"],
     "common-brick",
-    { width: 36, height: 33.1875 },
+    { width: 30.125, height: 26.125 },
     [
       option("black-glass", "Black Glass", "96100851"),
       option("common-brick", "Common Brick", "96100852"),
@@ -214,7 +214,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500231",
     ["94500626"],
     "common-brick",
-    { width: 36, height: 33.1875 },
+    { width: 30.125, height: 26.125 },
     [
       option("black-glass", "Black Glass", "96100851"),
       option("common-brick", "Common Brick", "96100852"),
@@ -224,7 +224,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500237",
     ["94500642"],
     "common-brick",
-    { width: 36, height: 33.1875 },
+    { width: 30.125, height: 26.125 },
     [
       option("black-glass", "Black Glass", "96100857"),
       option("common-brick", "Common Brick", "96100858"),
@@ -234,7 +234,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500232",
     ["94500771"],
     "common-brick",
-    { width: 42, height: 40.25 },
+    { width: 36, height: 31 },
     [
       option("black-glass", "Black Glass", "96100861"),
       option("common-brick", "Common Brick", "96100862"),
@@ -244,7 +244,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500264",
     ["94500580"],
     "black-glass",
-    { width: 42, height: 15 },
+    { width: 40.375, height: 13.625 },
     [
       option("black-glass", "Black Glass", "96100802"),
       option("ledgestone", "Ledgestone", "96100803"),
@@ -254,7 +254,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500268",
     ["94500580"],
     "black-glass",
-    { width: 54, height: 15 },
+    { width: 52.375, height: 13.625 },
     [
       option("black-glass", "Black Glass", "96100805"),
       option("ledgestone", "Ledgestone", "96100806"),
@@ -264,7 +264,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500263",
     ["94500580"],
     "black-glass",
-    { width: 72, height: 15 },
+    { width: 70.375, height: 13.625 },
     [
       option("black-glass", "Black Glass", "96100809"),
       option("ledgestone", "Ledgestone", "96100810"),
@@ -274,7 +274,7 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98500266",
     ["94500580"],
     "black-glass",
-    { width: 72, height: 15 },
+    { width: 70.375, height: 13.625 },
     [
       option("black-glass", "Black Glass", "96100809"),
       option("ledgestone", "Ledgestone", "96100810"),
@@ -284,17 +284,17 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98400371",
     ["94500957"],
     "handmade-brick",
-    { width: 25.25, height: 13.75 },
+    { width: 24.25, height: 12.75 },
     insertBrickSet32,
   ),
   "430-deluxe-ember-glo": set(
     "98400113",
     ["94500957"],
     "handmade-brick",
-    { width: 24, height: 17 },
+    { width: 23, height: 16 },
     insertBrickSet430,
   ),
-  "430-mod-fyre": set("98400114", ["94500580"], "black-painted", { width: 24, height: 17 }, [
+  "430-mod-fyre": set("98400114", ["94500580"], "black-painted", { width: 23, height: 16 }, [
     option("black-painted", "Black Painted", "96100920"),
     option("black-glass", "Black Glass", "96100922"),
   ]),
@@ -302,21 +302,21 @@ export const FPX_OFFICIAL_FIREBACK_SETS: Readonly<Record<string, OfficialFirebac
     "98400376",
     ["94500952"],
     "handmade-brick",
-    { width: 28, height: 17.125 },
+    { width: 27, height: 16.125 },
     insertBrickSet34,
   ),
   "616-deluxe-ember-glo": set(
     "98400120",
     ["94500952"],
     "handmade-brick",
-    { width: 28.5, height: 20.75 },
+    { width: 27.5, height: 19.75 },
     insertBrickSet616,
   ),
   "616-mod-fyre": set(
     "98400121",
     ["94500580"],
     "black-painted",
-    { width: 28.5, height: 20.75 },
+    { width: 27.5, height: 19.75 },
     [
       option("black-painted", "Black Painted", "96100928"),
       option("black-glass", "Black Glass", "96100931"),

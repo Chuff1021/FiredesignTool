@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RELEASE_2026_08_11_2 } from "@/catalog/releases/2026.08.11-2";
+import { RELEASE_2026_08_11_3 } from "@/catalog/releases/2026.08.11-3";
 import {
   assetSourceSchema,
   fireplaceProductSchema,
@@ -207,7 +207,7 @@ export const catalogReleaseSchema = z
 export type CatalogRelease = z.infer<typeof catalogReleaseSchema>;
 export type CatalogBrand = z.infer<typeof brandSchema>;
 
-export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_11_2);
+export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_11_3);
 
 export interface CatalogRepository {
   readonly release: CatalogRelease;

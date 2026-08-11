@@ -266,6 +266,48 @@ function drawStoneField(
   context.restore();
 }
 
+function drawImageCover(
+  context: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  width: number,
+  height: number,
+) {
+  const sourceAspect = image.naturalWidth / image.naturalHeight;
+  const targetAspect = width / height;
+  let sourceX = 0;
+  let sourceY = 0;
+  let sourceWidth = image.naturalWidth;
+  let sourceHeight = image.naturalHeight;
+  if (sourceAspect > targetAspect) {
+    sourceWidth = image.naturalHeight * targetAspect;
+    sourceX = (image.naturalWidth - sourceWidth) / 2;
+  } else if (sourceAspect < targetAspect) {
+    sourceHeight = image.naturalWidth / targetAspect;
+    sourceY = (image.naturalHeight - sourceHeight) / 2;
+  }
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, width, height);
+}
+
+function createMaskedOpening(
+  image: HTMLImageElement,
+  mask: HTMLImageElement,
+  width: number,
+  height: number,
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) throw new Error("The firebox mask could not be prepared.");
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  drawImageCover(context, image, width, height);
+  context.globalCompositeOperation = "destination-in";
+  context.drawImage(mask, 0, 0, width, height);
+  context.globalCompositeOperation = "source-over";
+  return canvas;
+}
+
 async function createDesignLayer(
   configuration: FeatureWallConfiguration,
   scenario: RoomProject["scenario"],
@@ -295,9 +337,18 @@ async function createDesignLayer(
     configuration.mantelProductId,
     configuration.mantelFinishId,
   );
-  const [stoneImage, fireplaceImage, faceOverlayImage, mantelImage] = await Promise.all([
+  const [
+    stoneImage,
+    fireplaceImage,
+    firebackImage,
+    faceMaskImage,
+    faceOverlayImage,
+    mantelImage,
+  ] = await Promise.all([
     cachedImage(stone.assets[0]!.localPath),
-    cachedImage(fireback.asset.localPath),
+    cachedImage(face.asset.localPath),
+    fireback.renderMode === "base-layer" ? cachedImage(fireback.asset.localPath) : null,
+    fireback.renderMode === "base-layer" ? cachedImage(face.maskAsset.localPath) : null,
     face.overlayMode === "always" ? cachedImage(face.overlayAsset.localPath) : null,
     cachedImage(mantelFinish.assets[0]!.localPath),
   ]);
@@ -346,19 +397,24 @@ async function createDesignLayer(
   context.shadowColor = "rgba(0,0,0,.42)";
   context.shadowBlur = 5 * pixelsPerInch;
   context.shadowOffsetY = 1.2 * pixelsPerInch;
-  if (fireback.renderMode === "complete-composite") {
-    context.drawImage(fireplaceImage, faceLeft, faceTop, faceWidth, faceHeight);
-  } else {
-    const firebackWidth = fireback.display.width * pixelsPerInch;
-    const firebackHeight = fireback.display.height * pixelsPerInch;
-    const firebackLeft = toX(face.mediaWindow.offsetX - fireback.display.width / 2);
+  context.drawImage(fireplaceImage, faceLeft, faceTop, faceWidth, faceHeight);
+  if (firebackImage && faceMaskImage) {
+    const firebackWidth = face.mediaWindow.width * pixelsPerInch;
+    const firebackHeight = face.mediaWindow.height * pixelsPerInch;
+    const firebackLeft = toX(face.mediaWindow.offsetX - face.mediaWindow.width / 2);
     const firebackTop = toY(
       configuration.fireplaceElevation +
         face.visibleFace.height / 2 +
         face.mediaWindow.offsetY +
-        fireback.display.height / 2,
+        face.mediaWindow.height / 2,
     );
-    context.drawImage(fireplaceImage, firebackLeft, firebackTop, firebackWidth, firebackHeight);
+    const opening = createMaskedOpening(
+      firebackImage,
+      faceMaskImage,
+      Math.max(1, Math.round(firebackWidth)),
+      Math.max(1, Math.round(firebackHeight)),
+    );
+    context.drawImage(opening, firebackLeft, firebackTop, firebackWidth, firebackHeight);
   }
   if (faceOverlayImage) {
     context.drawImage(faceOverlayImage, faceLeft, faceTop, faceWidth, faceHeight);
@@ -407,8 +463,10 @@ async function createInsertFaceLayer(
     configuration.fireplaceId,
     configuration.firebackOptionId,
   );
-  const [image, overlay] = await Promise.all([
-    cachedImage(fireback.asset.localPath),
+  const [image, firebackImage, mask, overlay] = await Promise.all([
+    cachedImage(face.asset.localPath),
+    fireback.renderMode === "base-layer" ? cachedImage(fireback.asset.localPath) : null,
+    fireback.renderMode === "base-layer" ? cachedImage(face.maskAsset.localPath) : null,
     face.overlayMode === "always" ? cachedImage(face.overlayAsset.localPath) : null,
   ]);
   const canvas = document.createElement("canvas");
@@ -418,14 +476,19 @@ async function createInsertFaceLayer(
   if (!context) throw new Error("The insert renderer could not start.");
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
-  if (fireback.renderMode === "complete-composite") {
-    context.drawImage(image, 0, 0, canvas.width, canvas.height);
-  } else {
-    const width = fireback.display.width * pixelsPerInch;
-    const height = fireback.display.height * pixelsPerInch;
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  if (firebackImage && mask) {
+    const width = face.mediaWindow.width * pixelsPerInch;
+    const height = face.mediaWindow.height * pixelsPerInch;
     const left = canvas.width / 2 + face.mediaWindow.offsetX * pixelsPerInch - width / 2;
     const top = canvas.height / 2 - face.mediaWindow.offsetY * pixelsPerInch - height / 2;
-    context.drawImage(image, left, top, width, height);
+    const opening = createMaskedOpening(
+      firebackImage,
+      mask,
+      Math.max(1, Math.round(width)),
+      Math.max(1, Math.round(height)),
+    );
+    context.drawImage(opening, left, top, width, height);
   }
   if (overlay) context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
   return {

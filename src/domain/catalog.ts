@@ -48,10 +48,6 @@ const firebackOptionSchema = z.object({
   sku: z.string().min(1),
   fireBuilderSku: z.string().min(1),
   asset: assetSourceSchema,
-  display: z.object({
-    width: positiveInches,
-    height: positiveInches,
-  }),
   renderMode: z.enum(["base-layer", "complete-composite"]),
 });
 
@@ -1309,7 +1305,6 @@ function attachFirebackCatalog(product: UnconfiguredFireplace) {
             `https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/${sourceName}.png`,
             `Exact official Travis FireBuilder ${product.model} ${fireback.name} configuration`,
           ),
-          display: officialSet.display,
           renderMode: "base-layer" as const,
         };
       })
@@ -1321,7 +1316,6 @@ function attachFirebackCatalog(product: UnconfiguredFireplace) {
           sku: product.sku,
           fireBuilderSku: product.sku,
           asset: defaultFace.asset,
-          display: defaultFace.visibleFace,
           renderMode: "complete-composite" as const,
         },
       ];
@@ -2157,7 +2151,7 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export const APP_VERSION = "0.25.0";
+export const APP_VERSION = "0.25.1";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

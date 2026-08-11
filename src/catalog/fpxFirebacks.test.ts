@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import sharp from "sharp";
 import { FPX_OFFICIAL_FIREBACK_SETS } from "@/catalog/fpxFirebacks";
 import { fireplaceProducts } from "@/domain/catalog";
 
@@ -43,6 +44,39 @@ describe("official FPX FireBuilder firebacks", () => {
           (fireback) => fireback.id === product.burnMedia?.compatibleFirebackIds[0],
         ),
       ).toBe(true);
+    }
+  });
+
+  it("registers every model to its published glass opening", () => {
+    for (const product of fireplaceProducts) {
+      const officialSet = FPX_OFFICIAL_FIREBACK_SETS[product.id];
+      if (!officialSet) continue;
+      expect(officialSet.viewingArea).toEqual(product.viewingArea);
+      for (const face of product.faceOptions) {
+        expect(face.mediaWindow.width).toBeLessThanOrEqual(face.visibleFace.width);
+        expect(face.mediaWindow.height).toBeLessThanOrEqual(face.visibleFace.height);
+      }
+    }
+  });
+
+  it("keeps every option for a model on one shared, undistorted source frame", async () => {
+    for (const [productId, officialSet] of Object.entries(FPX_OFFICIAL_FIREBACK_SETS)) {
+      const dimensions = await Promise.all(
+        officialSet.options.map((fireback) =>
+          sharp(`public/assets/firebacks/${productId}-${fireback.id}.png`).metadata(),
+        ),
+      );
+      const reference = dimensions[0];
+      expect(reference?.width).toBeGreaterThan(0);
+      expect(reference?.height).toBeGreaterThan(0);
+      const targetAspect = officialSet.viewingArea.width / officialSet.viewingArea.height;
+      expect((reference?.width ?? 0) / (reference?.height ?? 1)).toBeCloseTo(targetAspect, 2);
+      for (const dimension of dimensions) {
+        expect({ width: dimension.width, height: dimension.height }).toEqual({
+          width: reference?.width,
+          height: reference?.height,
+        });
+      }
     }
   });
 });

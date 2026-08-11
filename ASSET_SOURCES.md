@@ -145,11 +145,14 @@ ft. Ember-Glo™`, `https://vimeo.com/639273752`
 
 ### Official FireBuilder firebacks
 
-Release `2026.08.11-2` packages 125 model-specific configurations resolved from
+Release `2026.08.11-3` packages 125 model-specific configurations resolved from
 the live Travis FireBuilder accessory endpoint (`FB_LinkTypeID = 2`). Each
 local PNG is the exact appliance + fireback + approved default log/media
 combination returned by FireBuilder's 900-pixel layered-image route. The sync
-step trims only transparent canvas and preserves the source pixels losslessly.
+step registers every option in a model to one shared source frame, then the app
+projects it only inside the published glass opening under the exact face mask.
+This preserves manufacturer pixels without independently scaling or shifting
+the fireplace shell, log set, fireback, or face.
 `scripts/sync-fpx-firebacks.mts` is the reproducible intake path; the release
 manifest records every nested asset checksum for startup and offline-cache
 verification.
