@@ -103,7 +103,7 @@ models and retains FireBuilder's limited-stock/factory-sold-out qualifiers.
 
 ### Complete current FPX wood fireplace catalog
 
-Release `2026.08.05-1` adds the three current wood fireplaces published on the
+Release `2026.08.11-1` retains the three current wood fireplaces published on the
 official FPX wood collection page:
 
 - 42 Apex NexGen-Hybrid, appliance `98500115`, with Timberline `95500451`,

@@ -16,7 +16,11 @@ import {
   type PerspectiveCamera as ThreePerspectiveCamera,
   type Texture,
 } from "three";
-import { APPROVED_ASSET_PATHS, catalogRepository } from "@/domain/catalogRepository";
+import {
+  APPROVED_CORE_ASSET_PATHS,
+  catalogRepository,
+  getApprovedFireplaceAssetPaths,
+} from "@/domain/catalogRepository";
 import {
   calculateOrthographicZoom,
   getHearthStoneSegments,
@@ -35,15 +39,23 @@ type FeatureWallCanvasProps = {
   onRendererStatus: (status: "ready" | "recovering" | "error") => void;
 };
 
-const TEXTURE_ASSET_PATHS = APPROVED_ASSET_PATHS.filter((path) => !path.endsWith(".mp4"));
-
-function usePreparedTextures() {
-  const sources = useLoader(TextureLoader, TEXTURE_ASSET_PATHS) as Texture[];
+function usePreparedTextures(fireplaceId: FeatureWallConfiguration["fireplaceId"]) {
+  const textureAssetPaths = useMemo(
+    () =>
+      [
+        ...new Set([
+          ...APPROVED_CORE_ASSET_PATHS,
+          ...getApprovedFireplaceAssetPaths(fireplaceId),
+        ]),
+      ].filter((path) => !path.endsWith(".mp4")),
+    [fireplaceId],
+  );
+  const sources = useLoader(TextureLoader, textureAssetPaths) as Texture[];
   const maxAnisotropy = useThree((state) => state.gl.capabilities.getMaxAnisotropy());
 
   const prepared = useMemo(() => {
     const textures = new Map<string, Texture>();
-    TEXTURE_ASSET_PATHS.forEach((path, index) => {
+    textureAssetPaths.forEach((path, index) => {
       const source = sources[index];
       if (!source) throw new Error(`Approved texture source is missing: ${path}`);
       const texture = source.clone();
@@ -55,7 +67,7 @@ function usePreparedTextures() {
       textures.set(path, texture);
     });
     return textures;
-  }, [maxAnisotropy, sources]);
+  }, [maxAnisotropy, sources, textureAssetPaths]);
   useEffect(
     () => () => {
       prepared.forEach((texture) => texture.dispose());
@@ -214,7 +226,7 @@ function FeatureWall({
   onMediaStatus: (status: FireboxMediaStatus) => void;
 }) {
   const groupRef = useRef<Group>(null);
-  const textures = usePreparedTextures();
+  const textures = usePreparedTextures(configuration.fireplaceId);
   const shadowTexture = useMemo(() => makeShadowTexture(), []);
   const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
   const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);

@@ -5,8 +5,10 @@
 1. Start the showroom computer and open the installed FireDesign app.
 2. Wait for the “Dimensionally calibrated” status.
 3. Press `Shift+D`.
-4. Confirm renderer status is **Showroom ready**, 77 assets are verified,
-   the official burn video is **Playing**, and offline cache is **Ready**.
+4. Confirm renderer status is **Showroom ready**, every active-design asset is
+   verified, the firebox media status is correct, and offline cache is **Ready**.
+   Before taking a catalog-wide demo computer offline, choose **Install complete
+   catalog offline** and wait for **Installed offline**.
 5. Confirm **Customer project storage** is not critical. If **Storage
    protection** is browser-managed, the daily external backup is mandatory.
 6. Confirm the displayed application and asset versions match the current
@@ -21,8 +23,9 @@
 
 - If the browser closes, reopen the installed app. The last validated design
   is restored locally.
-- If the network is unavailable, continue normally after the release has been
-  cached once.
+- If the network is unavailable, continue normally with installed model packs.
+  Use **Install complete catalog offline** before an event where every model must
+  remain selectable without internet.
 - If the scene pauses, use **Restart display**. Saved dimensions are retained.
 - If burn footage cannot resume after one automatic retry, the matching approved
   video poster remains visible. Reload after the customer session and confirm

@@ -48,8 +48,10 @@ state migration when necessary.
 - Duplicate offered mantel widths.
 - Invalid IDs, dimensions, URLs, local paths, statuses, or classifications.
 
-The repository indexes records once, validates every lookup, and derives the
-complete unique asset list used by readiness checks and the offline cache.
+The repository indexes records once, validates every lookup, and derives both
+the shared scene assets and an exact pack for each fireplace. Startup verifies
+only the selected design; the complete unique asset list remains available for
+an operator-initiated full offline installation.
 
 ## Intake workflow
 
@@ -125,16 +127,17 @@ for catalog-related pull requests. Each run retains a JSON evidence report for
 the installed showroom application or its Vercel build depend on a manufacturer
 website being available.
 
-Release `2026.08.05-1` contains all 27 models and factory variants in FPX's
+Release `2026.08.11-1` contains all 27 models and factory variants in FPX's
 current marketed gas-fireplace and gas-insert collections plus all three
-current wood fireplaces as checked on 2026-08-05: ten premium traditional fireplaces, two premium linear fireplaces,
+current wood fireplaces as checked on 2026-08-11: ten premium traditional fireplaces, two premium linear fireplaces,
 five traditional ProBuilder fireplaces, four linear ProBuilder fireplaces, and
 six gas inserts, plus the 42 Apex, 36 Elite, and 44 Elite NexGen-Hybrid wood
 fireplaces. Current marketing status and current factory availability are
 stored separately, so the 430 Mod-Fyre can be labeled limited stock and the 616
 Mod-Fyre factory sold out without silently removing either current marketed
-model. ProBuilder 24, 564 TV High Output, 3615 High Output, and 4415 See-Thru
-remain in the legacy intake list and never appear as current products.
+model. ProBuilder 24, 564 TV High Output, and 3615 High Output remain in the
+legacy intake list. The 4415 See-Thru is explicitly classified as discontinued
+per dealer confirmation on 2026-08-11. None appear as current products.
 
 Every live appliance has a stable model ID, official SKU where published,
 manufacturer visual, published viewing area, and manual-referenced mantel

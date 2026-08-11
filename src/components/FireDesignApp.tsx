@@ -1,21 +1,29 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { ControlPanel } from "@/components/ControlPanel";
 import { DiagnosticsPanel, type DiagnosticsData } from "@/components/DiagnosticsPanel";
 import { SceneErrorBoundary } from "@/components/SceneErrorBoundary";
 import { SceneViewport } from "@/components/SceneViewport";
 import { StartupGate } from "@/components/StartupGate";
-import { APPROVED_ASSET_PATHS } from "@/domain/catalogRepository";
+import {
+  APPROVED_ASSET_PATHS,
+  APPROVED_CORE_ASSET_PATHS,
+  catalogRepository,
+  getApprovedFireplaceAssetPaths,
+  getApprovedStartupAssetPaths,
+} from "@/domain/catalogRepository";
 import {
   runReadinessChecks,
+  verifyApprovedAssets,
   type GraphicsSupport,
   type ReadinessResult,
 } from "@/lib/readiness";
 import { useConfigurationStore } from "@/store/configurationStore";
 import type { FireboxMediaStatus } from "@/components/FireboxMedia";
 import { readStorageHealth, UNAVAILABLE_STORAGE_HEALTH } from "@/lib/storageHealth";
+import { cacheAssetPack, cacheCompleteCatalog } from "@/lib/offlineCatalog";
 
 const CustomerRoomViewport = dynamic(
   () =>
@@ -40,14 +48,36 @@ const UNKNOWN_GRAPHICS: GraphicsSupport = {
   vendor: "Checking",
 };
 
+type AssetPackState = {
+  complete: number;
+  error: string | null;
+  fireplaceId: string;
+  status: "loading" | "ready" | "error";
+  total: number;
+};
+
 export function FireDesignApp() {
   const initialize = useConfigurationStore((state) => state.initialize);
+  const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const [readiness, setReadiness] = useState<ReadinessResult | null>(null);
   const [startupError, setStartupError] = useState<string | null>(null);
   const [progress, setProgress] = useState({
     complete: 0,
-    total: APPROVED_ASSET_PATHS.length,
+    total: 0,
   });
+  const [assetPack, setAssetPack] = useState<AssetPackState>({
+    complete: 0,
+    error: null,
+    fireplaceId,
+    status: "loading",
+    total: 0,
+  });
+  const [assetPackRetry, setAssetPackRetry] = useState(0);
+  const [completeCatalogStatus, setCompleteCatalogStatus] =
+    useState<DiagnosticsData["completeCatalogStatus"]>("idle");
+  const [completeCatalogProgress, setCompleteCatalogProgress] = useState("Not installed");
+  const verifiedPacks = useRef(new Set<string>());
+  const packRequest = useRef(0);
   const [isPresentation, setPresentation] = useState(false);
   const [diagnosticsOpen, setDiagnosticsOpen] = useState(false);
   const [cacheReady, setCacheReady] = useState(false);
@@ -62,13 +92,33 @@ export function FireDesignApp() {
   const checkReadiness = useCallback(async () => {
     setStartupError(null);
     setReadiness(null);
-    setProgress({ complete: 0, total: APPROVED_ASSET_PATHS.length });
     try {
-      const result = await runReadinessChecks((complete, total) =>
+      initialize();
+      const initialFireplaceId = useConfigurationStore.getState().fireplaceId;
+      const requiredPaths = getApprovedStartupAssetPaths(initialFireplaceId);
+      setProgress({ complete: 0, total: requiredPaths.length });
+      setAssetPack({
+        complete: 0,
+        error: null,
+        fireplaceId: initialFireplaceId,
+        status: "loading",
+        total: requiredPaths.length,
+      });
+      const result = await runReadinessChecks(requiredPaths, (complete, total) =>
         setProgress({ complete, total }),
       );
-      initialize();
+      verifiedPacks.current.add(initialFireplaceId);
+      setAssetPack({
+        complete: requiredPaths.length,
+        error: null,
+        fireplaceId: initialFireplaceId,
+        status: "ready",
+        total: requiredPaths.length,
+      });
       setReadiness(result);
+      void cacheAssetPack(requiredPaths)
+        .then(() => setCacheReady(true))
+        .catch(() => setCacheReady(false));
       void readStorageHealth().then(setStorageHealth);
     } catch (error) {
       setStartupError(
@@ -95,23 +145,7 @@ export function FireDesignApp() {
     if ("serviceWorker" in navigator && process.env.NODE_ENV === "production") {
       void navigator.serviceWorker
         .register("/service-worker.js")
-        .then(async (registration) => {
-          const readyRegistration = await navigator.serviceWorker.ready;
-          await registration.update().catch(() => undefined);
-          const worker =
-            navigator.serviceWorker.controller ??
-            readyRegistration.active ??
-            registration.active;
-          if (!worker) return;
-          const resources = performance
-            .getEntriesByType("resource")
-            .map((entry) => entry.name)
-            .filter((url) => url.startsWith(window.location.origin));
-          const channel = new MessageChannel();
-          channel.port1.onmessage = (event: MessageEvent) =>
-            setCacheReady(event.data?.type === "CACHE_READY");
-          worker.postMessage({ type: "CACHE_RELEASE", urls: resources }, [channel.port2]);
-        })
+        .then((registration) => registration.update().catch(() => undefined))
         .catch(() => setCacheReady(false));
     } else {
       queueMicrotask(() => setCacheReady(process.env.NODE_ENV !== "production"));
@@ -122,6 +156,102 @@ export function FireDesignApp() {
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
+
+  useEffect(() => {
+    if (!readiness) return;
+    const requestId = ++packRequest.current;
+    const requiredPaths = getApprovedStartupAssetPaths(fireplaceId);
+    const modelPaths = getApprovedFireplaceAssetPaths(fireplaceId);
+    // A model change is the asset-verification synchronization boundary. The
+    // scene is already gated by the mismatched pack ID before these flags reset.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCacheReady(false);
+    setRendererStatus("recovering");
+
+    if (verifiedPacks.current.has(fireplaceId)) {
+      setAssetPack({
+        complete: requiredPaths.length,
+        error: null,
+        fireplaceId,
+        status: "ready",
+        total: requiredPaths.length,
+      });
+      void cacheAssetPack(requiredPaths)
+        .then(() => {
+          if (packRequest.current === requestId) setCacheReady(true);
+        })
+        .catch(() => {
+          if (packRequest.current === requestId) setCacheReady(false);
+        });
+      return;
+    }
+
+    setAssetPack({
+      complete: APPROVED_CORE_ASSET_PATHS.length,
+      error: null,
+      fireplaceId,
+      status: "loading",
+      total: requiredPaths.length,
+    });
+    void verifyApprovedAssets(readiness.manifest, modelPaths, (complete) => {
+      if (packRequest.current !== requestId) return;
+      setAssetPack((current) => ({
+        ...current,
+        complete: APPROVED_CORE_ASSET_PATHS.length + complete,
+      }));
+    })
+      .then(() => {
+        if (packRequest.current !== requestId) return;
+        verifiedPacks.current.add(fireplaceId);
+        setAssetPack({
+          complete: requiredPaths.length,
+          error: null,
+          fireplaceId,
+          status: "ready",
+          total: requiredPaths.length,
+        });
+        void cacheAssetPack(requiredPaths)
+          .then(() => {
+            if (packRequest.current === requestId) setCacheReady(true);
+          })
+          .catch(() => {
+            if (packRequest.current === requestId) setCacheReady(false);
+          });
+      })
+      .catch((error) => {
+        if (packRequest.current !== requestId) return;
+        setAssetPack({
+          complete: APPROVED_CORE_ASSET_PATHS.length,
+          error:
+            error instanceof Error
+              ? error.message
+              : "This fireplace asset pack could not be prepared.",
+          fireplaceId,
+          status: "error",
+          total: requiredPaths.length,
+        });
+        setCacheReady(false);
+      });
+  }, [assetPackRetry, fireplaceId, readiness]);
+
+  const installCompleteCatalog = async () => {
+    if (!readiness || completeCatalogStatus === "installing") return;
+    setCompleteCatalogStatus("installing");
+    setCompleteCatalogProgress(`0 / ${APPROVED_ASSET_PATHS.length} verified`);
+    try {
+      await verifyApprovedAssets(readiness.manifest, APPROVED_ASSET_PATHS, (complete, total) =>
+        setCompleteCatalogProgress(`${complete} / ${total} verified`),
+      );
+      setCompleteCatalogProgress("Caching complete catalog…");
+      await cacheCompleteCatalog();
+      setCompleteCatalogStatus("ready");
+      setCompleteCatalogProgress(`${APPROVED_ASSET_PATHS.length} assets installed`);
+      setCacheReady(true);
+    } catch {
+      setCompleteCatalogStatus("error");
+      setCompleteCatalogProgress("Install failed");
+    }
+  };
 
   useEffect(() => {
     const onFullscreenChange = () => setPresentation(Boolean(document.fullscreenElement));
@@ -175,14 +305,20 @@ export function FireDesignApp() {
 
   const diagnostics: DiagnosticsData = {
     cacheReady,
+    completeCatalogProgress,
+    completeCatalogStatus,
     fps,
     graphics: readiness.graphics ?? UNKNOWN_GRAPHICS,
     online,
     rendererStatus,
     mediaStatus,
+    requiredAssets: assetPack.total,
+    selectedModel: catalogRepository.getFireplace(fireplaceId).shortLabel,
     storage: storageHealth,
-    verifiedAssets: readiness.verifiedAssets,
+    verifiedAssets: assetPack.complete,
   };
+  const activePackReady = assetPack.fireplaceId === fireplaceId && assetPack.status === "ready";
+  const selectedFireplace = catalogRepository.getFireplace(fireplaceId);
 
   return (
     <main className="app-shell" data-presentation={isPresentation}>
@@ -191,11 +327,38 @@ export function FireDesignApp() {
           onEnterPresentation={() => void enterPresentation()}
           onOpenDiagnostics={openDiagnostics}
           onWorkspaceChange={setWorkspace}
-          presentationReady={workspace === "feature-wall" && rendererStatus === "ready"}
+          presentationReady={
+            workspace === "feature-wall" && activePackReady && rendererStatus === "ready"
+          }
           workspace={workspace}
         />
       ) : null}
-      {workspace === "customer-room" && !isPresentation ? (
+      {!activePackReady ? (
+        <section aria-live="polite" className="scene-viewport asset-pack-gate">
+          <div className="scene-loading">
+            <span className="scene-loading__mark" />
+            <strong>
+              {assetPack.status === "error"
+                ? `${selectedFireplace.shortLabel} is not ready`
+                : `Preparing ${selectedFireplace.shortLabel}`}
+            </strong>
+            <span>
+              {assetPack.status === "error"
+                ? "The current design is protected. Retry this model or choose another fireplace."
+                : `${Math.min(assetPack.complete, assetPack.total)} of ${assetPack.total} approved assets verified`}
+            </span>
+            {assetPack.status === "error" ? (
+              <button
+                className="primary-button"
+                onClick={() => setAssetPackRetry((value) => value + 1)}
+                type="button"
+              >
+                Retry fireplace pack
+              </button>
+            ) : null}
+          </div>
+        </section>
+      ) : workspace === "customer-room" && !isPresentation ? (
         <CustomerRoomViewport />
       ) : (
         <SceneErrorBoundary onError={() => setRendererStatus("error")}>
@@ -213,6 +376,7 @@ export function FireDesignApp() {
         <DiagnosticsPanel
           data={diagnostics}
           onClose={() => setDiagnosticsOpen(false)}
+          onInstallCompleteCatalog={() => void installCompleteCatalog()}
           onReload={() => window.location.reload()}
         />
       ) : null}

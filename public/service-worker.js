@@ -1,11 +1,13 @@
-const CACHE_VERSION = "firedesign-2026.08.04-21";
+const CACHE_VERSION = "firedesign-2026.08.11-1";
 const SHELL = ["/", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
-async function cacheApprovedRelease(cache) {
-  const manifestResponse = await fetch("/assets/manifest.json", { cache: "no-store" });
+async function loadApprovedManifest(cache) {
+  const cachedManifest = await cache.match("/assets/manifest.json");
+  const manifestResponse =
+    cachedManifest ?? (await fetch("/assets/manifest.json", { cache: "no-store" }));
   if (!manifestResponse.ok) throw new Error("Approved asset manifest is unavailable.");
   const manifest = await manifestResponse.clone().json();
-  const assetPaths = Array.isArray(manifest.files)
+  const approvedPaths = Array.isArray(manifest.files)
     ? manifest.files
         .map((file) => file?.path)
         .filter(
@@ -13,15 +15,28 @@ async function cacheApprovedRelease(cache) {
         )
     : [];
   await cache.put("/assets/manifest.json", manifestResponse);
-  await cache.addAll([...SHELL, ...assetPaths]);
-  return new Set([...SHELL, "/assets/manifest.json", ...assetPaths]);
+  return new Set(approvedPaths);
+}
+
+async function cacheApprovedPaths(cache, requestedPaths) {
+  const approvedPaths = await loadApprovedManifest(cache);
+  const uniquePaths = [...new Set(requestedPaths)];
+  const invalidPath = uniquePaths.find((path) => !approvedPaths.has(path));
+  if (invalidPath) throw new Error(`Unapproved offline asset requested: ${invalidPath}`);
+  for (let index = 0; index < uniquePaths.length; index += 8) {
+    await cache.addAll(uniquePaths.slice(index, index + 8));
+  }
+  return uniquePaths.length;
 }
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_VERSION)
-      .then((cache) => cacheApprovedRelease(cache))
+      .then(async (cache) => {
+        await cache.addAll(SHELL);
+        await loadApprovedManifest(cache);
+      })
       .then(() => self.skipWaiting()),
   );
 });
@@ -105,21 +120,38 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data?.type !== "CACHE_RELEASE") return;
-  const urls = Array.isArray(event.data.urls)
-    ? event.data.urls.filter((url) => typeof url === "string")
-    : [];
+  const type = event.data?.type;
+  if (type !== "CACHE_PACK" && type !== "CACHE_ALL") return;
   event.waitUntil(
     caches
       .open(CACHE_VERSION)
       .then(async (cache) => {
-        const approvedPaths = await cacheApprovedRelease(cache);
-        const additional = [...new Set(urls)].filter(
-          (url) => !approvedPaths.has(new URL(url, self.location.origin).pathname),
-        );
-        await Promise.allSettled(additional.map((url) => cache.add(url)));
+        const approvedPaths = await loadApprovedManifest(cache);
+        const requestedPaths =
+          type === "CACHE_ALL"
+            ? [...approvedPaths]
+            : Array.isArray(event.data.paths)
+              ? event.data.paths.filter((path) => typeof path === "string")
+              : [];
+        const count = await cacheApprovedPaths(cache, requestedPaths);
+        const runtimeUrls = Array.isArray(event.data.runtimeUrls)
+          ? event.data.runtimeUrls.filter((value) => {
+              if (typeof value !== "string") return false;
+              const url = new URL(value, self.location.origin);
+              return (
+                url.origin === self.location.origin && url.pathname.startsWith("/_next/static/")
+              );
+            })
+          : [];
+        await cache.addAll([...new Set(runtimeUrls)]);
+        return count;
       })
-      .then(() => event.ports[0]?.postMessage({ type: "CACHE_READY" }))
-      .catch(() => event.ports[0]?.postMessage({ type: "CACHE_ERROR" })),
+      .then((count) => event.ports[0]?.postMessage({ type: "CACHE_READY", count }))
+      .catch((error) =>
+        event.ports[0]?.postMessage({
+          type: "CACHE_ERROR",
+          message: error instanceof Error ? error.message : "Offline installation failed.",
+        }),
+      ),
   );
 });

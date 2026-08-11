@@ -68,6 +68,7 @@ export function FireboxMedia({
   useEffect(() => {
     let disposed = false;
     let retried = false;
+    let readinessTimer: number | undefined;
     const { texture, video } = playback;
     if (disposeTimer.current) window.clearTimeout(disposeTimer.current);
     document.body.append(video);
@@ -83,8 +84,13 @@ export function FireboxMedia({
     };
     const showVideo = () => {
       if (disposed || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+      if (readinessTimer) window.clearTimeout(readinessTimer);
       setDecoded(true);
       onStatus("playing");
+    };
+    const armReadinessTimer = (callback: () => void) => {
+      if (readinessTimer) window.clearTimeout(readinessTimer);
+      readinessTimer = window.setTimeout(callback, 12_000);
     };
     const recover = () => {
       if (disposed) return;
@@ -92,8 +98,10 @@ export function FireboxMedia({
         retried = true;
         video.load();
         void play();
+        armReadinessTimer(recover);
         return;
       }
+      if (readinessTimer) window.clearTimeout(readinessTimer);
       setDecoded(false);
       onStatus("fallback");
     };
@@ -113,11 +121,13 @@ export function FireboxMedia({
     video.addEventListener("stalled", recover);
     document.addEventListener("visibilitychange", visibility);
     video.load();
+    armReadinessTimer(recover);
     queueMicrotask(showVideo);
     void play();
 
     return () => {
       disposed = true;
+      if (readinessTimer) window.clearTimeout(readinessTimer);
       document.removeEventListener("visibilitychange", visibility);
       video.removeEventListener("loadeddata", showVideo);
       video.removeEventListener("canplay", showVideo);

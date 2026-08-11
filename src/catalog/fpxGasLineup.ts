@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const FPX_GAS_LINEUP_CHECKED_AT = "2026-08-04";
+export const FPX_GAS_LINEUP_CHECKED_AT = "2026-08-11";
 
 export const FPX_GAS_LINEUP_SOURCES = {
   gasFireplaces: "https://www.fireplacex.com/products/gas-fireplaces/",
@@ -36,6 +36,7 @@ const lineupEntrySchema = z.object({
     "limited-stock",
     "sold-out-at-factory",
     "dealer-confirmation",
+    "discontinued",
   ]),
   sku: z.string().min(1).optional(),
   fireBuilderProductId: z.number().int().positive().optional(),
@@ -372,7 +373,7 @@ export const FPX_LEGACY_GAS_LINEUP = z.array(lineupEntrySchema).parse([
     category: "premium-linear",
     applianceType: "fireplace",
     marketingStatus: "legacy",
-    factoryAvailability: "dealer-confirmation",
+    factoryAvailability: "discontinued",
     intakeId: "4415-see-through-high-output",
     sourceUrl: FPX_GAS_LINEUP_SOURCES.discontinuedManuals,
   },

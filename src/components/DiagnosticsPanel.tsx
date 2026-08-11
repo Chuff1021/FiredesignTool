@@ -1,7 +1,7 @@
 "use client";
 
 import { APP_VERSION } from "@/domain/catalog";
-import { APPROVED_ASSET_PATHS, catalogRepository } from "@/domain/catalogRepository";
+import { catalogRepository } from "@/domain/catalogRepository";
 import type { GraphicsSupport } from "@/lib/readiness";
 import { UiIcon } from "@/components/UiIcon";
 import type { FireboxMediaStatus } from "@/components/FireboxMedia";
@@ -15,12 +15,17 @@ export type DiagnosticsData = {
   rendererStatus: "ready" | "recovering" | "error";
   mediaStatus: FireboxMediaStatus;
   verifiedAssets: number;
+  requiredAssets: number;
+  selectedModel: string;
+  completeCatalogStatus: "idle" | "installing" | "ready" | "error";
+  completeCatalogProgress: string;
   storage: StorageHealth;
 };
 
 type DiagnosticsPanelProps = {
   data: DiagnosticsData;
   onClose: () => void;
+  onInstallCompleteCatalog: () => void;
   onReload: () => void;
 };
 
@@ -41,7 +46,12 @@ function DiagnosticRow({
   );
 }
 
-export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelProps) {
+export function DiagnosticsPanel({
+  data,
+  onClose,
+  onInstallCompleteCatalog,
+  onReload,
+}: DiagnosticsPanelProps) {
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
       <section
@@ -78,15 +88,35 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
         <div className="diagnostics-grid">
           <DiagnosticRow label="Application" value={`v${APP_VERSION}`} />
           <DiagnosticRow label="Catalog release" value={catalogRepository.release.version} />
+          <DiagnosticRow label="Selected model pack" value={data.selectedModel} />
           <DiagnosticRow
-            label="Approved assets"
-            tone={data.verifiedAssets === APPROVED_ASSET_PATHS.length ? "good" : "warn"}
-            value={`${data.verifiedAssets} / ${APPROVED_ASSET_PATHS.length} verified`}
+            label="Active design assets"
+            tone={data.verifiedAssets === data.requiredAssets ? "good" : "warn"}
+            value={`${data.verifiedAssets} / ${data.requiredAssets} verified`}
           />
           <DiagnosticRow
             label="Offline cache"
             tone={data.cacheReady ? "good" : "warn"}
             value={data.cacheReady ? "Ready" : "Preparing"}
+          />
+          <DiagnosticRow
+            label="Complete catalog"
+            tone={
+              data.completeCatalogStatus === "ready"
+                ? "good"
+                : data.completeCatalogStatus === "error"
+                  ? "warn"
+                  : "neutral"
+            }
+            value={
+              data.completeCatalogStatus === "ready"
+                ? "Installed offline"
+                : data.completeCatalogStatus === "installing"
+                  ? data.completeCatalogProgress
+                  : data.completeCatalogStatus === "error"
+                    ? "Install failed · retry available"
+                    : "Install on this computer"
+            }
           />
           <DiagnosticRow
             label="Customer project storage"
@@ -162,6 +192,18 @@ export function DiagnosticsPanel({ data, onClose, onReload }: DiagnosticsPanelPr
         </div>
 
         <footer>
+          <button
+            className="secondary-button"
+            disabled={data.completeCatalogStatus === "installing"}
+            onClick={onInstallCompleteCatalog}
+            type="button"
+          >
+            {data.completeCatalogStatus === "ready"
+              ? "Verify complete catalog again"
+              : data.completeCatalogStatus === "installing"
+                ? "Installing catalog…"
+                : "Install complete catalog offline"}
+          </button>
           <button className="secondary-button" onClick={onReload} type="button">
             Reload application
           </button>

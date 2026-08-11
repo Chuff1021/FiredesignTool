@@ -26,6 +26,7 @@ export type ReadinessResult = {
   manifest: AssetManifest;
   graphics: GraphicsSupport;
   verifiedAssets: number;
+  requiredAssets: number;
 };
 
 function bytesToHex(bytes: ArrayBuffer): string {
@@ -136,26 +137,23 @@ async function verifyVideo(bytes: ArrayBuffer, contentType: string | null): Prom
   });
 }
 
-export async function runReadinessChecks(
+export async function verifyApprovedAssets(
+  manifest: AssetManifest,
+  requiredPaths: readonly string[],
   onProgress?: (completed: number, total: number) => void,
-): Promise<ReadinessResult> {
-  console.info("[FireDesign] Starting approved asset verification.");
-  const graphics = detectGraphicsSupport();
-  if (!graphics.supported) {
-    throw new Error(graphics.reason);
-  }
-
-  const manifestResponse = await fetch("/assets/manifest.json", { cache: "no-store" });
-  if (!manifestResponse.ok) {
-    throw new Error("The approved showroom asset manifest is unavailable.");
-  }
-  const manifest = assetManifestSchema.parse(await manifestResponse.json());
-
+): Promise<number> {
+  const manifestByPath = new Map(manifest.files.map((file) => [file.path, file]));
+  const uniquePaths = [...new Set(requiredPaths)];
+  const files = uniquePaths.map((path) => {
+    const file = manifestByPath.get(path);
+    if (!file) throw new Error(`Required showroom asset is missing from the manifest: ${path}`);
+    return file;
+  });
   let verifiedAssets = 0;
   let nextAssetIndex = 0;
   const verifyNextAsset = async () => {
-    while (nextAssetIndex < manifest.files.length) {
-      const file = manifest.files[nextAssetIndex];
+    while (nextAssetIndex < files.length) {
+      const file = files[nextAssetIndex];
       nextAssetIndex += 1;
       if (!file) return;
       const response = await fetch(file.path);
@@ -173,15 +171,38 @@ export async function runReadinessChecks(
       await verifyImage(bytes, response.headers.get("content-type"));
       await verifyVideo(bytes, response.headers.get("content-type"));
       verifiedAssets += 1;
-      onProgress?.(verifiedAssets, manifest.files.length);
+      onProgress?.(verifiedAssets, files.length);
     }
   };
 
   // A small bounded pool keeps 4K startup inside the showroom target without
   // flooding Safari's decoders or allocating the entire release at once.
-  await Promise.all(
-    Array.from({ length: Math.min(4, manifest.files.length) }, () => verifyNextAsset()),
-  );
+  await Promise.all(Array.from({ length: Math.min(4, files.length) }, () => verifyNextAsset()));
 
-  return { manifest, graphics, verifiedAssets };
+  return verifiedAssets;
+}
+
+export async function runReadinessChecks(
+  requiredPaths: readonly string[],
+  onProgress?: (completed: number, total: number) => void,
+): Promise<ReadinessResult> {
+  console.info("[FireDesign] Starting approved asset-pack verification.");
+  const graphics = detectGraphicsSupport();
+  if (!graphics.supported) {
+    throw new Error(graphics.reason);
+  }
+
+  const manifestResponse = await fetch("/assets/manifest.json", { cache: "no-store" });
+  if (!manifestResponse.ok) {
+    throw new Error("The approved showroom asset manifest is unavailable.");
+  }
+  const manifest = assetManifestSchema.parse(await manifestResponse.json());
+  const verifiedAssets = await verifyApprovedAssets(manifest, requiredPaths, onProgress);
+
+  return {
+    manifest,
+    graphics,
+    verifiedAssets,
+    requiredAssets: new Set(requiredPaths).size,
+  };
 }

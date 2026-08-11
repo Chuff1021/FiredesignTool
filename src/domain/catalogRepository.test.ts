@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   APPROVED_ASSET_PATHS,
   APPROVED_CATALOG_RELEASE,
+  APPROVED_CORE_ASSET_PATHS,
   catalogReleaseSchema,
   catalogRepository,
   createCatalogRepository,
@@ -9,7 +10,7 @@ import {
 
 describe("versioned catalog repository", () => {
   it("indexes the complete approved release behind stable repository methods", () => {
-    expect(catalogRepository.release.version).toBe("2026.08.05-1");
+    expect(catalogRepository.release.version).toBe("2026.08.11-1");
     expect(catalogRepository.listBrands().map((brand) => brand.id)).toEqual([
       "fireplace-xtrordinair",
       "centurion-stone",
@@ -23,6 +24,24 @@ describe("versioned catalog repository", () => {
     expect(catalogRepository.getStone("kentucky-ledge").productCode).toBe("150-260-15");
     expect(APPROVED_ASSET_PATHS).toHaveLength(131);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
+  });
+
+  it("partitions shared scene assets from deterministic fireplace packs", () => {
+    const fireplaceIds = catalogRepository.listFireplaces().map((product) => product.id);
+    const allPackedAssets = new Set(APPROVED_CORE_ASSET_PATHS);
+    for (const id of fireplaceIds) {
+      const pack = catalogRepository.getFireplaceAssetPaths(id);
+      expect(pack.length).toBeGreaterThan(0);
+      expect(pack.every((path) => path.startsWith("/assets/"))).toBe(true);
+      pack.forEach((path) => allPackedAssets.add(path));
+      expect(catalogRepository.getStartupAssetPaths(id)).toEqual([
+        ...new Set([...APPROVED_CORE_ASSET_PATHS, ...pack]),
+      ]);
+    }
+    expect([...allPackedAssets]).toEqual(APPROVED_ASSET_PATHS);
+    expect(
+      catalogRepository.getStartupAssetPaths("864-trv-31k-clean-face").length,
+    ).toBeLessThan(APPROVED_ASSET_PATHS.length);
   });
 
   it("accepts a new manufacturer and appliance without changing TypeScript enums", () => {

@@ -8,7 +8,7 @@ import {
 export { catalogIntakeSchema, summarizeCatalogIntake } from "@/catalog/intakeSchema";
 
 const specsUrl = "https://www.fireplacex.com/professionals/specs-and-drawings/";
-const checkedAt = "2026-08-05";
+const checkedAt = "2026-08-11";
 
 const gasFireplace = (
   id: string,
@@ -161,7 +161,7 @@ const electricUrl = "https://www.fireplacex.com/electric-fireplaces/";
 
 export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
   schemaVersion: 2,
-  snapshotId: "fpx-2026.08.05-1",
+  snapshotId: "fpx-2026.08.11-1",
   brandId: "fireplace-xtrordinair",
   brandName: "Fireplace Xtrordinair",
   manufacturer: "Travis Industries",
@@ -429,6 +429,11 @@ export const FPX_CURRENT_INTAKE = catalogIntakeSchema.parse({
       "4415-see-through-high-output",
       "4415 See-Thru High Output Linear",
       "see-through",
+      {
+        productUrl: "https://www.fireplacex.com/owner-resources/manuals/manuals-discontinued/",
+        notes:
+          "Discontinued per dealer confirmation on 2026-08-11. Retained only as intake history and intentionally excluded from the selectable showroom catalog.",
+      },
     ),
     gasFireplace("6015-high-output", "6015 High Output Linear", "linear", {
       stage: "approved",

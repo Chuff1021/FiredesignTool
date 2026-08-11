@@ -120,7 +120,9 @@ npm run dev
 ```
 
 Open `http://localhost:3000`. The production app installs a service worker
-after the first verified load and caches the exact release for offline use.
+after the first verified load and caches the shared scene plus the selected
+fireplace pack for offline use. Operator diagnostics can verify and install the
+complete approved catalog on a dedicated showroom computer.
 
 ## Quality commands
 
@@ -154,9 +156,9 @@ or physical-sample approval.
   Ruby Platinum remains hidden until an approved isolated high-resolution
   visual master is available. Its mantel rules are explicitly referenced
   to the top of the surround opening, matching its current manual.
-- `src/domain/catalogRepository.ts` validates release integrity and is the only
-  product lookup boundary used by configuration, renderers, controls, and
-  exports.
+- `src/domain/catalogRepository.ts` validates release integrity, partitions
+  shared assets from model-specific fireplace packs, and is the only product
+  lookup boundary used by configuration, renderers, controls, and exports.
 - `src/domain` contains product schemas, product-specific mantel rules,
   physical constraints, and inch-based calculations.
 - `src/lib` owns asset readiness, integrity verification, state migration, and

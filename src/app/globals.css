@@ -1720,6 +1720,28 @@ select:focus-visible {
   width: 7px;
 }
 
+.asset-pack-gate .scene-loading {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(146, 102, 59, 0.12), transparent 34%), #171513;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+.asset-pack-gate .scene-loading strong {
+  color: var(--ink);
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.asset-pack-gate .scene-loading > span:not(.scene-loading__mark) {
+  letter-spacing: 0;
+  max-width: 34rem;
+  text-transform: none;
+}
+
 .startup-gate,
 .fatal-error,
 .scene-fallback {

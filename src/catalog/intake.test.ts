@@ -39,6 +39,17 @@ describe("FPX catalog intake queue", () => {
     ).toBe(true);
   });
 
+  it("retains the discontinued 4415 See-Thru only as non-published intake history", () => {
+    const product = FPX_CURRENT_INTAKE.products.find(
+      (candidate) => candidate.id === "4415-see-through-high-output",
+    );
+    expect(product).toMatchObject({
+      stage: "source-indexed",
+      approvedCatalogIds: [],
+    });
+    expect(product?.notes).toContain("Discontinued");
+  });
+
   it("rejects duplicate records and premature live-catalog mappings", () => {
     const duplicate = structuredClone(FPX_CURRENT_INTAKE);
     duplicate.products.push({ ...duplicate.products[0]! });

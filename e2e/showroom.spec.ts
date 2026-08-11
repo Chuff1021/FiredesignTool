@@ -4,9 +4,8 @@ import sharp from "sharp";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/");
-  // A clean CI worker verifies all packaged media before first render. Under the
-  // full parallel browser matrix this can take longer than a cached showroom
-  // launch, so keep the assertion tied to readiness without a brittle 20s cap.
+  // A clean CI worker verifies the shared scene assets and selected fireplace
+  // pack before first render, so keep this tied to readiness without a brittle cap.
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 60_000 });
 });
 
@@ -23,7 +22,7 @@ test("loads the approved showroom composition without customer-facing errors", a
   await expect(page.locator(".scene-viewport")).toHaveAttribute(
     "data-media-status",
     "playing",
-    { timeout: 15_000 },
+    { timeout: test.info().project.name === "showroom-4k" ? 30_000 : 15_000 },
   );
 });
 
@@ -245,7 +244,7 @@ test("enters a clean presentation surface and returns to controls", async ({
   await expect(page.getByRole("heading", { name: "FireDesign" })).toBeVisible();
 });
 
-test("preloads the complete release and reloads offline", async ({
+test("preloads the active design pack and reloads offline", async ({
   browserName,
   context,
   page,
@@ -255,7 +254,9 @@ test("preloads the complete release and reloads offline", async ({
     "Offline cache gate is verified once in desktop Chromium.",
   );
   await page.keyboard.press("Shift+D");
-  await expect(page.getByText("131 / 131 verified")).toBeVisible();
+  const diagnostics = page.getByLabel("System diagnostics");
+  await expect(diagnostics.getByText("61 / 61 verified")).toBeVisible();
+  await expect(diagnostics.getByText("864 Clean Face", { exact: true })).toBeVisible();
   await expect(page.getByText("Playing · H.264 · muted")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,

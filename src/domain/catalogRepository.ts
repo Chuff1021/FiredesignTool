@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RELEASE_2026_08_05_1 } from "@/catalog/releases/2026.08.05-1";
+import { RELEASE_2026_08_11_1 } from "@/catalog/releases/2026.08.11-1";
 import {
   assetSourceSchema,
   fireplaceProductSchema,
@@ -181,7 +181,7 @@ export const catalogReleaseSchema = z
 export type CatalogRelease = z.infer<typeof catalogReleaseSchema>;
 export type CatalogBrand = z.infer<typeof brandSchema>;
 
-export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_05_1);
+export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_11_1);
 
 export interface CatalogRepository {
   readonly release: CatalogRelease;
@@ -206,6 +206,9 @@ export interface CatalogRepository {
     finishId: MantelFinishId,
   ): CatalogRelease["mantelFinishes"][number];
   getStone(id: StoneId): StoneProduct;
+  getCoreAssetPaths(): readonly string[];
+  getFireplaceAssetPaths(id: FireplaceId): readonly string[];
+  getStartupAssetPaths(id: FireplaceId): readonly string[];
   getAssetPaths(): readonly string[];
 }
 
@@ -215,6 +218,27 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
   const mantelsById = new Map(release.mantelProducts.map((product) => [product.id, product]));
   const finishesById = new Map(release.mantelFinishes.map((finish) => [finish.id, finish]));
   const stonesById = new Map(release.stones.map((stone) => [stone.id, stone]));
+
+  const uniqueAssetPaths = (assets: z.infer<typeof assetSourceSchema>[]) => [
+    ...new Set(assets.map((asset) => asset.localPath)),
+  ];
+  const coreAssetPaths = uniqueAssetPaths([
+    ...release.stones.flatMap((stone) => [...stone.assets, ...stone.hearthstone.assets]),
+    ...release.mantelFinishes.flatMap((finish) => finish.assets),
+  ]);
+  const fireplaceAssetPaths = new Map(
+    release.fireplaces.map((product) => [
+      product.id,
+      uniqueAssetPaths([
+        ...product.faceOptions.flatMap((face) => [
+          face.asset,
+          face.overlayAsset,
+          face.maskAsset,
+        ]),
+        ...(product.burnMedia ? [product.burnMedia.video, product.burnMedia.poster] : []),
+      ]),
+    ]),
+  );
 
   const requireRecord = <T>(record: T | undefined, label: string): T => {
     if (!record) throw new Error(`Unknown approved ${label}.`);
@@ -260,23 +284,25 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
       return finish;
     },
     getStone: (id) => requireRecord(stonesById.get(id), `stone: ${id}`),
-    getAssetPaths: () => {
-      const assets: z.infer<typeof assetSourceSchema>[] = [
-        ...release.fireplaces.flatMap((product) => [
-          ...product.faceOptions.flatMap((face) => [
-            face.asset,
-            face.overlayAsset,
-            face.maskAsset,
-          ]),
-          ...(product.burnMedia ? [product.burnMedia.video, product.burnMedia.poster] : []),
-        ]),
-        ...release.stones.flatMap((stone) => [...stone.assets, ...stone.hearthstone.assets]),
-        ...release.mantelFinishes.flatMap((finish) => finish.assets),
-      ];
-      return [...new Set(assets.map((asset) => asset.localPath))];
-    },
+    getCoreAssetPaths: () => coreAssetPaths,
+    getFireplaceAssetPaths: (id) =>
+      requireRecord(fireplaceAssetPaths.get(id), `fireplace asset pack: ${id}`),
+    getStartupAssetPaths: (id) => [
+      ...new Set([
+        ...coreAssetPaths,
+        ...requireRecord(fireplaceAssetPaths.get(id), `fireplace asset pack: ${id}`),
+      ]),
+    ],
+    getAssetPaths: () => [
+      ...new Set([...coreAssetPaths, ...[...fireplaceAssetPaths.values()].flat()]),
+    ],
   };
 }
 
 export const catalogRepository = createCatalogRepository(APPROVED_CATALOG_RELEASE);
+export const APPROVED_CORE_ASSET_PATHS = catalogRepository.getCoreAssetPaths();
 export const APPROVED_ASSET_PATHS = catalogRepository.getAssetPaths();
+export const getApprovedFireplaceAssetPaths = (id: FireplaceId) =>
+  catalogRepository.getFireplaceAssetPaths(id);
+export const getApprovedStartupAssetPaths = (id: FireplaceId) =>
+  catalogRepository.getStartupAssetPaths(id);

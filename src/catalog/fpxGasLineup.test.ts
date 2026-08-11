@@ -40,6 +40,15 @@ describe("canonical FPX gas lineup", () => {
     expect(FPX_LEGACY_GAS_LINEUP.map((product) => product.id)).toContain(
       "probuilder-24-clean-face",
     );
+    expect(
+      FPX_LEGACY_GAS_LINEUP.find((product) => product.id === "4415-see-through-high-output"),
+    ).toMatchObject({
+      marketingStatus: "legacy",
+      factoryAvailability: "discontinued",
+    });
+    expect(
+      FPX_CURRENT_GAS_LINEUP.some((product) => product.id === "4415-see-through-high-output"),
+    ).toBe(false);
     expect(FPX_LEGACY_GAS_LINEUP.every((product) => product.marketingStatus === "legacy")).toBe(
       true,
     );
