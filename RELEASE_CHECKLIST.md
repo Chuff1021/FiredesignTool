@@ -50,6 +50,11 @@ application version, asset version, preview URL, and deployment ID.
       produce a perspective-aligned design within 2% of the marked plane.
 - [ ] Full-remodel and insert-only modes preserve the expected portions of the
       customer photograph.
+- [ ] Switching from the 44 Elite to every other approved model keeps the room
+      workspace mounted, retains calibration/cleanup, and does not restore the
+      previous model after its asset pack becomes ready.
+- [ ] Customer-room wall projection uses the seam-free GPU homography in
+      Chromium and WebKit, with no diagonal mesh lines at 1080p, 1440p, or 4K.
 - [ ] Full-remodel millwork can be enabled independently left/right, remains
       within the measured wall space beside the stone, survives refresh and
       backup, and appears in export/PDF. Bookcases, base cabinets, and floating
@@ -66,7 +71,7 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Insert-fit screening is bound to the selected approved insert and reports
       each exact manufacturer variant independently. A built-in fireplace visual
       produces no fit claim, and the same conservative result appears in the PDF.
-- [ ] Version 1 through version 5 customer-room records migrate to the current
+- [ ] Version 1 through version 7 customer-room records migrate to the current
       schema with their original photo, calibration, name, comparison, traced
       foreground objects, and the best available last-known design intact.
 - [ ] Before/after comparison and high-resolution JPEG export contain no
@@ -75,6 +80,9 @@ application version, asset version, preview URL, and deployment ID.
 - [ ] Traced foreground polygons restore only original room pixels, remain
       aligned in preview/comparison/export, survive refresh, and reject crossed
       or degenerate outlines.
+- [ ] Painted-wall cleanup masks remain reversible, sample the local wall
+      surface, stop at the calibrated wall boundary, survive refresh/backup,
+      and never appear as editor outlines in presentation or export.
 - [ ] Multiple named customer projects can be created, reopened, renamed, and
       selectively deleted; each reopens with its own exact product/material
       configuration, and Back and Replace Photo preserve the intended record.

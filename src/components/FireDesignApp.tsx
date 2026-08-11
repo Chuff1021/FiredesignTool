@@ -341,7 +341,7 @@ export function FireDesignApp() {
           workspace={workspace}
         />
       ) : null}
-      {!activePackReady ? (
+      {!activePackReady && workspace === "feature-wall" ? (
         <section aria-live="polite" className="scene-viewport asset-pack-gate">
           <div className="scene-loading">
             <span className="scene-loading__mark" />

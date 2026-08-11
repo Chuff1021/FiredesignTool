@@ -9,13 +9,12 @@ import {
   faceBoundsWithinOpening,
   imagePoint,
   type BuiltInSide,
-  type NormalizedPoint,
   type RoomProject,
 } from "@/domain/roomProject";
 import { loadImage } from "@/lib/roomImage";
+import { projectCanvasLayer } from "@/lib/roomPerspective";
 
 type Point = { x: number; y: number };
-type Triangle = [Point, Point, Point];
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
 const MIN_DESIGN_PIXELS_PER_INCH = 6;
@@ -515,79 +514,6 @@ function bilinear(quad: Point[], u: number, v: number): Point {
   };
 }
 
-function drawTriangle(
-  context: CanvasRenderingContext2D,
-  image: CanvasImageSource,
-  source: Triangle,
-  destination: Triangle,
-) {
-  const [s0, s1, s2] = source;
-  const [d0, d1, d2] = destination;
-  const determinant = s0.x * (s1.y - s2.y) + s1.x * (s2.y - s0.y) + s2.x * (s0.y - s1.y);
-  if (Math.abs(determinant) < 0.0001) return;
-  const a = (d0.x * (s1.y - s2.y) + d1.x * (s2.y - s0.y) + d2.x * (s0.y - s1.y)) / determinant;
-  const b = (d0.y * (s1.y - s2.y) + d1.y * (s2.y - s0.y) + d2.y * (s0.y - s1.y)) / determinant;
-  const c = (d0.x * (s2.x - s1.x) + d1.x * (s0.x - s2.x) + d2.x * (s1.x - s0.x)) / determinant;
-  const d = (d0.y * (s2.x - s1.x) + d1.y * (s0.x - s2.x) + d2.y * (s1.x - s0.x)) / determinant;
-  const e =
-    (d0.x * (s1.x * s2.y - s2.x * s1.y) +
-      d1.x * (s2.x * s0.y - s0.x * s2.y) +
-      d2.x * (s0.x * s1.y - s1.x * s0.y)) /
-    determinant;
-  const f =
-    (d0.y * (s1.x * s2.y - s2.x * s1.y) +
-      d1.y * (s2.x * s0.y - s0.x * s2.y) +
-      d2.y * (s0.x * s1.y - s1.x * s0.y)) /
-    determinant;
-  context.save();
-  context.beginPath();
-  context.moveTo(d0.x, d0.y);
-  context.lineTo(d1.x, d1.y);
-  context.lineTo(d2.x, d2.y);
-  context.closePath();
-  context.clip();
-  context.transform(a, b, c, d, e, f);
-  context.drawImage(image, 0, 0);
-  context.restore();
-}
-
-function projectLayer(
-  context: CanvasRenderingContext2D,
-  layer: HTMLCanvasElement,
-  quad: Point[],
-) {
-  const columns = 18;
-  const rows = 12;
-  for (let row = 0; row < rows; row += 1) {
-    for (let column = 0; column < columns; column += 1) {
-      const u0 = column / columns;
-      const u1 = (column + 1) / columns;
-      const v0 = row / rows;
-      const v1 = (row + 1) / rows;
-      const sourceTopLeft = { x: u0 * layer.width, y: v0 * layer.height };
-      const sourceTopRight = { x: u1 * layer.width, y: v0 * layer.height };
-      const sourceBottomRight = { x: u1 * layer.width, y: v1 * layer.height };
-      const sourceBottomLeft = { x: u0 * layer.width, y: v1 * layer.height };
-      const targetTopLeft = bilinear(quad, u0, v0);
-      const targetTopRight = bilinear(quad, u1, v0);
-      const targetBottomRight = bilinear(quad, u1, v1);
-      const targetBottomLeft = bilinear(quad, u0, v1);
-      drawTriangle(
-        context,
-        layer,
-        [sourceTopLeft, sourceTopRight, sourceBottomRight],
-        [targetTopLeft, targetTopRight, targetBottomRight],
-      );
-      drawTriangle(
-        context,
-        layer,
-        [sourceTopLeft, sourceBottomRight, sourceBottomLeft],
-        [targetTopLeft, targetBottomRight, targetBottomLeft],
-      );
-    }
-  }
-}
-
 function averageFloorDirection(quad: Point[]): Point {
   const [topLeft, topRight, bottomRight, bottomLeft] = quad;
   if (!topLeft || !topRight || !bottomRight || !bottomLeft) return { x: 0, y: 1 };
@@ -715,18 +641,53 @@ export function projectedHearthGeometry(
   const rearLeftFloor = wallPhysicalPoint(quad, configuration, -halfWidth, 0);
   const rearRightFloor = wallPhysicalPoint(quad, configuration, halfWidth, 0);
   const rearCenter = midpoint(rearLeftTop, rearRightTop);
+  const rearFloorCenter = midpoint(rearLeftFloor, rearRightFloor);
   const destinationPixelsPerInch = pointDistance(quad[3]!, quad[2]!) / configuration.wallWidth;
-  const direction = averageFloorDirection(quad);
-  const defaultDepth = Math.max(8, depthInches * destinationPixelsPerInch * 0.5);
+  const wallDirection = averageFloorDirection(quad);
+  const defaultDepth = Math.max(8, depthInches * destinationPixelsPerInch * 0.72);
   const requestedFrontCenter = project.hearthFrontCenter
     ? imagePoint(project.hearthFrontCenter, project.source.width, project.source.height)
     : {
-        x: rearCenter.x + direction.x * defaultDepth,
-        y: rearCenter.y + direction.y * defaultDepth,
+        x: rearCenter.x + wallDirection.x * defaultDepth,
+        y: rearCenter.y + wallDirection.y * defaultDepth,
       };
-  const depthOffset = {
+  const requestedOffset = {
     x: requestedFrontCenter.x - rearCenter.x,
     y: requestedFrontCenter.y - rearCenter.y,
+  };
+  const requestedLength = Math.hypot(requestedOffset.x, requestedOffset.y) || defaultDepth;
+  const minimumDepth = depthInches * destinationPixelsPerInch * 0.22;
+  const maximumDepth = depthInches * destinationPixelsPerInch * 1.08;
+  const resolvedDepth = Math.max(minimumDepth, Math.min(maximumDepth, requestedLength));
+  const requestedDirection = {
+    x: requestedOffset.x / requestedLength,
+    y: requestedOffset.y / requestedLength,
+  };
+  const directionAlignment =
+    requestedDirection.x * wallDirection.x + requestedDirection.y * wallDirection.y;
+  const blendedDirection =
+    directionAlignment < 0.25
+      ? wallDirection
+      : {
+          x: requestedDirection.x * 0.82 + wallDirection.x * 0.18,
+          y: requestedDirection.y * 0.82 + wallDirection.y * 0.18,
+        };
+  const blendedLength = Math.hypot(blendedDirection.x, blendedDirection.y) || 1;
+  const direction = {
+    x: blendedDirection.x / blendedLength,
+    y: blendedDirection.y / blendedLength,
+  };
+  const depthOffset = {
+    x: direction.x * resolvedDepth,
+    y: direction.y * resolvedDepth,
+  };
+  const frontCenter = {
+    x: rearCenter.x + depthOffset.x,
+    y: rearCenter.y + depthOffset.y,
+  };
+  const frontFloorCenter = {
+    x: rearFloorCenter.x + depthOffset.x,
+    y: rearFloorCenter.y + depthOffset.y,
   };
   const rearWidth = pointDistance(rearLeftTop, rearRightTop);
   const rearDirection = {
@@ -736,29 +697,29 @@ export function projectedHearthGeometry(
   const wallHeightPixels =
     (pointDistance(quad[0]!, quad[3]!) + pointDistance(quad[1]!, quad[2]!)) / 2;
   const perspectiveScale = Math.max(
-    0.88,
-    Math.min(1.18, 1 + (depthOffset.y / Math.max(1, wallHeightPixels)) * 0.42),
+    1,
+    Math.min(1.16, 1 + (resolvedDepth / Math.max(1, wallHeightPixels)) * 0.58),
   );
   const frontHalfWidth = (rearWidth * perspectiveScale) / 2;
   const frontLeftTop = {
-    x: requestedFrontCenter.x - rearDirection.x * frontHalfWidth,
-    y: requestedFrontCenter.y - rearDirection.y * frontHalfWidth,
+    x: frontCenter.x - rearDirection.x * frontHalfWidth,
+    y: frontCenter.y - rearDirection.y * frontHalfWidth,
   };
   const frontRightTop = {
-    x: requestedFrontCenter.x + rearDirection.x * frontHalfWidth,
-    y: requestedFrontCenter.y + rearDirection.y * frontHalfWidth,
+    x: frontCenter.x + rearDirection.x * frontHalfWidth,
+    y: frontCenter.y + rearDirection.y * frontHalfWidth,
   };
   const frontLeftFloor = {
-    x: rearLeftFloor.x + depthOffset.x,
-    y: rearLeftFloor.y + depthOffset.y,
+    x: frontFloorCenter.x - rearDirection.x * frontHalfWidth,
+    y: frontFloorCenter.y - rearDirection.y * frontHalfWidth,
   };
   const frontRightFloor = {
-    x: rearRightFloor.x + depthOffset.x,
-    y: rearRightFloor.y + depthOffset.y,
+    x: frontFloorCenter.x + rearDirection.x * frontHalfWidth,
+    y: frontFloorCenter.y + rearDirection.y * frontHalfWidth,
   };
   const capDrop = {
-    x: direction.x * thicknessInches * destinationPixelsPerInch,
-    y: direction.y * thicknessInches * destinationPixelsPerInch,
+    x: wallDirection.x * thicknessInches * destinationPixelsPerInch,
+    y: wallDirection.y * thicknessInches * destinationPixelsPerInch,
   };
   return {
     capDrop,
@@ -807,6 +768,14 @@ async function drawProjectedHearth(
     x: frontRightTop.x + capDrop.x,
     y: frontRightTop.y + capDrop.y,
   };
+  const rearLeftCapBottom = {
+    x: rearLeftTop.x + capDrop.x,
+    y: rearLeftTop.y + capDrop.y,
+  };
+  const rearRightCapBottom = {
+    x: rearRightTop.x + capDrop.x,
+    y: rearRightTop.y + capDrop.y,
+  };
   const textureScale = Math.max(6, destinationPixelsPerInch);
 
   context.save();
@@ -832,7 +801,7 @@ async function drawProjectedHearth(
     context.shadowColor = "rgba(0,0,0,.38)";
     context.shadowBlur = Math.max(3, destinationPixelsPerInch * 1.1);
     context.shadowOffsetY = Math.max(1, destinationPixelsPerInch * 0.35);
-    projectLayer(context, riser, [
+    projectCanvasLayer(context, riser, [
       frontLeftCapBottom,
       frontRightCapBottom,
       frontRightFloor,
@@ -850,7 +819,7 @@ async function drawProjectedHearth(
       (segment.centerX + segment.width / 2 + configuration.stoneWidth / 2) /
       configuration.stoneWidth;
     const cap = hearthCapCanvas(hearthImage, segment.width, depthInches, textureScale, index);
-    projectLayer(context, cap, [
+    projectCanvasLayer(context, cap, [
       interpolatePoint(rearLeftTop, rearRightTop, leftProgress),
       interpolatePoint(rearLeftTop, rearRightTop, rightProgress),
       interpolatePoint(frontLeftTop, frontRightTop, rightProgress),
@@ -863,13 +832,60 @@ async function drawProjectedHearth(
       textureScale,
       index + 2,
     );
-    projectLayer(context, nose, [
+    projectCanvasLayer(context, nose, [
       interpolatePoint(frontLeftTop, frontRightTop, leftProgress),
       interpolatePoint(frontLeftTop, frontRightTop, rightProgress),
       interpolatePoint(frontLeftCapBottom, frontRightCapBottom, rightProgress),
       interpolatePoint(frontLeftCapBottom, frontRightCapBottom, leftProgress),
     ]);
   });
+
+  context.save();
+  context.fillStyle = "rgba(42, 39, 35, .58)";
+  context.beginPath();
+  context.moveTo(rearLeftTop.x, rearLeftTop.y);
+  context.lineTo(frontLeftTop.x, frontLeftTop.y);
+  context.lineTo(frontLeftCapBottom.x, frontLeftCapBottom.y);
+  context.lineTo(rearLeftCapBottom.x, rearLeftCapBottom.y);
+  context.closePath();
+  context.fill();
+  context.fillStyle = "rgba(28, 26, 24, .68)";
+  context.beginPath();
+  context.moveTo(rearRightTop.x, rearRightTop.y);
+  context.lineTo(frontRightTop.x, frontRightTop.y);
+  context.lineTo(frontRightCapBottom.x, frontRightCapBottom.y);
+  context.lineTo(rearRightCapBottom.x, rearRightCapBottom.y);
+  context.closePath();
+  context.fill();
+  context.restore();
+
+  context.save();
+  context.lineWidth = Math.max(1, destinationPixelsPerInch * 0.11);
+  context.strokeStyle = "rgba(35, 31, 28, .52)";
+  segments.slice(0, -1).forEach((segment) => {
+    const progress =
+      (segment.centerX + segment.width / 2 + configuration.stoneWidth / 2) /
+      configuration.stoneWidth;
+    const rear = interpolatePoint(rearLeftTop, rearRightTop, progress);
+    const front = interpolatePoint(frontLeftTop, frontRightTop, progress);
+    const bottom = interpolatePoint(frontLeftCapBottom, frontRightCapBottom, progress);
+    context.beginPath();
+    context.moveTo(rear.x, rear.y);
+    context.lineTo(front.x, front.y);
+    context.lineTo(bottom.x, bottom.y);
+    context.stroke();
+  });
+  context.restore();
+
+  context.save();
+  context.strokeStyle = "rgba(15, 13, 11, .34)";
+  context.lineWidth = Math.max(1, destinationPixelsPerInch * 0.16);
+  context.filter = `blur(${Math.max(1, destinationPixelsPerInch * 0.22)}px)`;
+  context.beginPath();
+  context.moveTo(rearLeftCapBottom.x, rearLeftCapBottom.y);
+  context.lineTo(rearRightCapBottom.x, rearRightCapBottom.y);
+  context.stroke();
+  context.restore();
 
   context.save();
   context.strokeStyle = "rgba(250,243,232,.33)";
@@ -881,14 +897,196 @@ async function drawProjectedHearth(
   context.restore();
 }
 
+type Rgb = { red: number; green: number; blue: number };
+
+function sampleRoomColor(context: CanvasRenderingContext2D, point: Point): Rgb {
+  const radius = Math.max(2, Math.round(context.canvas.width / 600));
+  const left = Math.max(0, Math.min(context.canvas.width - 1, Math.round(point.x) - radius));
+  const top = Math.max(0, Math.min(context.canvas.height - 1, Math.round(point.y) - radius));
+  const width = Math.max(1, Math.min(radius * 2 + 1, context.canvas.width - left));
+  const height = Math.max(1, Math.min(radius * 2 + 1, context.canvas.height - top));
+  const pixels = context.getImageData(left, top, width, height).data;
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+  let samples = 0;
+  for (let index = 0; index < pixels.length; index += 4) {
+    red += pixels[index]!;
+    green += pixels[index + 1]!;
+    blue += pixels[index + 2]!;
+    samples += 1;
+  }
+  return { red: red / samples, green: green / samples, blue: blue / samples };
+}
+
+function blendChannel(
+  topLeft: number,
+  topRight: number,
+  bottomRight: number,
+  bottomLeft: number,
+  u: number,
+  v: number,
+) {
+  return (
+    topLeft * (1 - u) * (1 - v) +
+    topRight * u * (1 - v) +
+    bottomRight * u * v +
+    bottomLeft * (1 - u) * v
+  );
+}
+
+function drawWallCleanup(
+  context: CanvasRenderingContext2D,
+  project: RoomProject,
+  wallQuad: Point[],
+  room: HTMLImageElement,
+) {
+  if (project.removalPolygons.length === 0 || wallQuad.length !== 4) return;
+  project.removalPolygons.forEach((polygon) => {
+    const pixels = polygon.map((point) =>
+      imagePoint(point, project.source.width, project.source.height),
+    );
+    const xs = pixels.map((point) => point.x);
+    const ys = pixels.map((point) => point.y);
+    const left = Math.min(...xs);
+    const right = Math.max(...xs);
+    const top = Math.min(...ys);
+    const bottom = Math.max(...ys);
+    const padding = Math.max(
+      project.cleanupFeather * 2,
+      12,
+      Math.min(right - left, bottom - top) * 0.12,
+    );
+    const colors = [
+      { x: left - padding, y: top - padding },
+      { x: right + padding, y: top - padding },
+      { x: right + padding, y: bottom + padding },
+      { x: left - padding, y: bottom + padding },
+    ].map((point) => sampleRoomColor(context, point));
+
+    const coarse = document.createElement("canvas");
+    coarse.width = 64;
+    coarse.height = 64;
+    const coarseContext = coarse.getContext("2d");
+    if (!coarseContext) return;
+    const image = coarseContext.createImageData(coarse.width, coarse.height);
+    for (let y = 0; y < coarse.height; y += 1) {
+      for (let x = 0; x < coarse.width; x += 1) {
+        const u = x / Math.max(1, coarse.width - 1);
+        const v = y / Math.max(1, coarse.height - 1);
+        const noise = Math.sin((x + 1) * 12.9898 + (y + 1) * 78.233) * 0.7;
+        const offset = (y * coarse.width + x) * 4;
+        image.data[offset] = Math.max(
+          0,
+          Math.min(
+            255,
+            blendChannel(colors[0]!.red, colors[1]!.red, colors[2]!.red, colors[3]!.red, u, v) +
+              noise,
+          ),
+        );
+        image.data[offset + 1] = Math.max(
+          0,
+          Math.min(
+            255,
+            blendChannel(
+              colors[0]!.green,
+              colors[1]!.green,
+              colors[2]!.green,
+              colors[3]!.green,
+              u,
+              v,
+            ) + noise,
+          ),
+        );
+        image.data[offset + 2] = Math.max(
+          0,
+          Math.min(
+            255,
+            blendChannel(
+              colors[0]!.blue,
+              colors[1]!.blue,
+              colors[2]!.blue,
+              colors[3]!.blue,
+              u,
+              v,
+            ) + noise,
+          ),
+        );
+        image.data[offset + 3] = 255;
+      }
+    }
+    coarseContext.putImageData(image, 0, 0);
+
+    const reconstruction = document.createElement("canvas");
+    reconstruction.width = context.canvas.width;
+    reconstruction.height = context.canvas.height;
+    const reconstructionContext = reconstruction.getContext("2d");
+    if (!reconstructionContext) return;
+    reconstructionContext.imageSmoothingEnabled = true;
+    reconstructionContext.imageSmoothingQuality = "high";
+    if (project.cleanupSamplePoint) {
+      const sample = imagePoint(
+        project.cleanupSamplePoint,
+        project.source.width,
+        project.source.height,
+      );
+      const center = { x: (left + right) / 2, y: (top + bottom) / 2 };
+      reconstructionContext.drawImage(
+        room,
+        center.x - sample.x,
+        center.y - sample.y,
+        context.canvas.width,
+        context.canvas.height,
+      );
+    } else {
+      reconstructionContext.drawImage(
+        coarse,
+        left - padding,
+        top - padding,
+        right - left + padding * 2,
+        bottom - top + padding * 2,
+      );
+    }
+
+    const hardMask = document.createElement("canvas");
+    hardMask.width = context.canvas.width;
+    hardMask.height = context.canvas.height;
+    const hardMaskContext = hardMask.getContext("2d");
+    if (!hardMaskContext) return;
+    hardMaskContext.save();
+    hardMaskContext.beginPath();
+    hardMaskContext.moveTo(wallQuad[0]!.x, wallQuad[0]!.y);
+    wallQuad.slice(1).forEach((point) => hardMaskContext.lineTo(point.x, point.y));
+    hardMaskContext.closePath();
+    hardMaskContext.clip();
+    hardMaskContext.fillStyle = "white";
+    hardMaskContext.beginPath();
+    hardMaskContext.moveTo(pixels[0]!.x, pixels[0]!.y);
+    pixels.slice(1).forEach((pixel) => hardMaskContext.lineTo(pixel.x, pixel.y));
+    hardMaskContext.closePath();
+    hardMaskContext.fill();
+    hardMaskContext.restore();
+
+    const mask = document.createElement("canvas");
+    mask.width = context.canvas.width;
+    mask.height = context.canvas.height;
+    const maskContext = mask.getContext("2d");
+    if (!maskContext) return;
+    maskContext.filter = `blur(${project.cleanupFeather}px)`;
+    maskContext.drawImage(hardMask, 0, 0);
+    reconstructionContext.globalCompositeOperation = "destination-in";
+    reconstructionContext.drawImage(mask, 0, 0);
+    reconstructionContext.globalCompositeOperation = "source-over";
+    context.drawImage(reconstruction, 0, 0);
+  });
+}
+
 export async function renderRoomProject(
   canvas: HTMLCanvasElement,
   project: RoomProject,
   configuration: FeatureWallConfiguration,
   options: {
     comparison?: number;
-    markers?: boolean;
-    foregroundDraft?: NormalizedPoint[];
   } = {},
 ): Promise<void> {
   canvas.width = project.source.width;
@@ -903,10 +1101,19 @@ export async function renderRoomProject(
   context.imageSmoothingQuality = "high";
   context.drawImage(room, 0, 0, canvas.width, canvas.height);
   const comparison = options.comparison ?? project.comparison;
+  const wallQuad = project.wallQuad.map((point) =>
+    imagePoint(point, project.source.width, project.source.height),
+  );
+  if (comparison > 0 && (cleanedRoom || project.removalPolygons.length > 0)) {
+    context.save();
+    context.beginPath();
+    context.rect(0, 0, canvas.width * comparison, canvas.height);
+    context.clip();
+    if (cleanedRoom) context.drawImage(cleanedRoom, 0, 0, canvas.width, canvas.height);
+    else drawWallCleanup(context, project, wallQuad, room);
+    context.restore();
+  }
   if (project.scenario === "full-remodel" && project.wallQuad.length === 4) {
-    const wallQuad = project.wallQuad.map((point) =>
-      imagePoint(point, project.source.width, project.source.height),
-    );
     const design = await createDesignLayer(
       configuration,
       "full-remodel",
@@ -917,8 +1124,7 @@ export async function renderRoomProject(
     context.beginPath();
     context.rect(0, 0, canvas.width * comparison, canvas.height);
     context.clip();
-    if (cleanedRoom) context.drawImage(cleanedRoom, 0, 0, canvas.width, canvas.height);
-    projectLayer(context, design, wallQuad);
+    projectCanvasLayer(context, design, wallQuad);
     await drawProjectedHearth(context, wallQuad, project, configuration);
     context.restore();
   }
@@ -953,8 +1159,7 @@ export async function renderRoomProject(
     context.beginPath();
     context.rect(0, 0, canvas.width * comparison, canvas.height);
     context.clip();
-    if (cleanedRoom) context.drawImage(cleanedRoom, 0, 0, canvas.width, canvas.height);
-    projectLayer(context, face.canvas, target);
+    projectCanvasLayer(context, face.canvas, target);
     context.restore();
   }
   if (comparison > 0 && project.foregroundPolygons.length > 0) {
@@ -982,94 +1187,5 @@ export async function renderRoomProject(
     context.moveTo(canvas.width * comparison, 0);
     context.lineTo(canvas.width * comparison, canvas.height);
     context.stroke();
-  }
-  if (options.markers) drawCalibrationMarkers(context, project);
-  if (options.foregroundDraft) {
-    drawForegroundMarkers(context, project, options.foregroundDraft);
-  }
-}
-
-function drawForegroundMarkers(
-  context: CanvasRenderingContext2D,
-  project: RoomProject,
-  draft: NormalizedPoint[],
-) {
-  const polygons = [...project.foregroundPolygons, draft].filter(
-    (polygon) => polygon.length > 0,
-  );
-  polygons.forEach((polygon, polygonIndex) => {
-    const pixels = polygon.map((point) =>
-      imagePoint(point, project.source.width, project.source.height),
-    );
-    context.save();
-    context.beginPath();
-    context.strokeStyle = "rgba(240, 174, 105, .98)";
-    context.fillStyle = "rgba(240, 174, 105, .14)";
-    context.lineWidth = Math.max(2, project.source.width / 800);
-    context.setLineDash([Math.max(7, project.source.width / 150), 5]);
-    context.moveTo(pixels[0]!.x, pixels[0]!.y);
-    pixels.slice(1).forEach((pixel) => context.lineTo(pixel.x, pixel.y));
-    if (polygonIndex < project.foregroundPolygons.length) context.closePath();
-    context.fill();
-    context.stroke();
-    context.restore();
-    pixels.forEach((pixel, pointIndex) => {
-      context.beginPath();
-      context.fillStyle = "#f0ae69";
-      context.strokeStyle = "rgba(15,13,11,.9)";
-      context.lineWidth = Math.max(2, project.source.width / 900);
-      context.arc(pixel.x, pixel.y, Math.max(6, project.source.width / 180), 0, Math.PI * 2);
-      context.fill();
-      context.stroke();
-      context.fillStyle = "#17130f";
-      context.font = `600 ${Math.max(10, project.source.width / 125)}px sans-serif`;
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.fillText(`${pointIndex + 1}`, pixel.x, pixel.y);
-    });
-  });
-}
-
-function drawCalibrationMarkers(context: CanvasRenderingContext2D, project: RoomProject) {
-  const drawOutline = (points: NormalizedPoint[], color: string) => {
-    if (points.length < 2) return;
-    const pixels = points.map((point) =>
-      imagePoint(point, project.source.width, project.source.height),
-    );
-    context.save();
-    context.beginPath();
-    context.strokeStyle = color;
-    context.lineWidth = Math.max(2, project.source.width / 900);
-    context.setLineDash([Math.max(7, project.source.width / 140), 6]);
-    context.moveTo(pixels[0]!.x, pixels[0]!.y);
-    pixels.slice(1).forEach((pixel) => context.lineTo(pixel.x, pixel.y));
-    if (pixels.length === 4) context.closePath();
-    context.stroke();
-    context.restore();
-  };
-  const drawPoints = (points: NormalizedPoint[], color: string, prefix = "") => {
-    points.forEach((point, index) => {
-      const pixel = imagePoint(point, project.source.width, project.source.height);
-      context.beginPath();
-      context.fillStyle = color;
-      context.strokeStyle = "rgba(15,13,11,.9)";
-      context.lineWidth = Math.max(2, project.source.width / 800);
-      context.arc(pixel.x, pixel.y, Math.max(7, project.source.width / 160), 0, Math.PI * 2);
-      context.fill();
-      context.stroke();
-      context.fillStyle = "#17130f";
-      context.font = `600 ${Math.max(11, project.source.width / 110)}px sans-serif`;
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.fillText(`${prefix}${index + 1}`, pixel.x, pixel.y);
-    });
-  };
-  drawOutline(project.wallQuad, "rgba(227,198,158,.9)");
-  drawOutline(project.referenceSegment, "rgba(140,183,142,.9)");
-  drawPoints(project.wallQuad, "#e3c69e");
-  drawPoints(project.referenceSegment, "#8cb78e");
-  if (project.scenario === "insert") {
-    drawOutline(project.openingQuad, "rgba(121,182,201,.95)");
-    drawPoints(project.openingQuad, "#79b6c9", "O");
   }
 }

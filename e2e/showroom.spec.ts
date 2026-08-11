@@ -328,6 +328,31 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   await click(0.12, 0.75);
   await click(0.88, 0.75);
   await expect(page.getByText("Dimensionally scaled")).toBeVisible();
+  await page.getByRole("button", { name: "Mark object" }).click();
+  await click(0.16, 0.24);
+  await click(0.28, 0.24);
+  await click(0.28, 0.48);
+  await click(0.16, 0.48);
+  await page.getByRole("button", { name: "Remove object" }).click();
+  await expect(page.getByText("1 reconstructed wall area")).toBeVisible();
+  await expect(page.getByTestId("room-editor-overlay")).toHaveCount(0);
+  await page.getByRole("button", { name: "Choose clean sample" }).click();
+  await click(0.34, 0.3);
+  await expect(page.getByRole("button", { name: "Move clean sample" })).toBeVisible();
+  await expect(page.getByTestId("room-editor-overlay")).toHaveCount(0);
+
+  const fireplaceModel = page.getByLabel("Fireplace model");
+  await fireplaceModel.selectOption("44-elite-nexgen-hybrid");
+  await expect(fireplaceModel).toHaveValue("44-elite-nexgen-hybrid");
+  await expect(canvas).toBeVisible();
+  await fireplaceModel.selectOption("4237-ember-glo-clean-face");
+  await expect(fireplaceModel).toHaveValue("4237-ember-glo-clean-face");
+  await expect(
+    page.getByRole("heading", { name: "4237 Ember-Glo Clean Face Deluxe" }),
+  ).toBeVisible();
+  await fireplaceModel.selectOption("864-trv-31k-clean-face");
+  await expect(fireplaceModel).toHaveValue("864-trv-31k-clean-face");
+  await expect(canvas).toBeVisible();
   const pdfDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "PDF" }).click();
   await expect((await pdfDownload).suggestedFilename()).toMatch(/firedesign\.pdf$/);
@@ -364,6 +389,7 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   await expect(page.getByLabel("Existing opening width in inches")).toHaveValue("40");
   await expect(page.getByLabel("Existing opening depth in inches")).toHaveValue("16.5");
   await expect(page.getByLabel("Existing opening rear width in inches")).toHaveValue("24");
+  await expect(page.getByRole("button", { name: "Move clean sample" })).toBeVisible();
 });
 
 test("preserves a true 4K customer photograph", async ({ page }, testInfo) => {
@@ -520,7 +546,7 @@ test("calibrates hearth depth and preserves a reversible cleaned room photo", as
     mimeType: "image/jpeg",
     buffer: cleaned,
   });
-  await expect(page.getByText("Cleaned background active")).toBeVisible();
+  await expect(page.getByText("Aligned clean photograph active")).toBeVisible();
   await expect(page.locator(".room-rendering")).toHaveCount(0);
   const cleanedCorner = await canvas.evaluate((element) =>
     Array.from(
@@ -532,10 +558,10 @@ test("calibrates hearth depth and preserves a reversible cleaned room photo", as
   await page.reload();
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
   await page.getByRole("button", { name: /Customer room/ }).click();
-  await expect(page.getByText("Cleaned background active")).toBeVisible();
+  await expect(page.getByText("Aligned clean photograph active")).toBeVisible();
   await expect(page.getByRole("button", { name: "Adjust hearth perspective" })).toBeVisible();
   await page.getByRole("button", { name: "Remove" }).click();
-  await expect(page.getByText("Room cleanup", { exact: true })).toBeVisible();
+  await expect(page.getByText("Room cleanup studio", { exact: true })).toBeVisible();
 });
 
 test("restores and persists a traced foreground object", async ({ page }, testInfo) => {

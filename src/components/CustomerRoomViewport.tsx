@@ -32,6 +32,7 @@ import {
 } from "@/domain/insertFit";
 import { findApprovedIntakeProduct } from "@/catalog/intakeRegistry";
 import { RoomAccessoriesPanel } from "@/components/RoomAccessoriesPanel";
+import { RoomEditorOverlay, type RoomEditorTool } from "@/components/RoomEditorOverlay";
 import { UiIcon } from "@/components/UiIcon";
 import { prepareRoomImage } from "@/lib/roomImage";
 import {
@@ -57,14 +58,6 @@ import {
   type RoomProjectBackupRecord,
 } from "@/lib/storageHealth";
 import { useConfigurationStore } from "@/store/configurationStore";
-
-type CalibrationTool =
-  | "wall"
-  | "measurement"
-  | "opening"
-  | "hearth-depth"
-  | "foreground"
-  | "view";
 
 const fitDimensionLabels: Record<InsertFitDimension, string> = {
   frontWidth: "front width",
@@ -99,13 +92,15 @@ export function CustomerRoomViewport() {
   const cleanedPhotoInputRef = useRef<HTMLInputElement>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
   const projectRef = useRef<RoomProject | null>(null);
+  const saveSequenceRef = useRef(0);
   const [project, setProject] = useState<RoomProject | null>(null);
   const [projects, setProjects] = useState<RoomProjectSummary[]>([]);
   const [deleteCandidate, setDeleteCandidate] = useState<string | null>(null);
-  const [tool, setTool] = useState<CalibrationTool>("wall");
+  const [tool, setTool] = useState<RoomEditorTool>("wall");
   const [foregroundDraft, setForegroundDraft] = useState<NormalizedPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [rendering, setRendering] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [libraryBusy, setLibraryBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [storageHealth, setStorageHealth] = useState(UNAVAILABLE_STORAGE_HEALTH);
@@ -172,24 +167,29 @@ export function CustomerRoomViewport() {
 
   const activateProject = useCallback(
     (saved: RoomProject) => {
-      projectRef.current = saved;
-      setProject(saved);
-      setForegroundDraft([]);
-      setConfiguration({
+      const activatedConfiguration = normalizeConfiguration({
         ...saved.configuration,
         wallWidth: saved.referenceInches,
         cameraMode: "front",
         showDimensions: false,
       });
-      void saveRoomProject(saved).catch(() =>
+      const activatedProject = roomProjectSchema.parse({
+        ...saved,
+        configuration: activatedConfiguration,
+      });
+      projectRef.current = activatedProject;
+      setProject(activatedProject);
+      setForegroundDraft([]);
+      setConfiguration(activatedConfiguration);
+      void saveRoomProject(activatedProject).catch(() =>
         setMessage("This project could not be upgraded to the current local format."),
       );
       setTool(
-        saved.wallQuad.length < 4
+        activatedProject.wallQuad.length < 4
           ? "wall"
-          : saved.referenceSegment.length < 2
+          : activatedProject.referenceSegment.length < 2
             ? "measurement"
-            : saved.scenario === "insert" && saved.openingQuad.length < 4
+            : activatedProject.scenario === "insert" && activatedProject.openingQuad.length < 4
               ? "opening"
               : "view",
       );
@@ -220,8 +220,6 @@ export function CustomerRoomViewport() {
     setRendering(true);
     void renderRoomProject(canvasRef.current, project, configuration, {
       comparison: project.comparison,
-      markers: tool !== "view" && tool !== "foreground" && tool !== "hearth-depth",
-      foregroundDraft: tool === "foreground" ? foregroundDraft : undefined,
     })
       .catch((error) => {
         if (active)
@@ -233,7 +231,7 @@ export function CustomerRoomViewport() {
     return () => {
       active = false;
     };
-  }, [configuration, foregroundDraft, project, tool]);
+  }, [configuration, project]);
 
   const updateProject = useCallback(
     (next: RoomProject) => {
@@ -243,9 +241,14 @@ export function CustomerRoomViewport() {
       });
       projectRef.current = validated;
       setProject(validated);
+      const saveSequence = ++saveSequenceRef.current;
+      setSaving(true);
       void saveRoomProject(validated)
         .then(refreshProjects)
-        .catch(() => setMessage("This project could not be saved locally."));
+        .catch(() => setMessage("This project could not be saved locally."))
+        .finally(() => {
+          if (saveSequenceRef.current === saveSequence) setSaving(false);
+        });
     },
     [refreshProjects],
   );
@@ -253,11 +256,20 @@ export function CustomerRoomViewport() {
   useEffect(() => {
     const current = projectRef.current;
     if (!current) return;
-    const serializedCurrent = JSON.stringify(current.configuration);
     const serializedNext = JSON.stringify(configuration);
+    const serializedCurrent = JSON.stringify(current.configuration);
     if (serializedCurrent === serializedNext) return;
     updateProject({ ...current, configuration });
   }, [configuration, updateProject]);
+
+  useEffect(() => {
+    if (!saving) return;
+    const protectPendingSave = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+    };
+    window.addEventListener("beforeunload", protectPendingSave);
+    return () => window.removeEventListener("beforeunload", protectPendingSave);
+  }, [saving]);
 
   const handleFile = async (file: File | undefined, replaceCurrent = false) => {
     if (!file) return;
@@ -443,9 +455,13 @@ export function CustomerRoomViewport() {
       x: Math.min(1, Math.max(0, (event.clientX - bounds.left) / bounds.width)),
       y: Math.min(1, Math.max(0, (event.clientY - bounds.top) / bounds.height)),
     };
-    if (tool === "foreground") {
+    if (tool === "cleanup-sample") {
+      updateProject({ ...project, cleanupSamplePoint: point });
+      setTool("view");
+      setMessage("Clean wall sample selected for the marked removal areas.");
+    } else if (tool === "foreground" || tool === "cleanup") {
       if (foregroundDraft.length >= 24) {
-        setMessage("A foreground outline can contain up to 24 points.");
+        setMessage("An outline can contain up to 24 points.");
         return;
       }
       setForegroundDraft([...foregroundDraft, point]);
@@ -479,6 +495,7 @@ export function CustomerRoomViewport() {
       referenceSegment: [],
       openingQuad: [],
       hearthFrontCenter: null,
+      cleanupSamplePoint: null,
     });
     setTool("wall");
   };
@@ -491,6 +508,16 @@ export function CustomerRoomViewport() {
     }
     setForegroundDraft([]);
     setTool("foreground");
+  };
+
+  const beginCleanup = () => {
+    if (!project) return;
+    if (project.removalPolygons.length >= 12) {
+      setMessage("This project already has the maximum of twelve cleanup areas.");
+      return;
+    }
+    setForegroundDraft([]);
+    setTool("cleanup");
   };
 
   const finishForeground = () => {
@@ -506,9 +533,30 @@ export function CustomerRoomViewport() {
     setTool("view");
   };
 
+  const finishCleanup = () => {
+    if (!project || !isValidForegroundPolygon(foregroundDraft)) {
+      setMessage("Use at least three ordered points without crossing the outline.");
+      return;
+    }
+    updateProject({
+      ...project,
+      removalPolygons: [...project.removalPolygons, foregroundDraft],
+    });
+    setForegroundDraft([]);
+    setTool("view");
+    setMessage("The marked object was removed with the reconstructed wall surface.");
+  };
+
   const clearForeground = () => {
     if (!project) return;
     updateProject({ ...project, foregroundPolygons: [] });
+    setForegroundDraft([]);
+    setTool("view");
+  };
+
+  const clearCleanup = () => {
+    if (!project) return;
+    updateProject({ ...project, removalPolygons: [], cleanupSamplePoint: null });
     setForegroundDraft([]);
     setTool("view");
   };
@@ -526,7 +574,12 @@ export function CustomerRoomViewport() {
       setTool("view");
       return;
     }
-    if (tool === "foreground") {
+    if (tool === "cleanup-sample") {
+      updateProject({ ...project, cleanupSamplePoint: null });
+      setTool("view");
+      return;
+    }
+    if (tool === "foreground" || tool === "cleanup") {
       setForegroundDraft(foregroundDraft.slice(0, -1));
       return;
     }
@@ -549,7 +602,6 @@ export function CustomerRoomViewport() {
     const exportCanvas = document.createElement("canvas");
     await renderRoomProject(exportCanvas, project, configuration, {
       comparison: 1,
-      markers: false,
     });
     return exportCanvas;
   };
@@ -819,7 +871,7 @@ export function CustomerRoomViewport() {
           </button>
           <button
             className="primary-action"
-            disabled={!ready || rendering}
+            disabled={!ready || rendering || saving}
             onClick={() => void exportDesign("image")}
             type="button"
           >
@@ -827,7 +879,7 @@ export function CustomerRoomViewport() {
           </button>
           <button
             className="secondary-action"
-            disabled={!ready || rendering}
+            disabled={!ready || rendering || saving}
             onClick={() => void exportDesign("pdf")}
             type="button"
           >
@@ -866,7 +918,16 @@ export function CustomerRoomViewport() {
           onClick={handleCanvasClick}
           ref={canvasRef}
         />
-        {rendering ? <div className="room-rendering">Updating design…</div> : null}
+        <RoomEditorOverlay
+          draft={tool === "foreground" || tool === "cleanup" ? foregroundDraft : []}
+          project={project}
+          tool={tool}
+        />
+        {rendering || saving ? (
+          <div className="room-rendering">
+            {saving ? "Saving project…" : "Updating design…"}
+          </div>
+        ) : null}
         {message ? (
           <div className="room-message room-message--floating" role="alert">
             {message}
@@ -942,6 +1003,24 @@ export function CustomerRoomViewport() {
               <span>
                 Click around its outside edge in order, then finish the outline. Use this for
                 furniture, fireplace tools, or décor that should cover the design.
+              </span>
+            </>
+          ) : null}
+          {tool === "cleanup" ? (
+            <>
+              <strong>Outline only the object to remove.</strong>
+              <span>
+                Use ordered points around furniture or clutter on a painted wall. Windows, trim,
+                outlets, baseboards, and flooring should stay outside the outline.
+              </span>
+            </>
+          ) : null}
+          {tool === "cleanup-sample" ? (
+            <>
+              <strong>Choose an undisturbed wall sample.</strong>
+              <span>
+                Click a clean painted area near the object. Its original texture and lighting
+                will be cloned into the marked cleanup areas with blended edges.
               </span>
             </>
           ) : null}
@@ -1107,19 +1186,29 @@ export function CustomerRoomViewport() {
           />
           <span>After</span>
         </label>
-        <div className="room-cleanup-status" data-active={Boolean(project.cleanedSource)}>
+        <div
+          className="room-cleanup-status"
+          data-active={Boolean(project.cleanedSource || project.removalPolygons.length)}
+        >
           <span>
             <strong>
-              {project.cleanedSource ? "Cleaned background active" : "Room cleanup"}
+              {project.cleanedSource
+                ? "Aligned clean photograph active"
+                : project.removalPolygons.length > 0
+                  ? `${project.removalPolygons.length} reconstructed wall area${project.removalPolygons.length === 1 ? "" : "s"}`
+                  : "Room cleanup studio"}
             </strong>
             <small>
               {project.cleanedSource
-                ? "Before keeps the original; After uses the retouched photograph."
-                : "Upload a same-angle retouched copy with pets and clutter removed."}
+                ? "Before keeps the original; After uses the same-angle clean photograph."
+                : "Outline clutter on painted wall, or add a same-angle clean photograph for complex rooms."}
             </small>
           </span>
+          <button disabled={!calibrated} onClick={beginCleanup} type="button">
+            Mark object
+          </button>
           <button onClick={() => cleanedPhotoInputRef.current?.click()} type="button">
-            {project.cleanedSource ? "Replace" : "Add cleaned photo"}
+            {project.cleanedSource ? "Replace photo" : "Add clean photo"}
           </button>
           {project.cleanedSource ? (
             <button
@@ -1128,6 +1217,40 @@ export function CustomerRoomViewport() {
             >
               Remove
             </button>
+          ) : null}
+          {project.removalPolygons.length > 0 ? (
+            <button onClick={clearCleanup} type="button">
+              Clear masks
+            </button>
+          ) : null}
+          {!project.cleanedSource && project.removalPolygons.length > 0 ? (
+            <>
+              <button onClick={() => setTool("cleanup-sample")} type="button">
+                {project.cleanupSamplePoint ? "Move clean sample" : "Choose clean sample"}
+              </button>
+              {project.cleanupSamplePoint ? (
+                <button
+                  onClick={() => updateProject({ ...project, cleanupSamplePoint: null })}
+                  type="button"
+                >
+                  Use wall reconstruction
+                </button>
+              ) : null}
+              <label className="room-cleanup-feather">
+                <span>Edge blend</span>
+                <input
+                  aria-label="Cleanup edge blend"
+                  max="36"
+                  min="0"
+                  onChange={(event) =>
+                    updateProject({ ...project, cleanupFeather: Number(event.target.value) })
+                  }
+                  step="1"
+                  type="range"
+                  value={project.cleanupFeather}
+                />
+              </label>
+            </>
           ) : null}
         </div>
         {project.scenario === "full-remodel" ? (
@@ -1150,14 +1273,14 @@ export function CustomerRoomViewport() {
               Reset opening
             </button>
           ) : null}
-          {tool === "foreground" ? (
+          {tool === "foreground" || tool === "cleanup" ? (
             <>
               <button
                 disabled={foregroundDraft.length < 3}
-                onClick={finishForeground}
+                onClick={tool === "cleanup" ? finishCleanup : finishForeground}
                 type="button"
               >
-                Finish foreground
+                {tool === "cleanup" ? "Remove object" : "Finish foreground"}
               </button>
               <button
                 onClick={() => {

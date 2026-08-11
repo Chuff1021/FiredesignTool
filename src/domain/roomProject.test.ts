@@ -28,7 +28,7 @@ describe("customer room projects", () => {
       new Date("2026-07-31T12:00:00.000Z"),
     );
     expect(roomProjectSchema.parse(project).id).toBe("project-1");
-    expect(project.schemaVersion).toBe(7);
+    expect(project.schemaVersion).toBe(8);
     expect(project.scenario).toBe("full-remodel");
     expect(project.openingQuad).toEqual([]);
     expect(project.openingDepthInches).toBeNull();
@@ -37,6 +37,9 @@ describe("customer room projects", () => {
     expect(project.accessories.left.enabled).toBe(false);
     expect(project.hearthFrontCenter).toBeNull();
     expect(project.cleanedSource).toBeNull();
+    expect(project.removalPolygons).toEqual([]);
+    expect(project.cleanupFeather).toBe(12);
+    expect(project.cleanupSamplePoint).toBeNull();
     expect(project.configuration).toMatchObject({
       fireplaceId: "864-trv-31k-clean-face",
       wallWidth: 144,
@@ -66,7 +69,7 @@ describe("customer room projects", () => {
       scenario: "insert",
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 7,
+      schemaVersion: 8,
       id: "legacy-project",
       comparison: 0.75,
       openingQuad: [],
@@ -102,7 +105,7 @@ describe("customer room projects", () => {
       openingHeightInches: 30,
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 7,
+      schemaVersion: 8,
       id: "version-two-project",
       openingWidthInches: 40,
       openingDepthInches: null,
@@ -141,7 +144,7 @@ describe("customer room projects", () => {
       ],
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 7,
+      schemaVersion: 8,
       openingDepthInches: null,
       openingRearWidthInches: null,
     });
@@ -190,7 +193,7 @@ describe("customer room projects", () => {
       },
     );
     expect(migrated).toMatchObject({
-      schemaVersion: 7,
+      schemaVersion: 8,
       configuration: {
         wallWidth: 180,
         fireplaceId: "4237-ember-glo-clean-face",
@@ -211,7 +214,7 @@ describe("customer room projects", () => {
       new Date("2026-07-31T12:00:00.000Z"),
     );
     const migrated = parseRoomProject({ ...current, schemaVersion: 5, accessories: undefined });
-    expect(migrated.schemaVersion).toBe(7);
+    expect(migrated.schemaVersion).toBe(8);
     expect(migrated.accessories.left.enabled).toBe(false);
     expect(migrated.accessories.right.enabled).toBe(false);
   });
@@ -233,9 +236,35 @@ describe("customer room projects", () => {
       cleanedSource: undefined,
     });
     expect(migrated).toMatchObject({
-      schemaVersion: 7,
+      schemaVersion: 8,
       hearthFrontCenter: null,
       cleanedSource: null,
+      removalPolygons: [],
+      cleanupFeather: 12,
+      cleanupSamplePoint: null,
+    });
+  });
+
+  it("migrates version 7 rooms into the reversible cleanup workspace", () => {
+    const current = createRoomProject(
+      {
+        dataUrl: "data:image/jpeg;base64,AA==",
+        fileName: "room.jpg",
+        width: 1600,
+        height: 900,
+      },
+      new Date("2026-07-31T12:00:00.000Z"),
+    );
+    const { removalPolygons, cleanupFeather, cleanupSamplePoint, ...versionSeven } = current;
+    void removalPolygons;
+    void cleanupFeather;
+    void cleanupSamplePoint;
+    const migrated = parseRoomProject({ ...versionSeven, schemaVersion: 7 });
+    expect(migrated).toMatchObject({
+      schemaVersion: 8,
+      removalPolygons: [],
+      cleanupFeather: 12,
+      cleanupSamplePoint: null,
     });
   });
 

@@ -63,14 +63,22 @@ foreground restoration. Foreground outlines preserve original room pixels over
 the projected design for furniture, fireplace tools, décor, or other objects
 that should remain visually in front without generative inpainting.
 
+The local Room Cleanup Studio adds reversible removal masks for clutter that
+sits against a painted wall. Each mask reconstructs the surface from neighboring
+paint color, room-light falloff, and restrained texture, while the calibrated
+wall boundary protects the finished floor and adjoining architecture. Complex
+surfaces can clone a nearby operator-selected clean sample or use a same-angle
+clean photograph supplied by the operator; none of these workflows uploads
+customer photography or calls an AI service.
+
 Full-remodel projects can add measured millwork independently on the left and
 right of the stone field. Each side supports a framed bookcase with optional
 base cabinets or a floating-shelf layout, plus configurable width, height,
 shelf count, gap, and representative warm-white, white-oak, walnut, or charcoal
 finish. The renderer preserves the original photographed wall outside the
 selected stone field, flags and constrains overlapping layouts, and renders a
-raised hearth as a projected 20-inch-deep top and riser instead of a flat wall
-texture.
+raised hearth as separately projected top, nosing, end caps, joints, contact
+shadow, and riser surfaces instead of a flat wall texture.
 
 Each customer project stores its own complete fireplace, face, stone, mantel,
 hearth, and dimensional configuration. Opening one project cannot inherit the
@@ -97,16 +105,18 @@ No profile can pass while one of its required opening measurements is unknown.
 
 Room photographs preserve up to a 4096-pixel edge and 12 megapixels and are
 stored locally in the browser's IndexedDB. Perspective-projected wall and insert
-layers are rendered at a destination-aware pixel density instead of a fixed
-low-resolution working size. Photographs are not uploaded or sent to an external
-service in this release. Named projects appear newest-first in the local project library.
+layers use a single GPU homography at a destination-aware pixel density instead
+of a visible Canvas triangle mesh or a fixed low-resolution working size. Editor
+guides live in a separate SVG layer and can never enter a presentation or
+export. Photographs are not uploaded or sent to an external service in this
+release. Named projects appear newest-first in the local project library.
 Returning to the library never deletes work, replacing a photograph preserves
 the project identity, and deletion requires a second explicit confirmation.
 
 The complete measured wall width and a four-corner wall plane are required
 before a full remodel is labeled dimensionally scaled. Insert-only projects
 also require a measured four-corner existing opening. Version 1 through version
-5 customer room records migrate automatically to the new schema without losing
+7 customer room records migrate automatically to the new schema without losing
 their photo or available configuration. Missing depth and rear-width
 measurements remain explicitly unknown. This remains a conceptual sales
 visualization, not an installation or fit approval.

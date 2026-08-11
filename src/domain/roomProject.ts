@@ -162,10 +162,17 @@ const roomProjectV6Schema = roomProjectV5Schema.extend({
   accessories: roomAccessoriesSchema,
 });
 
-export const roomProjectSchema = roomProjectV6Schema.extend({
+const roomProjectV7Schema = roomProjectV6Schema.extend({
   schemaVersion: z.literal(7),
   hearthFrontCenter: normalizedPointSchema.nullable(),
   cleanedSource: cleanedRoomSourceSchema.nullable(),
+});
+
+export const roomProjectSchema = roomProjectV7Schema.extend({
+  schemaVersion: z.literal(8),
+  removalPolygons: z.array(foregroundPolygonSchema).max(12),
+  cleanupFeather: z.number().min(0).max(36),
+  cleanupSamplePoint: normalizedPointSchema.nullable().default(null),
 });
 
 export type RoomProject = z.infer<typeof roomProjectSchema>;
@@ -182,7 +189,7 @@ export function createRoomProject(
     showDimensions: false,
   });
   return roomProjectSchema.parse({
-    schemaVersion: 7,
+    schemaVersion: 8,
     id: crypto.randomUUID(),
     name: "Customer fireplace concept",
     createdAt: timestamp,
@@ -203,6 +210,9 @@ export function createRoomProject(
     accessories: DEFAULT_ROOM_ACCESSORIES,
     hearthFrontCenter: null,
     cleanedSource: null,
+    removalPolygons: [],
+    cleanupFeather: 12,
+    cleanupSamplePoint: null,
   });
 }
 
@@ -212,7 +222,7 @@ function migrateVersionFour(
 ): RoomProject {
   return roomProjectSchema.parse({
     ...project,
-    schemaVersion: 7,
+    schemaVersion: 8,
     configuration: normalizeConfiguration({
       ...configuration,
       wallWidth: project.referenceInches,
@@ -222,25 +232,44 @@ function migrateVersionFour(
     accessories: DEFAULT_ROOM_ACCESSORIES,
     hearthFrontCenter: null,
     cleanedSource: null,
+    removalPolygons: [],
+    cleanupFeather: 12,
+    cleanupSamplePoint: null,
   });
 }
 
 function migrateVersionFive(project: z.infer<typeof roomProjectV5Schema>): RoomProject {
   return roomProjectSchema.parse({
     ...project,
-    schemaVersion: 7,
+    schemaVersion: 8,
     accessories: DEFAULT_ROOM_ACCESSORIES,
     hearthFrontCenter: null,
     cleanedSource: null,
+    removalPolygons: [],
+    cleanupFeather: 12,
+    cleanupSamplePoint: null,
   });
 }
 
 function migrateVersionSix(project: z.infer<typeof roomProjectV6Schema>): RoomProject {
   return roomProjectSchema.parse({
     ...project,
-    schemaVersion: 7,
+    schemaVersion: 8,
     hearthFrontCenter: null,
     cleanedSource: null,
+    removalPolygons: [],
+    cleanupFeather: 12,
+    cleanupSamplePoint: null,
+  });
+}
+
+function migrateVersionSeven(project: z.infer<typeof roomProjectV7Schema>): RoomProject {
+  return roomProjectSchema.parse({
+    ...project,
+    schemaVersion: 8,
+    removalPolygons: [],
+    cleanupFeather: 12,
+    cleanupSamplePoint: null,
   });
 }
 
@@ -250,6 +279,8 @@ export function parseRoomProject(
 ): RoomProject {
   const current = roomProjectSchema.safeParse(candidate);
   if (current.success) return current.data;
+  const versionSeven = roomProjectV7Schema.safeParse(candidate);
+  if (versionSeven.success) return migrateVersionSeven(versionSeven.data);
   const versionSix = roomProjectV6Schema.safeParse(candidate);
   if (versionSix.success) return migrateVersionSix(versionSix.data);
   const versionFive = roomProjectV5Schema.safeParse(candidate);
