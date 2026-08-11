@@ -321,6 +321,28 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
     await canvas.click({ position: { x: box.width * x, y: box.height * y } });
   };
   await click(0.12, 0.08);
+  const alignedBounds = await page.evaluate(() => {
+    const bounds = (selector: string) => {
+      const rectangle = document.querySelector(selector)!.getBoundingClientRect();
+      return {
+        x: rectangle.x,
+        y: rectangle.y,
+        width: rectangle.width,
+        height: rectangle.height,
+      };
+    };
+    return {
+      canvas: bounds('[data-testid="room-canvas"]'),
+      frame: bounds('[data-testid="room-canvas-frame"]'),
+      overlay: bounds('[data-testid="room-editor-overlay"]'),
+    };
+  });
+  for (const alignedBox of [alignedBounds.frame, alignedBounds.overlay]) {
+    expect(Math.abs(alignedBox.x - alignedBounds.canvas.x)).toBeLessThanOrEqual(0.01);
+    expect(Math.abs(alignedBox.y - alignedBounds.canvas.y)).toBeLessThanOrEqual(0.01);
+    expect(Math.abs(alignedBox.width - alignedBounds.canvas.width)).toBeLessThanOrEqual(0.01);
+    expect(Math.abs(alignedBox.height - alignedBounds.canvas.height)).toBeLessThanOrEqual(0.01);
+  }
   await click(0.88, 0.08);
   await click(0.88, 0.92);
   await click(0.12, 0.92);

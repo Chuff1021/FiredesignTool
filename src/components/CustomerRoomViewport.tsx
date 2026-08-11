@@ -47,6 +47,7 @@ import {
   type RoomProjectSummary,
 } from "@/lib/roomProjectPersistence";
 import { renderRoomProject } from "@/lib/roomRenderer";
+import { fitContainedSize } from "@/lib/roomViewport";
 import { createProjectPdf } from "@/lib/projectExport";
 import {
   backupFreshness,
@@ -88,6 +89,7 @@ function variantLabel(value: string): string {
 
 export function CustomerRoomViewport() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cleanedPhotoInputRef = useRef<HTMLInputElement>(null);
   const backupInputRef = useRef<HTMLInputElement>(null);
@@ -105,6 +107,12 @@ export function CustomerRoomViewport() {
   const [message, setMessage] = useState<string | null>(null);
   const [storageHealth, setStorageHealth] = useState(UNAVAILABLE_STORAGE_HEALTH);
   const [backupRecord, setBackupRecord] = useState<RoomProjectBackupRecord | null>(null);
+  const [photoFrameSize, setPhotoFrameSize] = useState<{
+    sourceWidth: number;
+    sourceHeight: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const configurationValues = useConfigurationStore(
     useShallow((state) => ({
       wallWidth: state.wallWidth,
@@ -156,6 +164,8 @@ export function CustomerRoomViewport() {
     () => summarizeInsertFitResults(insertFitResults),
     [insertFitResults],
   );
+  const sourceWidth = project?.source.width ?? 0;
+  const sourceHeight = project?.source.height ?? 0;
 
   const refreshProjects = useCallback(async () => {
     const [library, health] = await Promise.all([listRoomProjects(), readStorageHealth()]);
@@ -232,6 +242,47 @@ export function CustomerRoomViewport() {
       active = false;
     };
   }, [configuration, project]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage || sourceWidth <= 0 || sourceHeight <= 0) return;
+    let animationFrame = 0;
+
+    const measure = () => {
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = window.requestAnimationFrame(() => {
+        const style = window.getComputedStyle(stage);
+        const horizontalPadding =
+          Number.parseFloat(style.paddingLeft) + Number.parseFloat(style.paddingRight);
+        const verticalPadding =
+          Number.parseFloat(style.paddingTop) + Number.parseFloat(style.paddingBottom);
+        const fitted = fitContainedSize(
+          Math.max(0, stage.clientWidth - horizontalPadding),
+          Math.max(0, stage.clientHeight - verticalPadding),
+          sourceWidth,
+          sourceHeight,
+        );
+        setPhotoFrameSize((current) => {
+          const next = { sourceWidth, sourceHeight, ...fitted };
+          return current &&
+            Math.abs(current.width - next.width) < 0.5 &&
+            Math.abs(current.height - next.height) < 0.5 &&
+            current.sourceWidth === sourceWidth &&
+            current.sourceHeight === sourceHeight
+            ? current
+            : next;
+        });
+      });
+    };
+
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    measure();
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(animationFrame);
+    };
+  }, [sourceHeight, sourceWidth]);
 
   const updateProject = useCallback(
     (next: RoomProject) => {
@@ -448,7 +499,7 @@ export function CustomerRoomViewport() {
     }
   };
 
-  const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleCanvasClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!project || tool === "view") return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const point: NormalizedPoint = {
@@ -910,19 +961,36 @@ export function CustomerRoomViewport() {
         />
       </div>
 
-      <div className="room-stage">
-        <canvas
-          aria-label="Calibrated customer room visualization"
-          className="room-canvas"
-          data-testid="room-canvas"
+      <div className="room-stage" ref={stageRef}>
+        <div
+          className="room-canvas-frame"
+          data-testid="room-canvas-frame"
           onClick={handleCanvasClick}
-          ref={canvasRef}
-        />
-        <RoomEditorOverlay
-          draft={tool === "foreground" || tool === "cleanup" ? foregroundDraft : []}
-          project={project}
-          tool={tool}
-        />
+          style={{
+            height:
+              photoFrameSize?.sourceWidth === sourceWidth &&
+              photoFrameSize.sourceHeight === sourceHeight
+                ? photoFrameSize.height
+                : 0,
+            width:
+              photoFrameSize?.sourceWidth === sourceWidth &&
+              photoFrameSize.sourceHeight === sourceHeight
+                ? photoFrameSize.width
+                : 0,
+          }}
+        >
+          <canvas
+            aria-label="Calibrated customer room visualization"
+            className="room-canvas"
+            data-testid="room-canvas"
+            ref={canvasRef}
+          />
+          <RoomEditorOverlay
+            draft={tool === "foreground" || tool === "cleanup" ? foregroundDraft : []}
+            project={project}
+            tool={tool}
+          />
+        </div>
         {rendering || saving ? (
           <div className="room-rendering">
             {saving ? "Saving project…" : "Updating design…"}
