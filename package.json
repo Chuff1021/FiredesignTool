@@ -1,6 +1,6 @@
 {
   "name": "firedesign-tool",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "private": true,
   "engines": {
     "node": ">=22.0.0"
@@ -22,6 +22,7 @@
     "assets:manifest": "node scripts/generate-asset-manifest.mjs",
     "assets:inspect-master": "tsx scripts/inspect-visual-master.mts",
     "assets:preflight-package": "tsx scripts/preflight-visual-delivery.mts",
+    "assets:sync-firebacks": "tsx scripts/sync-fpx-firebacks.mts",
     "audit:production": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {

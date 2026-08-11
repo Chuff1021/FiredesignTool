@@ -52,6 +52,10 @@ export async function createProjectPdf(
 
   const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
   const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
+  const fireback = catalogRepository.getFireback(
+    configuration.fireplaceId,
+    configuration.firebackOptionId,
+  );
   const stone = catalogRepository.getStone(configuration.stoneId);
   const mantel = catalogRepository.getMantel(configuration.mantelProductId);
   const finish = catalogRepository.getMantelFinish(
@@ -67,6 +71,7 @@ export async function createProjectPdf(
   };
   line("Fireplace", fireplace.model);
   line("Face / trim", face.name);
+  line("Fireback", `${fireback.name} · SKU ${fireback.sku}`);
   line("Stone", `${stone.name} · ${configuration.stoneWidth} in field`);
   line("Mantel", `${finish.name} ${mantel.shortLabel} · ${configuration.mantelWidth} in`);
   line("Installation concept", project.scenario === "insert" ? "Insert only" : "Full remodel");

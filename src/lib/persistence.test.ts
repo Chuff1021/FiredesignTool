@@ -5,6 +5,7 @@ import {
   LEGACY_V2_STORAGE_KEY,
   LEGACY_V3_STORAGE_KEY,
   LEGACY_V4_STORAGE_KEY,
+  LEGACY_V5_STORAGE_KEY,
   STORAGE_KEY,
   readPersistedConfiguration,
   writePersistedConfiguration,
@@ -51,8 +52,8 @@ describe("configuration persistence", () => {
     };
     const result = readPersistedConfiguration(storage);
     expect(result.configuration).toMatchObject({
-      schemaVersion: 5,
-      catalogVersion: "2026.08.11-1",
+      schemaVersion: 6,
+      catalogVersion: "2026.08.11-2",
       stoneWidth: 90,
       hearthEnabled: true,
     });
@@ -77,7 +78,7 @@ describe("configuration persistence", () => {
     const result = readPersistedConfiguration(storage);
     expect(result.recovered).toBe(false);
     expect(result.configuration).toMatchObject({
-      schemaVersion: 5,
+      schemaVersion: 6,
       wallWidth: 168,
       fireplaceElevation: 4,
       mantelHeightAboveBase: 46.75,
@@ -108,7 +109,7 @@ describe("configuration persistence", () => {
     };
     expect(readPersistedConfiguration(storage)).toMatchObject({
       configuration: {
-        schemaVersion: 5,
+        schemaVersion: 6,
         mantelProductId: "linear",
         mantelWidth: 84,
         mantelFinishId: "onyx",
@@ -143,11 +144,29 @@ describe("configuration persistence", () => {
     };
     expect(readPersistedConfiguration(storage)).toMatchObject({
       configuration: {
-        schemaVersion: 5,
-        catalogVersion: "2026.08.11-1",
+        schemaVersion: 6,
+        catalogVersion: "2026.08.11-2",
         fireplaceId: "864-trv-31k-deluxe",
         faceOptionId: "metropolitan",
         stoneId: "brown-ledge",
+      },
+      recovered: false,
+    });
+  });
+
+  it("adds the model default fireback when migrating version five", () => {
+    const legacy: Record<string, unknown> = { ...DEFAULT_CONFIGURATION, schemaVersion: 5 };
+    delete legacy.firebackOptionId;
+    const storage = {
+      getItem: vi.fn((key: string) =>
+        key === LEGACY_V5_STORAGE_KEY ? JSON.stringify(legacy) : null,
+      ),
+    };
+    expect(readPersistedConfiguration(storage)).toMatchObject({
+      configuration: {
+        schemaVersion: 6,
+        fireplaceId: DEFAULT_CONFIGURATION.fireplaceId,
+        firebackOptionId: "common-brick",
       },
       recovered: false,
     });

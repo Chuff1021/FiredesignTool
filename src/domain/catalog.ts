@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FPX_OFFICIAL_FIREBACK_SETS } from "@/catalog/fpxFirebacks";
 
 const positiveInches = z.number().positive().finite();
 const catalogIdSchema = z
@@ -18,6 +19,8 @@ export const fireplaceIdSchema = catalogIdSchema;
 
 export const faceOptionIdSchema = catalogIdSchema;
 
+export const firebackOptionIdSchema = catalogIdSchema;
+
 const faceOptionSchema = z.object({
   id: faceOptionIdSchema,
   name: z.string().min(1),
@@ -36,6 +39,20 @@ const faceOptionSchema = z.object({
   asset: assetSourceSchema,
   overlayAsset: assetSourceSchema,
   maskAsset: assetSourceSchema,
+  overlayMode: z.enum(["none", "always"]).default("none"),
+});
+
+const firebackOptionSchema = z.object({
+  id: firebackOptionIdSchema,
+  name: z.string().min(1),
+  sku: z.string().min(1),
+  fireBuilderSku: z.string().min(1),
+  asset: assetSourceSchema,
+  display: z.object({
+    width: positiveInches,
+    height: positiveInches,
+  }),
+  renderMode: z.enum(["base-layer", "complete-composite"]),
 });
 
 const mantelRuleSchema = z.object({
@@ -78,6 +95,7 @@ export const burnMediaSchema = z.object({
   durationSeconds: z.number().positive().max(20),
   logSet: z.string().min(1),
   sourceTimecode: z.string().min(1),
+  compatibleFirebackIds: z.array(firebackOptionIdSchema).min(1),
   registration: z
     .object({
       repeatX: z.number().positive().max(1),
@@ -113,6 +131,8 @@ export const fireplaceProductSchema = z.object({
   }),
   faceOptions: z.array(faceOptionSchema).min(1),
   defaultFaceOptionId: faceOptionIdSchema,
+  firebackOptions: z.array(firebackOptionSchema).min(1),
+  defaultFirebackOptionId: firebackOptionIdSchema,
   mantelRule: mantelRuleSchema,
   hearthRule: hearthRuleSchema.optional(),
   burnMedia: burnMediaSchema.optional(),
@@ -1207,7 +1227,125 @@ const expandedFpxWoodProducts = [
   },
 ];
 
-export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
+type PendingBurnMedia = Omit<z.input<typeof burnMediaSchema>, "compatibleFirebackIds">;
+type UnconfiguredFireplace = Omit<
+  z.input<typeof fireplaceProductSchema>,
+  "burnMedia" | "defaultFirebackOptionId" | "firebackOptions"
+> & { burnMedia?: PendingBurnMedia };
+
+const burnMedia86440: PendingBurnMedia = {
+  video: officialLayer(
+    "/assets/fpx-864-burn.mp4",
+    "https://vimeo.com/468202425",
+    "Official Travis Industries 864 TV 40K Clean Face brick-fireback burn footage",
+  ),
+  poster: officialLayer(
+    "/assets/fpx-864-burn-poster.webp",
+    "https://vimeo.com/468202425",
+    "Poster extracted from the approved 864 TV 40K burn loop",
+  ),
+  codec: "H.264/AVC",
+  durationSeconds: 12,
+  logSet: "Classic Oak",
+  sourceTimecode: "00:08–00:20",
+  registration: { repeatX: 1, repeatY: 1, offsetX: 0, offsetY: 0 },
+};
+
+const burnCompatibility: Readonly<Record<string, string>> = {
+  "564-trv-25k-deluxe": "handmade-brick",
+  "564-trv-25k-clean-face": "handmade-brick",
+  "564-tv-35k-deluxe": "handmade-brick",
+  "564-tv-35k-clean-face": "handmade-brick",
+  "864-tv-40k-deluxe": "common-brick",
+  "864-tv-40k-clean-face": "common-brick",
+  "4237-ember-glo-clean-face": "handmade-brick",
+};
+
+function attachFirebackCatalog(product: UnconfiguredFireplace) {
+  const officialSet = FPX_OFFICIAL_FIREBACK_SETS[product.id];
+  const defaultFace =
+    product.faceOptions.find((face) => face.id === product.defaultFaceOptionId) ??
+    product.faceOptions[0];
+  if (!defaultFace) throw new Error(`Fireplace ${product.id} has no face option.`);
+
+  const faceOptions = product.faceOptions.map((face) => {
+    const isLayeredDesignerFace = Boolean(officialSet) && face.shape !== "clean";
+    if (!isLayeredDesignerFace) return { ...face, overlayMode: "none" as const };
+
+    const insertOverlay =
+      product.applianceType === "insert"
+        ? officialLayer(
+            `/assets/firebacks/${product.id}-face-${face.id}.png`,
+            `https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/${face.sku}.png`,
+            `Exact official Travis FireBuilder ${face.name} accessory layer`,
+          )
+        : undefined;
+    const shared864Overlay = product.id.startsWith("864-tv-40k")
+      ? officialLayer(
+          `/assets/fpx-864-${face.id === "arched-french-country" ? "arched-french-country" : face.id}-overlay.png`,
+          `https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/${face.sku}.png`,
+          `Exact official Travis FireBuilder ${face.name} accessory layer`,
+        )
+      : undefined;
+
+    return {
+      ...face,
+      overlayAsset: insertOverlay ?? shared864Overlay ?? face.overlayAsset,
+      overlayMode: "always" as const,
+    };
+  });
+
+  const firebackOptions = officialSet
+    ? officialSet.options.map((fireback) => {
+        const sourceName = [
+          officialSet.modelSku,
+          fireback.fireBuilderSku,
+          ...officialSet.defaultMediaSkus,
+        ].join("_");
+        return {
+          ...fireback,
+          asset: officialLayer(
+            `/assets/firebacks/${product.id}-${fireback.id}.png`,
+            `https://firebuilder.travisindustries.com/fbimages/LayeredImages/900/${sourceName}.png`,
+            `Exact official Travis FireBuilder ${product.model} ${fireback.name} configuration`,
+          ),
+          display: officialSet.display,
+          renderMode: "base-layer" as const,
+        };
+      })
+    : [
+        {
+          id: "factory-interior",
+          name:
+            product.fuel === "wood" ? "Factory firebox interior" : "Verified factory interior",
+          sku: product.sku,
+          fireBuilderSku: product.sku,
+          asset: defaultFace.asset,
+          display: defaultFace.visibleFace,
+          renderMode: "complete-composite" as const,
+        },
+      ];
+  const defaultFirebackOptionId = officialSet?.defaultFirebackId ?? "factory-interior";
+
+  let pendingBurnMedia = product.burnMedia;
+  if (product.id.startsWith("864-trv-31k")) pendingBurnMedia = undefined;
+  if (product.id.startsWith("864-tv-40k")) pendingBurnMedia = burnMedia86440;
+  const compatibleFirebackId = burnCompatibility[product.id];
+  const burnMedia =
+    pendingBurnMedia && compatibleFirebackId
+      ? { ...pendingBurnMedia, compatibleFirebackIds: [compatibleFirebackId] }
+      : undefined;
+
+  return {
+    ...product,
+    faceOptions,
+    firebackOptions,
+    defaultFirebackOptionId,
+    burnMedia,
+  };
+}
+
+const rawFireplaceProducts: UnconfiguredFireplace[] = [
   {
     id: "564-trv-25k-deluxe",
     brandId: "fireplace-xtrordinair",
@@ -1601,7 +1739,11 @@ export const fireplaceProducts = z.array(fireplaceProductSchema).parse([
   },
   ...expandedFpxGasProducts,
   ...expandedFpxWoodProducts,
-]);
+];
+
+export const fireplaceProducts = z
+  .array(fireplaceProductSchema)
+  .parse(rawFireplaceProducts.map(attachFirebackCatalog));
 
 const finishAssets = (
   id: z.infer<typeof mantelFinishIdSchema>,
@@ -2015,10 +2157,11 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export const APP_VERSION = "0.24.0";
+export const APP_VERSION = "0.25.0";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;
+export type FirebackOptionId = z.infer<typeof firebackOptionIdSchema>;
 export type MantelFinishId = z.infer<typeof mantelFinishIdSchema>;
 export type MantelProductId = z.infer<typeof mantelProductIdSchema>;
 export type MantelWidth = z.infer<typeof mantelWidthSchema>;

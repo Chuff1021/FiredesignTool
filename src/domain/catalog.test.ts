@@ -86,7 +86,7 @@ describe("approved product catalog", () => {
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(APPROVED_ASSET_PATHS).toHaveLength(131);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(262);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
     expect(APPROVED_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });
@@ -125,6 +125,13 @@ describe("approved product catalog", () => {
       fireplaceProducts.find((product) => product.id === "4237-ember-glo-clean-face")?.burnMedia
         ?.sourceTimecode,
     ).toBe("02:23–02:29");
+    expect(
+      fireplaceProducts.find((product) => product.id === "864-trv-31k-clean-face")?.burnMedia,
+    ).toBeUndefined();
+    expect(
+      fireplaceProducts.find((product) => product.id === "864-tv-40k-clean-face")?.burnMedia
+        ?.video.sourceUrl,
+    ).toBe("https://vimeo.com/468202425");
   });
 
   it("registers only the oblique 564 25K media without shifting fireplace geometry", () => {

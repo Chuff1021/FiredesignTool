@@ -119,6 +119,7 @@ export function CustomerRoomViewport() {
       mantelHeightAboveBase: state.mantelHeightAboveBase,
       fireplaceId: state.fireplaceId,
       faceOptionId: state.faceOptionId,
+      firebackOptionId: state.firebackOptionId,
       stoneId: state.stoneId,
       mantelProductId: state.mantelProductId,
       mantelWidth: state.mantelWidth,

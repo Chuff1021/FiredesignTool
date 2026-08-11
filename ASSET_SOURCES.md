@@ -103,7 +103,7 @@ models and retains FireBuilder's limited-stock/factory-sold-out qualifiers.
 
 ### Complete current FPX wood fireplace catalog
 
-Release `2026.08.11-1` retains the three current wood fireplaces published on the
+Release `2026.08.11-2` retains the three current wood fireplaces published on the
 official FPX wood collection page:
 
 - 42 Apex NexGen-Hybrid, appliance `98500115`, with Timberline `95500451`,
@@ -142,6 +142,25 @@ ft. Ember-Glo™`, `https://vimeo.com/639273752`
   fireback; cropped strictly inside the complete physical glass opening and
   calibrated to the published 39-7/8 × 34-7/8 inch ratio. No pixels are stretched
   or extended above the source frame; the result is exported at 1600 × 1400.
+
+### Official FireBuilder firebacks
+
+Release `2026.08.11-2` packages 125 model-specific configurations resolved from
+the live Travis FireBuilder accessory endpoint (`FB_LinkTypeID = 2`). Each
+local PNG is the exact appliance + fireback + approved default log/media
+combination returned by FireBuilder's 900-pixel layered-image route. The sync
+step trims only transparent canvas and preserves the source pixels losslessly.
+`scripts/sync-fpx-firebacks.mts` is the reproducible intake path; the release
+manifest records every nested asset checksum for startup and offline-cache
+verification.
+
+The 864 Vimeo source is explicitly titled “FireplaceX® 864 40K Clean Face Gas
+Fireplace,” so its loop is mapped only to the 864 TV 40K variants and their
+Common Brick selection. The 864 TRV 31K variants remain exact static
+FireBuilder configurations until model-correct footage is approved. The 4237
+loop is paired with Handmade Brick and the 564 loops with Handmade Brick. The
+application never presents a filmed fireback as though it were a different
+selected interior.
 
 All loops contain only manufacturer-recorded frames. Each uses a minimal
 real-frame dissolve between end/start frames, H.264 video without audio,

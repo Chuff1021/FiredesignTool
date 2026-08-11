@@ -17,6 +17,7 @@ export type DiagnosticsData = {
   verifiedAssets: number;
   requiredAssets: number;
   selectedModel: string;
+  selectedFireback: string;
   completeCatalogStatus: "idle" | "installing" | "ready" | "error";
   completeCatalogProgress: string;
   storage: StorageHealth;
@@ -89,6 +90,7 @@ export function DiagnosticsPanel({
           <DiagnosticRow label="Application" value={`v${APP_VERSION}`} />
           <DiagnosticRow label="Catalog release" value={catalogRepository.release.version} />
           <DiagnosticRow label="Selected model pack" value={data.selectedModel} />
+          <DiagnosticRow label="Selected fireback" value={data.selectedFireback} />
           <DiagnosticRow
             label="Active design assets"
             tone={data.verifiedAssets === data.requiredAssets ? "good" : "warn"}

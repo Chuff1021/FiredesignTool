@@ -15,21 +15,21 @@ test("loads the approved showroom composition without customer-facing errors", a
   await expect(page.getByRole("heading", { name: "FireDesign" })).toBeVisible();
   await expect(
     page.getByText(
-      "864 Clean Face · Clean Face · Kentucky Ledge · Graywash Zachary Smooth 72″",
+      "864 Clean Face · Clean Face · Common Brick · Kentucky Ledge · Graywash Zachary Smooth 72″",
     ),
   ).toBeVisible();
   await expect(page.getByText("The presentation could not start safely.")).toHaveCount(0);
-  await expect(page.locator(".scene-viewport")).toHaveAttribute(
-    "data-media-status",
-    "playing",
-    { timeout: test.info().project.name === "showroom-4k" ? 30_000 : 15_000 },
-  );
+  await expect(page.locator(".scene-viewport")).toHaveAttribute("data-media-status", "static", {
+    timeout: test.info().project.name === "showroom-4k" ? 30_000 : 15_000,
+  });
 });
 
-test("plays official media behind every approved FPX face", async ({ page }, testInfo) => {
+test("plays official media only with its approved fireback and every FPX face", async ({
+  page,
+}, testInfo) => {
   test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
   const viewport = page.locator(".scene-viewport");
-  await page.getByLabel("Fireplace model").selectOption("864-trv-31k-deluxe");
+  await page.getByLabel("Fireplace model").selectOption("864-tv-40k-deluxe");
   for (const face of [
     "classic-arch",
     "arched-french-country",
@@ -39,6 +39,12 @@ test("plays official media behind every approved FPX face", async ({ page }, tes
     await page.getByLabel("Face or trim").selectOption(face);
     await expect(page.getByLabel("Face or trim")).toHaveValue(face);
   }
+  await expect(viewport).toHaveAttribute("data-media-status", "playing", {
+    timeout: 15_000,
+  });
+  await page.getByLabel("Fireback").selectOption("ledgestone");
+  await expect(viewport).toHaveAttribute("data-media-status", "static");
+  await page.getByLabel("Fireback").selectOption("common-brick");
   await expect(viewport).toHaveAttribute("data-media-status", "playing", {
     timeout: 15_000,
   });
@@ -103,20 +109,24 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   await page.getByRole("button", { name: "84″" }).click();
   await page.getByLabel("Mantel finish").selectOption("onyx");
   await expect(
-    page.getByText("4237 Clean Face · Clean Face · Brown Ledge · Onyx Linear 84″"),
+    page.getByText(
+      "4237 Clean Face · Clean Face · Handmade Brick · Brown Ledge · Onyx Linear 84″",
+    ),
   ).toBeVisible();
 
   await page.getByLabel("Fireplace model").selectOption("864-trv-31k-deluxe");
   await page.getByLabel("Face or trim").selectOption("metropolitan");
   await expect(
-    page.getByText("864 Designer Face · Metropolitan · Black · Brown Ledge · Onyx Linear 84″"),
+    page.getByText(
+      "864 Designer Face · Metropolitan · Black · Handmade Brick · Brown Ledge · Onyx Linear 84″",
+    ),
   ).toBeVisible();
 
   await page.getByLabel("Fireplace model").selectOption("564-tv-35k-deluxe");
   await page.getByLabel("Face or trim").selectOption("french-country");
   await expect(
     page.getByText(
-      "564 35K Designer Face · French Country · Black · Brown Ledge · Onyx Linear 84″",
+      "564 35K Designer Face · French Country · Black · Handmade Brick · Brown Ledge · Onyx Linear 84″",
     ),
   ).toBeVisible();
   await expect(
@@ -208,7 +218,7 @@ test("offers larger Pearl non-combustible profiles with unrestricted placement",
   );
   await expect(
     page.getByText(
-      "864 Clean Face · Clean Face · Kentucky Ledge · Greystone Natural Cut Stone 84″",
+      "864 Clean Face · Clean Face · Common Brick · Kentucky Ledge · Greystone Natural Cut Stone 84″",
     ),
   ).toBeVisible();
 });
@@ -255,9 +265,9 @@ test("preloads the active design pack and reloads offline", async ({
   );
   await page.keyboard.press("Shift+D");
   const diagnostics = page.getByLabel("System diagnostics");
-  await expect(diagnostics.getByText("61 / 61 verified")).toBeVisible();
+  await expect(diagnostics.getByText("67 / 67 verified")).toBeVisible();
   await expect(diagnostics.getByText("864 Clean Face", { exact: true })).toBeVisible();
-  await expect(page.getByText("Playing · H.264 · muted")).toBeVisible();
+  await expect(page.getByText("Official static product image")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({
     timeout: 20_000,
   });
@@ -265,11 +275,9 @@ test("preloads the active design pack and reloads offline", async ({
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 20_000 });
-  await expect(page.locator(".scene-viewport")).toHaveAttribute(
-    "data-media-status",
-    "playing",
-    { timeout: 15_000 },
-  );
+  await expect(page.locator(".scene-viewport")).toHaveAttribute("data-media-status", "static", {
+    timeout: 15_000,
+  });
   await context.setOffline(false);
 });
 

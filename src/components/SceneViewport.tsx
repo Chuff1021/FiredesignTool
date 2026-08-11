@@ -38,12 +38,14 @@ export function SceneViewport({
 }: SceneViewportProps) {
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const faceOptionId = useConfigurationStore((state) => state.faceOptionId);
+  const firebackOptionId = useConfigurationStore((state) => state.firebackOptionId);
   const stoneId = useConfigurationStore((state) => state.stoneId);
   const mantelProductId = useConfigurationStore((state) => state.mantelProductId);
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
   const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
   const fireplace = catalogRepository.getFireplace(fireplaceId);
   const face = catalogRepository.getFace(fireplaceId, faceOptionId);
+  const fireback = catalogRepository.getFireback(fireplaceId, firebackOptionId);
   const stone = catalogRepository.getStone(stoneId);
   const mantelProduct = catalogRepository.getMantel(mantelProductId);
   const mantelFinish = catalogRepository.getMantelFinish(mantelProductId, mantelFinishId);
@@ -70,8 +72,8 @@ export function SceneViewport({
       <div className="scene-caption">
         <span>Current composition</span>
         <strong>
-          {fireplace.shortLabel} · {face.name} · {stone.name} · {mantelFinish.name}{" "}
-          {mantelProduct.shortLabel} {mantelWidth}″
+          {fireplace.shortLabel} · {face.name} · {fireback.name} · {stone.name} ·{" "}
+          {mantelFinish.name} {mantelProduct.shortLabel} {mantelWidth}″
         </strong>
       </div>
       {isPresentation ? (

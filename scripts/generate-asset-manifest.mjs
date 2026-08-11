@@ -6,24 +6,32 @@ const root = process.cwd();
 const assetsDirectory = path.join(root, "public", "assets");
 const manifestPath = path.join(assetsDirectory, "manifest.json");
 
-const entries = await readdir(assetsDirectory);
 const files = [];
 
-for (const name of entries.toSorted()) {
-  if (name === "manifest.json") continue;
-  const filePath = path.join(assetsDirectory, name);
-  const fileStats = await stat(filePath);
-  if (!fileStats.isFile()) continue;
-  const bytes = await readFile(filePath);
-  files.push({
-    path: `/assets/${name}`,
-    sha256: createHash("sha256").update(bytes).digest("hex"),
-    size: bytes.byteLength,
-  });
+async function collectFiles(directory) {
+  for (const name of (await readdir(directory)).toSorted()) {
+    const filePath = path.join(directory, name);
+    if (filePath === manifestPath) continue;
+    const fileStats = await stat(filePath);
+    if (fileStats.isDirectory()) {
+      await collectFiles(filePath);
+      continue;
+    }
+    if (!fileStats.isFile()) continue;
+    const bytes = await readFile(filePath);
+    const relativePath = path.relative(assetsDirectory, filePath).split(path.sep).join("/");
+    files.push({
+      path: `/assets/${relativePath}`,
+      sha256: createHash("sha256").update(bytes).digest("hex"),
+      size: bytes.byteLength,
+    });
+  }
 }
 
+await collectFiles(assetsDirectory);
+
 const manifest = {
-  version: "2026.08.11-1",
+  version: "2026.08.11-2",
   generatedAt: "2026-08-11T00:00:00.000Z",
   files,
 };

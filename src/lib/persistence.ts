@@ -6,7 +6,8 @@ import {
   type FeatureWallConfiguration,
 } from "@/domain/configuration";
 
-export const STORAGE_KEY = "firedesign:feature-wall:v5";
+export const STORAGE_KEY = "firedesign:feature-wall:v6";
+export const LEGACY_V5_STORAGE_KEY = "firedesign:feature-wall:v5";
 export const LEGACY_V4_STORAGE_KEY = "firedesign:feature-wall:v4";
 export const LEGACY_V3_STORAGE_KEY = "firedesign:feature-wall:v3";
 export const LEGACY_V2_STORAGE_KEY = "firedesign:feature-wall:v2";
@@ -28,6 +29,11 @@ const legacyV4ConfigurationSchema = z.object({
   hearthEnabled: z.boolean(),
   cameraMode: z.enum(["front", "perspective"]),
   showDimensions: z.boolean(),
+});
+
+const legacyV5ConfigurationSchema = legacyV4ConfigurationSchema.extend({
+  schemaVersion: z.literal(5),
+  catalogVersion: z.string().min(1),
 });
 
 const legacyV3ConfigurationSchema = z.object({
@@ -167,6 +173,25 @@ function migrateV4(raw: string): PersistenceResult {
   }
 }
 
+function migrateV5(raw: string): PersistenceResult {
+  try {
+    const legacy = legacyV5ConfigurationSchema.parse(JSON.parse(raw));
+    return {
+      configuration: normalizeConfiguration({
+        ...legacy,
+        schemaVersion: undefined,
+      }),
+      recovered: false,
+    };
+  } catch {
+    return {
+      configuration: DEFAULT_CONFIGURATION,
+      recovered: true,
+      reason: "Saved layout was invalid and safe defaults were restored.",
+    };
+  }
+}
+
 function migrateV2(raw: string): PersistenceResult {
   try {
     const legacy = legacyV2ConfigurationSchema.parse(JSON.parse(raw));
@@ -217,6 +242,9 @@ export function readPersistedConfiguration(
   const current = storage.getItem(STORAGE_KEY);
   if (current) return parseCurrent(current);
 
+  const legacyV5 = storage.getItem(LEGACY_V5_STORAGE_KEY);
+  if (legacyV5) return migrateV5(legacyV5);
+
   const legacyV4 = storage.getItem(LEGACY_V4_STORAGE_KEY);
   if (legacyV4) return migrateV4(legacyV4);
 
@@ -242,6 +270,7 @@ export function writePersistedConfiguration(
 
 export function clearPersistedConfiguration(storage: Pick<Storage, "removeItem">): void {
   storage.removeItem(STORAGE_KEY);
+  storage.removeItem(LEGACY_V5_STORAGE_KEY);
   storage.removeItem(LEGACY_V4_STORAGE_KEY);
   storage.removeItem(LEGACY_V3_STORAGE_KEY);
   storage.removeItem(LEGACY_V2_STORAGE_KEY);

@@ -1,4 +1,4 @@
-const CACHE_VERSION = "firedesign-2026.08.11-1";
+const CACHE_VERSION = "firedesign-2026.08.11-2";
 const SHELL = ["/", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 async function loadApprovedManifest(cache) {

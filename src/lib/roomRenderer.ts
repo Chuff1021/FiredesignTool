@@ -282,6 +282,10 @@ async function createDesignLayer(
 
   const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
   const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
+  const fireback = catalogRepository.getFireback(
+    configuration.fireplaceId,
+    configuration.firebackOptionId,
+  );
   const stone = catalogRepository.getStone(configuration.stoneId);
   const mantel = catalogRepository.getMantelSize(
     configuration.mantelProductId,
@@ -291,9 +295,10 @@ async function createDesignLayer(
     configuration.mantelProductId,
     configuration.mantelFinishId,
   );
-  const [stoneImage, fireplaceImage, mantelImage] = await Promise.all([
+  const [stoneImage, fireplaceImage, faceOverlayImage, mantelImage] = await Promise.all([
     cachedImage(stone.assets[0]!.localPath),
-    cachedImage(face.asset.localPath),
+    cachedImage(fireback.asset.localPath),
+    face.overlayMode === "always" ? cachedImage(face.overlayAsset.localPath) : null,
     cachedImage(mantelFinish.assets[0]!.localPath),
   ]);
   const toX = (inches: number) => (configuration.wallWidth / 2 + inches) * pixelsPerInch;
@@ -341,7 +346,23 @@ async function createDesignLayer(
   context.shadowColor = "rgba(0,0,0,.42)";
   context.shadowBlur = 5 * pixelsPerInch;
   context.shadowOffsetY = 1.2 * pixelsPerInch;
-  context.drawImage(fireplaceImage, faceLeft, faceTop, faceWidth, faceHeight);
+  if (fireback.renderMode === "complete-composite") {
+    context.drawImage(fireplaceImage, faceLeft, faceTop, faceWidth, faceHeight);
+  } else {
+    const firebackWidth = fireback.display.width * pixelsPerInch;
+    const firebackHeight = fireback.display.height * pixelsPerInch;
+    const firebackLeft = toX(face.mediaWindow.offsetX - fireback.display.width / 2);
+    const firebackTop = toY(
+      configuration.fireplaceElevation +
+        face.visibleFace.height / 2 +
+        face.mediaWindow.offsetY +
+        fireback.display.height / 2,
+    );
+    context.drawImage(fireplaceImage, firebackLeft, firebackTop, firebackWidth, firebackHeight);
+  }
+  if (faceOverlayImage) {
+    context.drawImage(faceOverlayImage, faceLeft, faceTop, faceWidth, faceHeight);
+  }
   context.restore();
 
   if (scenario === "full-remodel") {
@@ -382,7 +403,14 @@ async function createInsertFaceLayer(
   pixelsPerInch: number,
 ): Promise<{ canvas: HTMLCanvasElement; widthInches: number; heightInches: number }> {
   const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
-  const image = await cachedImage(face.asset.localPath);
+  const fireback = catalogRepository.getFireback(
+    configuration.fireplaceId,
+    configuration.firebackOptionId,
+  );
+  const [image, overlay] = await Promise.all([
+    cachedImage(fireback.asset.localPath),
+    face.overlayMode === "always" ? cachedImage(face.overlayAsset.localPath) : null,
+  ]);
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(face.visibleFace.width * pixelsPerInch);
   canvas.height = Math.round(face.visibleFace.height * pixelsPerInch);
@@ -390,7 +418,16 @@ async function createInsertFaceLayer(
   if (!context) throw new Error("The insert renderer could not start.");
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
-  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  if (fireback.renderMode === "complete-composite") {
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  } else {
+    const width = fireback.display.width * pixelsPerInch;
+    const height = fireback.display.height * pixelsPerInch;
+    const left = canvas.width / 2 + face.mediaWindow.offsetX * pixelsPerInch - width / 2;
+    const top = canvas.height / 2 - face.mediaWindow.offsetY * pixelsPerInch - height / 2;
+    context.drawImage(image, left, top, width, height);
+  }
+  if (overlay) context.drawImage(overlay, 0, 0, canvas.width, canvas.height);
   return {
     canvas,
     widthInches: face.visibleFace.width,

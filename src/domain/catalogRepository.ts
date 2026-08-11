@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RELEASE_2026_08_11_1 } from "@/catalog/releases/2026.08.11-1";
+import { RELEASE_2026_08_11_2 } from "@/catalog/releases/2026.08.11-2";
 import {
   assetSourceSchema,
   fireplaceProductSchema,
@@ -7,6 +7,7 @@ import {
   mantelProductSchema,
   stoneProductSchema,
   type FaceOptionId,
+  type FirebackOptionId,
   type FireplaceId,
   type FireplaceProduct,
   type MantelFinishId,
@@ -102,11 +103,36 @@ export const catalogReleaseSchema = z
           path: ["fireplaces", index, "defaultFaceOptionId"],
         });
       }
+      if (
+        !product.firebackOptions.some(
+          (fireback) => fireback.id === product.defaultFirebackOptionId,
+        )
+      ) {
+        context.addIssue({
+          code: "custom",
+          message: `Default fireback is not offered by ${product.id}`,
+          path: ["fireplaces", index, "defaultFirebackOptionId"],
+        });
+      }
       unique(
         product.faceOptions.map((face) => face.id),
         ["fireplaces", index, "faceOptions"],
         `${product.id} face ID`,
       );
+      unique(
+        product.firebackOptions.map((fireback) => fireback.id),
+        ["fireplaces", index, "firebackOptions"],
+        `${product.id} fireback ID`,
+      );
+      for (const compatibleId of product.burnMedia?.compatibleFirebackIds ?? []) {
+        if (!product.firebackOptions.some((fireback) => fireback.id === compatibleId)) {
+          context.addIssue({
+            code: "custom",
+            message: `Burn media references unavailable fireback ${compatibleId}`,
+            path: ["fireplaces", index, "burnMedia", "compatibleFirebackIds"],
+          });
+        }
+      }
     }
     for (const [index, product] of release.mantelProducts.entries()) {
       if (!brandIds.has(product.brandId)) {
@@ -181,7 +207,7 @@ export const catalogReleaseSchema = z
 export type CatalogRelease = z.infer<typeof catalogReleaseSchema>;
 export type CatalogBrand = z.infer<typeof brandSchema>;
 
-export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_11_1);
+export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_11_2);
 
 export interface CatalogRepository {
   readonly release: CatalogRelease;
@@ -199,6 +225,10 @@ export interface CatalogRepository {
     fireplaceId: FireplaceId,
     faceId: FaceOptionId,
   ): FireplaceProduct["faceOptions"][number];
+  getFireback(
+    fireplaceId: FireplaceId,
+    firebackId: FirebackOptionId,
+  ): FireplaceProduct["firebackOptions"][number];
   getMantel(id: MantelProductId): MantelProduct;
   getMantelSize(productId: MantelProductId, width: MantelWidth): MantelProduct["sizes"][number];
   getMantelFinish(
@@ -235,6 +265,7 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
           face.overlayAsset,
           face.maskAsset,
         ]),
+        ...product.firebackOptions.map((fireback) => fireback.asset),
         ...(product.burnMedia ? [product.burnMedia.video, product.burnMedia.poster] : []),
       ]),
     ]),
@@ -266,6 +297,19 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
         product.faceOptions.find((face) => face.id === faceId) ??
           product.faceOptions.find((face) => face.id === product.defaultFaceOptionId),
         `face ${faceId} for ${fireplaceId}`,
+      );
+    },
+    getFireback: (fireplaceId, firebackId) => {
+      const product = requireRecord(
+        fireplacesById.get(fireplaceId),
+        `fireplace: ${fireplaceId}`,
+      );
+      return requireRecord(
+        product.firebackOptions.find((fireback) => fireback.id === firebackId) ??
+          product.firebackOptions.find(
+            (fireback) => fireback.id === product.defaultFirebackOptionId,
+          ),
+        `fireback ${firebackId} for ${fireplaceId}`,
       );
     },
     getMantel: (id) => requireRecord(mantelsById.get(id), `mantel: ${id}`),

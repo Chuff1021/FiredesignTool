@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   faceOptionIdSchema,
+  firebackOptionIdSchema,
   fireplaceIdSchema,
   mantelFinishIdSchema,
   mantelProductIdSchema,
@@ -18,7 +19,7 @@ export const MANTEL_HEIGHT_RANGE = { min: 0, max: 84, step: 0.25 } as const;
 export const cameraModeSchema = z.enum(["front", "perspective"]);
 
 export const featureWallConfigurationSchema = z.object({
-  schemaVersion: z.literal(5),
+  schemaVersion: z.literal(6),
   catalogVersion: z.string().min(1),
   wallWidth: z.number().min(WALL_WIDTH_RANGE.min).max(WALL_WIDTH_RANGE.max).finite(),
   wallHeight: z.number().min(WALL_HEIGHT_RANGE.min).max(WALL_HEIGHT_RANGE.max).finite(),
@@ -35,6 +36,7 @@ export const featureWallConfigurationSchema = z.object({
     .finite(),
   fireplaceId: fireplaceIdSchema,
   faceOptionId: faceOptionIdSchema,
+  firebackOptionId: firebackOptionIdSchema,
   stoneId: stoneIdSchema,
   mantelProductId: mantelProductIdSchema,
   mantelWidth: mantelWidthSchema,
@@ -48,7 +50,7 @@ export type FeatureWallConfiguration = z.infer<typeof featureWallConfigurationSc
 export type CameraMode = z.infer<typeof cameraModeSchema>;
 
 export const DEFAULT_CONFIGURATION: FeatureWallConfiguration = Object.freeze({
-  schemaVersion: 5,
+  schemaVersion: 6,
   catalogVersion: catalogRepository.release.version,
   wallWidth: 144,
   wallHeight: 108,
@@ -57,6 +59,7 @@ export const DEFAULT_CONFIGURATION: FeatureWallConfiguration = Object.freeze({
   mantelHeightAboveBase: 45.75,
   fireplaceId: "864-trv-31k-clean-face",
   faceOptionId: "clean-face",
+  firebackOptionId: "common-brick",
   stoneId: "kentucky-ledge",
   mantelProductId: "zachary-smooth",
   mantelWidth: 72,
@@ -157,6 +160,14 @@ export function normalizeConfiguration(
   const faceOptionId = fireplace.faceOptions.some((face) => face.id === requestedFaceId)
     ? requestedFaceId
     : fireplace.defaultFaceOptionId;
+  const requestedFirebackId = firebackOptionIdSchema
+    .catch(fireplace.defaultFirebackOptionId)
+    .parse(candidate.firebackOptionId);
+  const firebackOptionId = fireplace.firebackOptions.some(
+    (fireback) => fireback.id === requestedFirebackId,
+  )
+    ? requestedFirebackId
+    : fireplace.defaultFirebackOptionId;
   const requestedMantelProductId = mantelProductIdSchema
     .catch(DEFAULT_CONFIGURATION.mantelProductId)
     .parse(candidate.mantelProductId);
@@ -201,7 +212,7 @@ export function normalizeConfiguration(
   const minimumNonCombustibleMantelHeight = getMinimumNonCombustibleMantelHeight(fireplaceId);
 
   const normalized: FeatureWallConfiguration = {
-    schemaVersion: 5,
+    schemaVersion: 6,
     catalogVersion: catalogRepository.release.version,
     wallWidth,
     wallHeight: clampToRange(
@@ -219,6 +230,7 @@ export function normalizeConfiguration(
     ),
     fireplaceId,
     faceOptionId,
+    firebackOptionId,
     stoneId: (() => {
       const requested = stoneIdSchema
         .catch(DEFAULT_CONFIGURATION.stoneId)

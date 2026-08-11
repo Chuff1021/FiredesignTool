@@ -26,9 +26,11 @@ complete three-model FPX wood-fireplace lineup:
   Timberline faces; 36 Elite NexGen-Hybrid with Classic Arch single/double
   door and Artisan single-door combinations; and 44 Elite NexGen-Hybrid with
   Classic Arch and Artisan double-door combinations
+- Model-scoped FireBuilder fireback selectors with 125 exact official
+  configurations across the supported gas lineup
 - Muted, automatically looping official Travis Industries burn footage for the
-  564, 864, and 4237 families, with local high-resolution fallback masters and
-  complete offline playback
+  564 variants, 864 TV 40K variants, and 4237 Clean Face, enabled only on the
+  exact fireback shown in each video, with complete offline playback
 - Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
 - Centurion #860 hearthstones in matching Kentucky and Brown colors, laid out
   across the exact selected stone-field width with centered field cuts

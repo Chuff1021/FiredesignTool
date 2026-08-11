@@ -127,7 +127,7 @@ for catalog-related pull requests. Each run retains a JSON evidence report for
 the installed showroom application or its Vercel build depend on a manufacturer
 website being available.
 
-Release `2026.08.11-1` contains all 27 models and factory variants in FPX's
+Release `2026.08.11-2` contains all 27 models and factory variants in FPX's
 current marketed gas-fireplace and gas-insert collections plus all three
 current wood fireplaces as checked on 2026-08-11: ten premium traditional fireplaces, two premium linear fireplaces,
 five traditional ProBuilder fireplaces, four linear ProBuilder fireplaces, and
@@ -147,6 +147,17 @@ left-heavy framing without moving or scaling the face, glass opening, or
 physical appliance. Newly added models use exact static Travis/FireBuilder
 composites until a model-specific burn loop and transparent opening receive a
 separate visual approval.
+
+The same release adds 125 exact, locally packaged FireBuilder fireback
+configurations. The selector is scoped to each appliance: the 564 and 864
+families expose eight current choices, the 4237 Clean Face exposes five, and
+the ProBuilder, premium linear, and insert models expose only their current
+FireBuilder options. The 4237 IronWorks variant and wood fireplaces retain a
+single verified factory interior because FireBuilder does not publish an
+alternate fireback set for those exact products. A burn loop is enabled only
+when its photographed fireback matches the selected option; every other choice
+uses the exact official static configuration instead of compositing flames over
+an interior that was not filmed.
 
 The wood records preserve each current FireBuilder face/door combination and
 manual-specific requirements rather than applying one generic wood rule. The

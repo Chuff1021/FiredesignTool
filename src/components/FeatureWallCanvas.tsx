@@ -230,6 +230,10 @@ function FeatureWall({
   const shadowTexture = useMemo(() => makeShadowTexture(), []);
   const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
   const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);
+  const fireback = catalogRepository.getFireback(
+    configuration.fireplaceId,
+    configuration.firebackOptionId,
+  );
   const stone = catalogRepository.getStone(configuration.stoneId);
   const mantelProduct = catalogRepository.getMantel(configuration.mantelProductId);
   const mantelSize = catalogRepository.getMantelSize(
@@ -303,16 +307,18 @@ function FeatureWall({
     return { color, bump };
   }, [configuration.fireplaceElevation, hearthWidth, stone.assets, textures]);
 
-  const fireTexture = requireTexture(textures, face.asset.localPath);
+  const fireTexture = requireTexture(textures, fireback.asset.localPath);
   const faceOverlayTexture = requireTexture(textures, face.overlayAsset.localPath);
   const fireboxMaskTexture = requireTexture(textures, face.maskAsset.localPath);
   const burnPosterTexture = fireplace.burnMedia
     ? requireTexture(textures, fireplace.burnMedia.poster.localPath)
     : undefined;
+  const liveBurnEnabled =
+    fireplace.burnMedia?.compatibleFirebackIds.includes(fireback.id) ?? false;
 
   useEffect(() => {
-    if (!fireplace.burnMedia) onMediaStatus("static");
-  }, [fireplace.burnMedia, onMediaStatus]);
+    if (!liveBurnEnabled) onMediaStatus("static");
+  }, [liveBurnEnabled, onMediaStatus]);
 
   useEffect(
     () => () => {
@@ -375,11 +381,19 @@ function FeatureWall({
         <boxGeometry args={[fireplace.viewingArea.width, fireplace.viewingArea.height, 1.2]} />
         <meshStandardMaterial color="#171513" metalness={0.34} roughness={0.38} />
       </mesh>
-      <mesh position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 0.9]}>
-        <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
+      <mesh
+        position={[
+          fireback.renderMode === "base-layer" ? face.mediaWindow.offsetX : 0,
+          configuration.fireplaceElevation +
+            face.visibleFace.height / 2 +
+            (fireback.renderMode === "base-layer" ? face.mediaWindow.offsetY : 0),
+          0.9,
+        ]}
+      >
+        <planeGeometry args={[fireback.display.width, fireback.display.height]} />
         <meshBasicMaterial alphaTest={0.02} map={fireTexture} toneMapped={false} transparent />
       </mesh>
-      {fireplace.burnMedia && burnPosterTexture ? (
+      {liveBurnEnabled && fireplace.burnMedia && burnPosterTexture ? (
         <>
           <group
             position={[
@@ -401,20 +415,22 @@ function FeatureWall({
               width={face.mediaWindow.width}
             />
           </group>
-          <mesh
-            position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 1.05]}
-            renderOrder={4}
-          >
-            <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
-            <meshBasicMaterial
-              alphaTest={0.02}
-              depthWrite={false}
-              map={faceOverlayTexture}
-              toneMapped={false}
-              transparent
-            />
-          </mesh>
         </>
+      ) : null}
+      {face.overlayMode === "always" ? (
+        <mesh
+          position={[0, configuration.fireplaceElevation + face.visibleFace.height / 2, 1.05]}
+          renderOrder={4}
+        >
+          <planeGeometry args={[face.visibleFace.width, face.visibleFace.height]} />
+          <meshBasicMaterial
+            alphaTest={0.02}
+            depthWrite={false}
+            map={faceOverlayTexture}
+            toneMapped={false}
+            transparent
+          />
+        </mesh>
       ) : null}
 
       <mesh
@@ -636,6 +652,7 @@ export function FeatureWallCanvas({
   const mantelHeightAboveBase = useConfigurationStore((state) => state.mantelHeightAboveBase);
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const faceOptionId = useConfigurationStore((state) => state.faceOptionId);
+  const firebackOptionId = useConfigurationStore((state) => state.firebackOptionId);
   const stoneId = useConfigurationStore((state) => state.stoneId);
   const mantelProductId = useConfigurationStore((state) => state.mantelProductId);
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
@@ -643,7 +660,7 @@ export function FeatureWallCanvas({
   const hearthEnabled = useConfigurationStore((state) => state.hearthEnabled);
   const showDimensions = useConfigurationStore((state) => state.showDimensions);
   const configuration: FeatureWallConfiguration = {
-    schemaVersion: 5,
+    schemaVersion: 6,
     catalogVersion: catalogRepository.release.version,
     wallWidth,
     wallHeight,
@@ -652,6 +669,7 @@ export function FeatureWallCanvas({
     mantelHeightAboveBase,
     fireplaceId,
     faceOptionId,
+    firebackOptionId,
     stoneId,
     mantelProductId,
     mantelWidth,

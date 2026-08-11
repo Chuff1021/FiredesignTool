@@ -1,5 +1,5 @@
 {
-  "version": "2026.08.11-1",
+  "version": "2026.08.11-2",
   "generatedAt": "2026-08-11T00:00:00.000Z",
   "files": [
     {
@@ -41,6 +41,661 @@
       "path": "/assets/centurion-kentucky-ledge.webp",
       "sha256": "ae5344bbce61910ced9af3c9c194ec2798b1876950948ef147bad612cc431bb0",
       "size": 6174196
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-black-glass.png",
+      "sha256": "489619ecc347e8b352cdc04e4eff389c8ab2d7995f5d8afd35ef8b2dfd464458",
+      "size": 197668
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-black-handmade-brick.png",
+      "sha256": "bcc66ce2814acfc36f6f0926e306248c477f521b65acd26f21dc15205ab1e3e3",
+      "size": 198346
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-common-brick.png",
+      "sha256": "53344c9299663946e5e6b8b5959d960dbf01cf342487eaed11b1990b6f6643ab",
+      "size": 210139
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-face-metropolitan.png",
+      "sha256": "45dd7c9fe0249a77a75275c1965cc67abf8beaa6463455204b64bd5caf5523bc",
+      "size": 146846
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-greystone.png",
+      "sha256": "e5d90c0f46ad657757479db910d60c7f3a2a4f80932d66547087a2c7ef54970f",
+      "size": 213708
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-handmade-brick.png",
+      "sha256": "b3109cd0e296224032002353bf2ac8acdf40942bfbed4059c81e505f1eea8609",
+      "size": 214429
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-herringbone-brick.png",
+      "sha256": "8fca664fd27320179d4c232cf6125ae66b06345f0b925ea926c40c8e1729ed40",
+      "size": 196654
+    },
+    {
+      "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-ledgestone.png",
+      "sha256": "8b079919e4db944f52e963f2ab94e9319002660041864e68d1db0a2826984cd3",
+      "size": 201620
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-black-glass.png",
+      "sha256": "9703defbb556b64630fe14a6224c489d19bd8d19f1153e62fd20720e912ccc37",
+      "size": 245994
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-black-handmade-brick.png",
+      "sha256": "9cceadb35789c0fc4860d05ed45ab726930cfebf4e19928b3e27bef75c840be6",
+      "size": 239156
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-common-brick.png",
+      "sha256": "442c28b758bb9b452a4581463dd7ed2f217c35ffa77abeefd547375c9fae41a7",
+      "size": 277401
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-face-metropolitan.png",
+      "sha256": "ee7abc8187283714c8e65151cb3e259ce8d21fa543a9f834c759ca72effcb566",
+      "size": 191213
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-greystone.png",
+      "sha256": "8a198de8e035cfca36e2e6fb86e08b17433a2e50f46cf9758c2db8378354f657",
+      "size": 234617
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-handmade-brick.png",
+      "sha256": "880d2479a9191c90521107d0c5cc9a97d58c8927942553157fe6ee3044b23e3c",
+      "size": 274349
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-herringbone-brick.png",
+      "sha256": "5cdd289c97b3ca531083df0bfa77bf80f8e449d958262ba2df8379a3db39d011",
+      "size": 284519
+    },
+    {
+      "path": "/assets/firebacks/34-dvl-deluxe-ember-glo-ledgestone.png",
+      "sha256": "792240c7b1c566fa99964922332bc5edaf399fbe3a3a02ace9528831bc631af2",
+      "size": 269177
+    },
+    {
+      "path": "/assets/firebacks/4237-ember-glo-clean-face-black-glass.png",
+      "sha256": "2e9174f0c3eb3c48ec58e40dd82026312a30e5caa3eec82abd30f95245b657a4",
+      "size": 477413
+    },
+    {
+      "path": "/assets/firebacks/4237-ember-glo-clean-face-black-handmade-brick.png",
+      "sha256": "377ba8de5625b3917e4f980c32a577b6d5ff9ea92f900c27e30d38d61ea757c8",
+      "size": 399616
+    },
+    {
+      "path": "/assets/firebacks/4237-ember-glo-clean-face-handmade-brick.png",
+      "sha256": "8b2f82476d1a980f4e4041b3417cefc67dfcb6fa2226f0a093794c55830c1808",
+      "size": 550869
+    },
+    {
+      "path": "/assets/firebacks/4237-ember-glo-clean-face-herringbone-brick.png",
+      "sha256": "6ae2b0057698ada0818c526a3c4cfd702b6c33854417cd162049986813f8f2e4",
+      "size": 579956
+    },
+    {
+      "path": "/assets/firebacks/4237-ember-glo-clean-face-tan-stacked-brick.png",
+      "sha256": "222a4b50a6f1704ea863b37b57847f7235dd0671f54f885b3034a832c4cb0ca6",
+      "size": 511506
+    },
+    {
+      "path": "/assets/firebacks/430-deluxe-ember-glo-black-glass.png",
+      "sha256": "7285ad59f23fd961736585178e96a85cd9ae210525ff28c7ee08f68aba8717f4",
+      "size": 190091
+    },
+    {
+      "path": "/assets/firebacks/430-deluxe-ember-glo-black-painted.png",
+      "sha256": "2223706ea5f2ea925db13bcdcc4322c9dc2bf1ee9b3f745dc18b04da99a613fd",
+      "size": 179533
+    },
+    {
+      "path": "/assets/firebacks/430-deluxe-ember-glo-common-brick.png",
+      "sha256": "64ff516d8a386e5b3605afcab9243edc2fe88115215bd9fc425a9f9a01300ff3",
+      "size": 203037
+    },
+    {
+      "path": "/assets/firebacks/430-deluxe-ember-glo-face-metropolitan.png",
+      "sha256": "0ff9a13b0005c58d0876fa06682c9c5d1b761e9cd0ab9e6ab50f5381026f7294",
+      "size": 84115
+    },
+    {
+      "path": "/assets/firebacks/430-deluxe-ember-glo-handmade-brick.png",
+      "sha256": "d64c9b18ba9b8f6777a2818964137d85a65f42a6eb71ebea3046f6a525c56611",
+      "size": 209857
+    },
+    {
+      "path": "/assets/firebacks/430-deluxe-ember-glo-herringbone-brick.png",
+      "sha256": "b860bf243b23c5b1710445394cb1cce65822522997753eaff954b3364750d05c",
+      "size": 192199
+    },
+    {
+      "path": "/assets/firebacks/430-deluxe-ember-glo-ledgestone.png",
+      "sha256": "69d7705d29a1b795b78652d47682252e8b7cf9652e01beecd76b800ba1dda5eb",
+      "size": 186833
+    },
+    {
+      "path": "/assets/firebacks/430-mod-fyre-black-glass.png",
+      "sha256": "b1a5a4b5e2e32f9e1276d0ce112d05ea053871eafee7d93629b45077de10b99d",
+      "size": 148068
+    },
+    {
+      "path": "/assets/firebacks/430-mod-fyre-black-painted.png",
+      "sha256": "877ea4fc4fc6d7fe618920ecce987612e3ad8b21ecdc544856726366b0aae771",
+      "size": 143805
+    },
+    {
+      "path": "/assets/firebacks/430-mod-fyre-face-metropolitan.png",
+      "sha256": "0ff9a13b0005c58d0876fa06682c9c5d1b761e9cd0ab9e6ab50f5381026f7294",
+      "size": 84115
+    },
+    {
+      "path": "/assets/firebacks/4415-high-output-deluxe-black-fluted.png",
+      "sha256": "38acce2e1c4dfe0ad20157963f94054ebf7763bc12310f154b5063af851c113c",
+      "size": 99089
+    },
+    {
+      "path": "/assets/firebacks/4415-high-output-deluxe-black-glass.png",
+      "sha256": "8d84f68f3a45743a493fdd33498fa7dddc4922f7f96cdeac43b4688f3780824a",
+      "size": 119921
+    },
+    {
+      "path": "/assets/firebacks/4415-high-output-deluxe-black-painted.png",
+      "sha256": "8c519b2f54d9826d74e815f85f42e42a750346672525abe36b5b884166af69ee",
+      "size": 116643
+    },
+    {
+      "path": "/assets/firebacks/4415-high-output-deluxe-ledgestone.png",
+      "sha256": "c9944ea8c3448d3917ded983fc68d56c442f851c767a7964396312212e40ac18",
+      "size": 137227
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-black-glass.png",
+      "sha256": "bc037b6e1d878523644d22de0aee23466bb8b18899f41ca9cdae287465032d67",
+      "size": 239658
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-black-handmade-brick.png",
+      "sha256": "9a20670e0862189267f54353ec8087b44ac28be1ed28a25646f16c6d81194168",
+      "size": 216311
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-common-brick.png",
+      "sha256": "709ac42344ce0990a85b0abe2e749b3dcaf1e6ea50a10ea4d85826230d932c8e",
+      "size": 243566
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-handmade-brick.png",
+      "sha256": "6a938fc02b38dfa31a1dcc37442ea76e7ab9942cf58a40035a73fbdfd3d5f82d",
+      "size": 248980
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-herringbone-brick.png",
+      "sha256": "1637c6a21228f3101afc7dbd2070164a491eb7c836da6d9cf4a4fd90091ee4f6",
+      "size": 253564
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-ledgestone.png",
+      "sha256": "cbadffcb0f3c8cbd4f69169a20a644292ef2c9ec40d73451edc0c46424ec4ac3",
+      "size": 252187
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-old-world-stucco.png",
+      "sha256": "1bc0c425f43929b644ef26ecada793e5ee5541972365ec727d5d961cef48e205",
+      "size": 239604
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-clean-face-tan-stacked-brick.png",
+      "sha256": "f4d46d4e73d98d252a6ae1f75aa456e8224f8015b3cd01883436c9d80b86c3c0",
+      "size": 224409
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-black-glass.png",
+      "sha256": "bc037b6e1d878523644d22de0aee23466bb8b18899f41ca9cdae287465032d67",
+      "size": 239658
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-black-handmade-brick.png",
+      "sha256": "fcdb6bc1f4f95252a9dc5758f8c71f23418923469c3b3567f55d8bfc0f945ebe",
+      "size": 210908
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-common-brick.png",
+      "sha256": "709ac42344ce0990a85b0abe2e749b3dcaf1e6ea50a10ea4d85826230d932c8e",
+      "size": 243566
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-handmade-brick.png",
+      "sha256": "6a938fc02b38dfa31a1dcc37442ea76e7ab9942cf58a40035a73fbdfd3d5f82d",
+      "size": 248980
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-herringbone-brick.png",
+      "sha256": "1637c6a21228f3101afc7dbd2070164a491eb7c836da6d9cf4a4fd90091ee4f6",
+      "size": 253564
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-ledgestone.png",
+      "sha256": "cbadffcb0f3c8cbd4f69169a20a644292ef2c9ec40d73451edc0c46424ec4ac3",
+      "size": 252187
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-old-world-stucco.png",
+      "sha256": "1bc0c425f43929b644ef26ecada793e5ee5541972365ec727d5d961cef48e205",
+      "size": 239604
+    },
+    {
+      "path": "/assets/firebacks/564-trv-25k-deluxe-tan-stacked-brick.png",
+      "sha256": "f4d46d4e73d98d252a6ae1f75aa456e8224f8015b3cd01883436c9d80b86c3c0",
+      "size": 224409
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-black-glass.png",
+      "sha256": "8ee71fd3c78babe166bbe52d340f274f16006e185c66faacfc7fe025828b13d2",
+      "size": 240439
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-black-handmade-brick.png",
+      "sha256": "5efb9703615fc00f1d9bd8d460dcf22a769b82689166d542547ad1428accbff5",
+      "size": 204210
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-common-brick.png",
+      "sha256": "906d6eb9a4c938f59689e4a0178e0c1c3f156798022a4733acb621fb8b529892",
+      "size": 261656
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-handmade-brick.png",
+      "sha256": "fe623bb09dd3d1fd9ca9773d8f5894f707db14e734f342d7cbeade99cdb52088",
+      "size": 248010
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-herringbone-brick.png",
+      "sha256": "dde93996aef7ff648d32de06d7a2b6d927c5b35e289aebfe4cf52a1a7f81b8a7",
+      "size": 241536
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-ledgestone.png",
+      "sha256": "453a09f85ff8753c16cd952d926d9ac005229263667d70ce1b3666c9ac1374f4",
+      "size": 256213
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-old-world-stucco.png",
+      "sha256": "0eb1d2512868222dab860c2a5f6592516d5ff974b9a43865f921d7981f7e2e6b",
+      "size": 251402
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-clean-face-tan-stacked-brick.png",
+      "sha256": "1d296a7c38790f3ab6f9637ccc3bc0705b24b39637b0e7155011036fe0bb5683",
+      "size": 255803
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-black-glass.png",
+      "sha256": "8ee71fd3c78babe166bbe52d340f274f16006e185c66faacfc7fe025828b13d2",
+      "size": 240439
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-black-handmade-brick.png",
+      "sha256": "a18b7a9f6bc4e21b665559db78eba3d9bc2d6c6803ea406f8f219dc9afec3ea3",
+      "size": 204283
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-common-brick.png",
+      "sha256": "906d6eb9a4c938f59689e4a0178e0c1c3f156798022a4733acb621fb8b529892",
+      "size": 261656
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-handmade-brick.png",
+      "sha256": "fe623bb09dd3d1fd9ca9773d8f5894f707db14e734f342d7cbeade99cdb52088",
+      "size": 248010
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-herringbone-brick.png",
+      "sha256": "dde93996aef7ff648d32de06d7a2b6d927c5b35e289aebfe4cf52a1a7f81b8a7",
+      "size": 241536
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-ledgestone.png",
+      "sha256": "453a09f85ff8753c16cd952d926d9ac005229263667d70ce1b3666c9ac1374f4",
+      "size": 256213
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-old-world-stucco.png",
+      "sha256": "0eb1d2512868222dab860c2a5f6592516d5ff974b9a43865f921d7981f7e2e6b",
+      "size": 251402
+    },
+    {
+      "path": "/assets/firebacks/564-tv-35k-deluxe-tan-stacked-brick.png",
+      "sha256": "1d296a7c38790f3ab6f9637ccc3bc0705b24b39637b0e7155011036fe0bb5683",
+      "size": 255803
+    },
+    {
+      "path": "/assets/firebacks/6015-high-output-deluxe-black-fluted.png",
+      "sha256": "eb719ef8417791bd04f6c715d639cc4c0cce863cf32a9aeb5eb626bc2c0d4fb2",
+      "size": 163258
+    },
+    {
+      "path": "/assets/firebacks/6015-high-output-deluxe-black-glass.png",
+      "sha256": "1e0cbf2f48d840c87f7beaf60533a8b743bd20fba58780a787f4a29f05ef26ab",
+      "size": 173477
+    },
+    {
+      "path": "/assets/firebacks/6015-high-output-deluxe-black-painted.png",
+      "sha256": "290ef47bf8de1fa90a982370a2171d01b92d39c463a06f14c6ab1a641493337c",
+      "size": 171397
+    },
+    {
+      "path": "/assets/firebacks/6015-high-output-deluxe-ledgestone.png",
+      "sha256": "4744dd769287fa0aea94a3dda96eab3baa8953b25e9fa9ffc54a7b9635c73f71",
+      "size": 197749
+    },
+    {
+      "path": "/assets/firebacks/616-deluxe-ember-glo-black-glass.png",
+      "sha256": "f9c380acb42ed742b19e70471eb40e543f03737d05810fe06640a9d6203436bc",
+      "size": 252681
+    },
+    {
+      "path": "/assets/firebacks/616-deluxe-ember-glo-black-painted.png",
+      "sha256": "8bbc29ec69b4de1ee04ae874f57e809f0efa685569282ef5d23bc2f8738891bf",
+      "size": 264076
+    },
+    {
+      "path": "/assets/firebacks/616-deluxe-ember-glo-common-brick.png",
+      "sha256": "9cd825057e32a5a744e81ecd746d3e417f4c04ee04ff837fa7c1569483f2b129",
+      "size": 292685
+    },
+    {
+      "path": "/assets/firebacks/616-deluxe-ember-glo-face-metropolitan.png",
+      "sha256": "969c7e0ffde07c1be7327681065bf501f6d24ee455935a8db15c07fc24b3da8d",
+      "size": 105001
+    },
+    {
+      "path": "/assets/firebacks/616-deluxe-ember-glo-handmade-brick.png",
+      "sha256": "07a94b385b4619adc54636b65e8461326e640e58e3bd0f9bd3a0a85a48c16b65",
+      "size": 286556
+    },
+    {
+      "path": "/assets/firebacks/616-deluxe-ember-glo-herringbone-brick.png",
+      "sha256": "75ab3dc2f0a89413760cefeda4674154e341e1ba3e46f51abeeea5fb140c4a4e",
+      "size": 297638
+    },
+    {
+      "path": "/assets/firebacks/616-deluxe-ember-glo-ledgestone.png",
+      "sha256": "3ca2393b276d783e1d0047765aed6f4f8570214cbe7dfc0fbee45f4a96320531",
+      "size": 279463
+    },
+    {
+      "path": "/assets/firebacks/616-mod-fyre-black-glass.png",
+      "sha256": "b7ee3b04a8ae61a726380420be10cbb15f81820c09c7c4efe490d645bd271fd5",
+      "size": 236229
+    },
+    {
+      "path": "/assets/firebacks/616-mod-fyre-black-painted.png",
+      "sha256": "fe46f7bbf8bbba3034019b879e6f1998c6ace0280ac4dd5902cf4c28ddede908",
+      "size": 214742
+    },
+    {
+      "path": "/assets/firebacks/616-mod-fyre-face-metropolitan.png",
+      "sha256": "969c7e0ffde07c1be7327681065bf501f6d24ee455935a8db15c07fc24b3da8d",
+      "size": 105001
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-black-glass.png",
+      "sha256": "009464c909c63fac1a21dd7471693d86b1ffb7354e428a3fc302bf42fcb94117",
+      "size": 430572
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-black-handmade-brick.png",
+      "sha256": "fb061ac9f858d2f897d0ceb23460c5b8b6328634bec1222cd76d1a571a851121",
+      "size": 371785
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-common-brick.png",
+      "sha256": "4f5e4ac3fecfad86c27ee4f1b92ea8367e153d7fecdd47feb54761c2211f424b",
+      "size": 492418
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-handmade-brick.png",
+      "sha256": "ee2b743227f98d0181e1a2c27b2ffeffb82f49869b7d8f764bf4e8a18f25eb74",
+      "size": 484417
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-herringbone-brick.png",
+      "sha256": "29bc19fd4c94240bb5b0ed6444ecf2362d26434e250fbfa724cbb469bc4ad97f",
+      "size": 480502
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-ledgestone.png",
+      "sha256": "3afdf1965625f57bb7131d90bacc58d46cc1300d9a1d8bd9851caf37d1152c17",
+      "size": 457563
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-old-world-stucco.png",
+      "sha256": "c2ca8754f2cb3541b5bb7bef1ae32825415778cd1fe85e563efa5f453fa45476",
+      "size": 451615
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-clean-face-tan-stacked-brick.png",
+      "sha256": "d4837ff843021ac424ea0a33cd432046fe718887e00b808246310cd78a27f74f",
+      "size": 456064
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-black-glass.png",
+      "sha256": "7c24f0d4d25245c72f297fbe610a9e00b5eaef5b3629ee514a36db6360781eef",
+      "size": 373182
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-black-handmade-brick.png",
+      "sha256": "60436c82ce4e882d51b7c23e9cc6a133d56427a4ef8f97664eb09bf24582a3c5",
+      "size": 315866
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-common-brick.png",
+      "sha256": "3209b998a9c9be41102ebc5df98b02da329fbd39420e3b4af9b17da2d54f64b3",
+      "size": 435850
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-handmade-brick.png",
+      "sha256": "a9fd6893bc6129f991ca2a4edddfaeb2604c294c7c9c447a5d75e76ccbdd0b9f",
+      "size": 425258
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-herringbone-brick.png",
+      "sha256": "7aeb4c9eabbba0810f5e9887a4b6fa654a482af1b09dab6cff36d254712c55e9",
+      "size": 422293
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-ledgestone.png",
+      "sha256": "a0c687dc311c783f0cfbf9fc2fb7c39bd1d9f430893c837e569da90b36b4d510",
+      "size": 401921
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-old-world-stucco.png",
+      "sha256": "d7fec6c17f13b528e386da32922d5dd2ec949ead468fb061f2fbe800494c3353",
+      "size": 388014
+    },
+    {
+      "path": "/assets/firebacks/864-trv-31k-deluxe-tan-stacked-brick.png",
+      "sha256": "d4837ff843021ac424ea0a33cd432046fe718887e00b808246310cd78a27f74f",
+      "size": 456064
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-black-glass.png",
+      "sha256": "0b8261769f4dd27774f54df23cd0cf65149580cdfda16515ce36c2cd1fd8c417",
+      "size": 412297
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-black-handmade-brick.png",
+      "sha256": "1e26ad8ea824635895546fe89f6fdbb8ad6563fcfdff9f2dab1e714e4cdce187",
+      "size": 372100
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-common-brick.png",
+      "sha256": "d8111f044103e7e65be30b6335cca92822fd54a4f3471ef74824cdb020871a2a",
+      "size": 485200
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-handmade-brick.png",
+      "sha256": "581a0577a4ae83049e5938b73a35298f8d2f26d5844d074be9fdcae678b762de",
+      "size": 480155
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-herringbone-brick.png",
+      "sha256": "a34f9a9722f2c3049414dca3b14cb02ccb7973b390889ae174d39d01e1461ffa",
+      "size": 480499
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-ledgestone.png",
+      "sha256": "e9b4661810138563bce989e88d5c82639831f45a996eede72c67f8924ab0c193",
+      "size": 482369
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-old-world-stucco.png",
+      "sha256": "84bdc9c91d682cdfcd83661df894d2dfac01958fea331d7b5af985da454ecdbc",
+      "size": 439265
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-clean-face-tan-stacked-brick.png",
+      "sha256": "5b60d5160b784e608b83ea7a166423f4547f7dbfc804449f51c99c6f5f3cec47",
+      "size": 415887
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-black-glass.png",
+      "sha256": "cdc1dee9caccba3cb6df852268738842e2e7c6e19b58565f2c1c4b354363242b",
+      "size": 379045
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-black-handmade-brick.png",
+      "sha256": "671070dc1b10d3ba5b269cc38c876c4d45164556c2c174f83e71b21835a24426",
+      "size": 356905
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-common-brick.png",
+      "sha256": "1099a89765d95ad394371a2ffe2938eccb02951db1a69a5c147298b555b72a84",
+      "size": 454995
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-handmade-brick.png",
+      "sha256": "3db0207f1f339aee5b241f842fec69d287889526453c805ab369cf4b8fd7c6da",
+      "size": 451257
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-herringbone-brick.png",
+      "sha256": "a9352d41f1e873d3af8ec29b60f75ae60a8b09d4453e6758f3037599b7a9fe88",
+      "size": 453208
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-ledgestone.png",
+      "sha256": "9d93fccf8bbdf735d1d8896d124a555e368a205e154622abd81706afca9ea762",
+      "size": 453441
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-old-world-stucco.png",
+      "sha256": "4b6e5b2d28cd82c82a6a927a37ac48201a3f659d0cb667afc63964efe03327a9",
+      "size": 410326
+    },
+    {
+      "path": "/assets/firebacks/864-tv-40k-deluxe-tan-stacked-brick.png",
+      "sha256": "5b60d5160b784e608b83ea7a166423f4547f7dbfc804449f51c99c6f5f3cec47",
+      "size": 415887
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-deluxe-black-glass.png",
+      "sha256": "c27fc15f16e1cb671873fa1e0d7b96c75a25bb64dd834700fbeadc3021dddb1a",
+      "size": 158905
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-deluxe-common-brick.png",
+      "sha256": "b855c8393028c792dbc6fe022c194f6fa1f738a24819848243bda6dbef678e9d",
+      "size": 169880
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-gsb-black-glass.png",
+      "sha256": "36050e74695536ab54a8c1382f556800fe0642e0f794b70de9c0a9214041b12b",
+      "size": 159851
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-gsb-common-brick.png",
+      "sha256": "b855c8393028c792dbc6fe022c194f6fa1f738a24819848243bda6dbef678e9d",
+      "size": 169880
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-mv-black-glass.png",
+      "sha256": "36050e74695536ab54a8c1382f556800fe0642e0f794b70de9c0a9214041b12b",
+      "size": 159851
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-mv-common-brick.png",
+      "sha256": "b855c8393028c792dbc6fe022c194f6fa1f738a24819848243bda6dbef678e9d",
+      "size": 169880
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-see-thru-black-glass.png",
+      "sha256": "f6f66e190743db3931349fb80dbcebcc72ffc848a9475a43d9e6c3a7f79926a5",
+      "size": 141700
+    },
+    {
+      "path": "/assets/firebacks/probuilder-36-clean-face-see-thru-common-brick.png",
+      "sha256": "b02b310b5910d3940016784d7720b100745cffd5d596721b21bf11d74887d2bb",
+      "size": 148883
+    },
+    {
+      "path": "/assets/firebacks/probuilder-42-clean-face-deluxe-black-glass.png",
+      "sha256": "14bbcad32bca8c6947ed5b13d2621eb98ea52cf807ed104558937f2c06a9d239",
+      "size": 260390
+    },
+    {
+      "path": "/assets/firebacks/probuilder-42-clean-face-deluxe-common-brick.png",
+      "sha256": "28d5130b0dfd6992a6a0fd69d7422ec00525fcc741e217082b53eee72a2562e7",
+      "size": 276840
+    },
+    {
+      "path": "/assets/firebacks/probuilder-42-linear-deluxe-black-glass.png",
+      "sha256": "580daf441a45dc9f567915b2149857d9fcf872f762d54c529ce79aae7755e0e3",
+      "size": 120865
+    },
+    {
+      "path": "/assets/firebacks/probuilder-42-linear-deluxe-ledgestone.png",
+      "sha256": "98d809a98130bde65cc907036761af137f61cd9705e2c6be53b7735b25f4feae",
+      "size": 138841
+    },
+    {
+      "path": "/assets/firebacks/probuilder-54-linear-deluxe-black-glass.png",
+      "sha256": "fa88f852886857caa35215d006d86c9f1d829f1eb02ea8a2140568035a5b43c0",
+      "size": 145632
+    },
+    {
+      "path": "/assets/firebacks/probuilder-54-linear-deluxe-ledgestone.png",
+      "sha256": "b767091a359fa11474c85290b583dc0b7137442615d4dbdafb36920edfbfd41f",
+      "size": 170029
+    },
+    {
+      "path": "/assets/firebacks/probuilder-72-linear-deluxe-black-glass.png",
+      "sha256": "bd2aca462b9f4b9e171880000a06ee6ef0882b13de1c7840b83be4b11a2fcce6",
+      "size": 142856
+    },
+    {
+      "path": "/assets/firebacks/probuilder-72-linear-deluxe-ledgestone.png",
+      "sha256": "3aab384c1d9d7bd3d067aafe7ffba2f7f8ac3ff362b4c72b0d24e0b8ec8882bc",
+      "size": 162862
+    },
+    {
+      "path": "/assets/firebacks/probuilder-72-linear-gsb-black-glass.png",
+      "sha256": "3b3bde6e48631775f354d7e3b97b68d4754ac3cf2163c88e7d6e527f118784bf",
+      "size": 136053
+    },
+    {
+      "path": "/assets/firebacks/probuilder-72-linear-gsb-ledgestone.png",
+      "sha256": "308d0e2b27c3dd3bcad091d73ae0a9f2ecf81128d56e614d7722b8249ffdd736",
+      "size": 156128
     },
     {
       "path": "/assets/firebox-media-mask-rect.png",

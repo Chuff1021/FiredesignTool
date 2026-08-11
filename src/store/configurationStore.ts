@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import type {
   FaceOptionId,
+  FirebackOptionId,
   FireplaceId,
   MantelFinishId,
   MantelProductId,
@@ -34,6 +35,7 @@ type ConfigurationState = FeatureWallConfiguration & {
   setMantelHeightAboveBase: (value: number) => void;
   setFireplaceId: (value: FireplaceId) => void;
   setFaceOptionId: (value: FaceOptionId) => void;
+  setFirebackOptionId: (value: FirebackOptionId) => void;
   setStoneId: (value: StoneId) => void;
   setMantelProductId: (value: MantelProductId) => void;
   setMantelWidth: (value: MantelWidth) => void;
@@ -46,7 +48,7 @@ type ConfigurationState = FeatureWallConfiguration & {
 
 function pickConfiguration(state: ConfigurationState): FeatureWallConfiguration {
   return {
-    schemaVersion: 5,
+    schemaVersion: 6,
     catalogVersion: state.catalogVersion,
     wallWidth: state.wallWidth,
     wallHeight: state.wallHeight,
@@ -55,6 +57,7 @@ function pickConfiguration(state: ConfigurationState): FeatureWallConfiguration 
     mantelHeightAboveBase: state.mantelHeightAboveBase,
     fireplaceId: state.fireplaceId,
     faceOptionId: state.faceOptionId,
+    firebackOptionId: state.firebackOptionId,
     stoneId: state.stoneId,
     mantelProductId: state.mantelProductId,
     mantelWidth: state.mantelWidth,
@@ -98,6 +101,7 @@ export const useConfigurationStore = create<ConfigurationState>((set) => ({
     set((state) => saveNext(state, { mantelHeightAboveBase: value })),
   setFireplaceId: (value) => set((state) => saveNext(state, { fireplaceId: value })),
   setFaceOptionId: (value) => set((state) => saveNext(state, { faceOptionId: value })),
+  setFirebackOptionId: (value) => set((state) => saveNext(state, { firebackOptionId: value })),
   setStoneId: (value) => set((state) => saveNext(state, { stoneId: value })),
   setMantelProductId: (value) =>
     set((state) => {

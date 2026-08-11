@@ -10,7 +10,7 @@ import {
 
 describe("versioned catalog repository", () => {
   it("indexes the complete approved release behind stable repository methods", () => {
-    expect(catalogRepository.release.version).toBe("2026.08.11-1");
+    expect(catalogRepository.release.version).toBe("2026.08.11-2");
     expect(catalogRepository.listBrands().map((brand) => brand.id)).toEqual([
       "fireplace-xtrordinair",
       "centurion-stone",
@@ -20,9 +20,12 @@ describe("versioned catalog repository", () => {
     expect(catalogRepository.getFace("864-trv-31k-deluxe", "classic-arch").sku).toBe(
       "99300497",
     );
+    expect(catalogRepository.getFireback("864-trv-31k-deluxe", "ledgestone").sku).toBe(
+      "96100841",
+    );
     expect(catalogRepository.getMantelSize("linear", 84).modelCode).toBe("NCL-84");
     expect(catalogRepository.getStone("kentucky-ledge").productCode).toBe("150-260-15");
-    expect(APPROVED_ASSET_PATHS).toHaveLength(131);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(262);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
   });
 

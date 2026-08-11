@@ -2,6 +2,7 @@
 
 import {
   type FaceOptionId,
+  type FirebackOptionId,
   type FireplaceId,
   type MantelFinishId,
   type MantelProductId,
@@ -51,6 +52,7 @@ export function ControlPanel({
   const mantelHeightAboveBase = useConfigurationStore((state) => state.mantelHeightAboveBase);
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const faceOptionId = useConfigurationStore((state) => state.faceOptionId);
+  const firebackOptionId = useConfigurationStore((state) => state.firebackOptionId);
   const stoneId = useConfigurationStore((state) => state.stoneId);
   const mantelProductId = useConfigurationStore((state) => state.mantelProductId);
   const mantelWidth = useConfigurationStore((state) => state.mantelWidth);
@@ -67,6 +69,7 @@ export function ControlPanel({
   );
   const setFireplaceId = useConfigurationStore((state) => state.setFireplaceId);
   const setFaceOptionId = useConfigurationStore((state) => state.setFaceOptionId);
+  const setFirebackOptionId = useConfigurationStore((state) => state.setFirebackOptionId);
   const setStoneId = useConfigurationStore((state) => state.setStoneId);
   const setMantelProductId = useConfigurationStore((state) => state.setMantelProductId);
   const setMantelWidth = useConfigurationStore((state) => state.setMantelWidth);
@@ -78,6 +81,9 @@ export function ControlPanel({
 
   const fireplace = catalogRepository.getFireplace(fireplaceId);
   const face = catalogRepository.getFace(fireplaceId, faceOptionId);
+  const fireback = catalogRepository.getFireback(fireplaceId, firebackOptionId);
+  const liveFireback =
+    fireplace.burnMedia?.compatibleFirebackIds.includes(fireback.id) ?? false;
   const stone = catalogRepository.getStone(stoneId);
   const mantelProduct = catalogRepository.getMantel(mantelProductId);
   const mantelSize = catalogRepository.getMantelSize(mantelProductId, mantelWidth);
@@ -181,8 +187,28 @@ export function ControlPanel({
             </select>
             <small>
               {fireplace.faceOptions.length === 1
-                ? "This model uses its clean-face configuration."
+                ? "This model has one approved face or trim configuration."
                 : `${face.shape === "arched" ? "Arched" : "Square"} profile · SKU ${face.sku}`}
+            </small>
+          </label>
+          <label className="select-control">
+            <span>Fireback</span>
+            <select
+              aria-label="Fireback"
+              disabled={fireplace.firebackOptions.length === 1}
+              onChange={(event) => setFirebackOptionId(event.target.value as FirebackOptionId)}
+              value={firebackOptionId}
+            >
+              {fireplace.firebackOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+            <small>
+              {fireplace.firebackOptions.length === 1
+                ? "No alternate firebacks are offered for this exact unit."
+                : `${liveFireback ? "Official live burn footage" : "Official static configuration"} · SKU ${fireback.sku}`}
             </small>
           </label>
         </section>

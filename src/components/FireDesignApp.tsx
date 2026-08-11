@@ -59,6 +59,7 @@ type AssetPackState = {
 export function FireDesignApp() {
   const initialize = useConfigurationStore((state) => state.initialize);
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
+  const firebackOptionId = useConfigurationStore((state) => state.firebackOptionId);
   const [readiness, setReadiness] = useState<ReadinessResult | null>(null);
   const [startupError, setStartupError] = useState<string | null>(null);
   const [progress, setProgress] = useState({
@@ -303,6 +304,8 @@ export function FireDesignApp() {
     );
   }
 
+  const diagnosticsFireplace = catalogRepository.getFireplace(fireplaceId);
+  const diagnosticsFireback = catalogRepository.getFireback(fireplaceId, firebackOptionId);
   const diagnostics: DiagnosticsData = {
     cacheReady,
     completeCatalogProgress,
@@ -314,6 +317,11 @@ export function FireDesignApp() {
     mediaStatus,
     requiredAssets: assetPack.total,
     selectedModel: catalogRepository.getFireplace(fireplaceId).shortLabel,
+    selectedFireback: `${diagnosticsFireback.name} · ${
+      diagnosticsFireplace.burnMedia?.compatibleFirebackIds.includes(diagnosticsFireback.id)
+        ? "live"
+        : "static"
+    }`,
     storage: storageHealth,
     verifiedAssets: assetPack.complete,
   };
