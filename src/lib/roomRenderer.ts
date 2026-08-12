@@ -17,6 +17,10 @@ import { projectCanvasLayer } from "@/lib/roomPerspective";
 type Point = { x: number; y: number };
 
 const imageCache = new Map<string, Promise<HTMLImageElement>>();
+const texturePaletteCache = new WeakMap<
+  HTMLImageElement,
+  { red: number; green: number; blue: number; variation: number }
+>();
 const MIN_DESIGN_PIXELS_PER_INCH = 6;
 const MAX_DESIGN_CANVAS_EDGE = 4096;
 const MAX_DESIGN_CANVAS_PIXELS = 4096 * 2160;
@@ -68,29 +72,6 @@ function cachedImage(source: string): Promise<HTMLImageElement> {
   const loading = loadImage(source);
   imageCache.set(source, loading);
   return loading;
-}
-
-function drawTexturedRect(
-  context: CanvasRenderingContext2D,
-  image: HTMLImageElement,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  scale = 1,
-) {
-  context.save();
-  context.beginPath();
-  context.rect(x, y, width, height);
-  context.clip();
-  const tileWidth = Math.max(140, image.naturalWidth * scale);
-  const tileHeight = Math.max(90, image.naturalHeight * scale);
-  for (let top = y - tileHeight; top < y + height + tileHeight; top += tileHeight) {
-    for (let left = x - tileWidth; left < x + width + tileWidth; left += tileWidth) {
-      context.drawImage(image, left, top, tileWidth + 1, tileHeight + 1);
-    }
-  }
-  context.restore();
 }
 
 const builtInFinishes: Record<
@@ -431,20 +412,26 @@ async function createDesignLayer(
     context.shadowOffsetY = 1.1 * pixelsPerInch;
     context.fillStyle = mantelFinish.colorHex;
     context.fillRect(mantelLeft, mantelTop, mantelWidth, mantelHeight);
-    drawTexturedRect(
-      context,
-      mantelImage,
-      mantelLeft,
-      mantelTop,
-      mantelWidth,
-      mantelHeight,
-      0.7,
-    );
+    // Pearl's packaged front reference is already a straight-on product
+    // elevation. Mapping that single approved image across the complete shelf
+    // keeps the grain continuous and avoids the repeated streaks caused by
+    // tiling a narrow crop.
+    context.globalAlpha = 0.82;
+    context.drawImage(mantelImage, mantelLeft, mantelTop, mantelWidth, mantelHeight);
+    context.globalAlpha = 1;
     const shade = context.createLinearGradient(0, mantelTop, 0, mantelTop + mantelHeight);
-    shade.addColorStop(0, "rgba(255,255,255,.16)");
-    shade.addColorStop(1, "rgba(0,0,0,.14)");
+    shade.addColorStop(0, "rgba(255,255,255,.2)");
+    shade.addColorStop(0.22, "rgba(255,255,255,.045)");
+    shade.addColorStop(0.82, "rgba(0,0,0,.04)");
+    shade.addColorStop(1, "rgba(0,0,0,.18)");
     context.fillStyle = shade;
     context.fillRect(mantelLeft, mantelTop, mantelWidth, mantelHeight);
+    context.strokeStyle = "rgba(255,255,255,.18)";
+    context.lineWidth = Math.max(1, pixelsPerInch * 0.08);
+    context.beginPath();
+    context.moveTo(mantelLeft, mantelTop);
+    context.lineTo(mantelLeft + mantelWidth, mantelTop);
+    context.stroke();
     context.restore();
   }
 
@@ -543,40 +530,101 @@ function drawHearthSurface(
   image: HTMLImageElement,
   width: number,
   height: number,
-  pieceIndex: number,
+  pixelsPerInch: number,
 ) {
-  // The official color reference is a 274 × 182 landscape swatch. The
-  // packaged master is enlarged for filtering, so restore that source aspect
-  // and tile it without stretching its slate markings into long streaks.
-  const officialSurfaceAspect = 274 / 182;
-  const tileWidth = width * 1.24;
-  const tileHeight = tileWidth / officialSurfaceAspect;
-  const horizontalOffset = -width * (0.08 + (pieceIndex % 3) * 0.055);
-  let row = 0;
-  for (
-    let top = -tileHeight * (0.16 + (pieceIndex % 4) * 0.11);
-    top < height;
-    top += tileHeight - 1
-  ) {
-    context.save();
-    if ((pieceIndex + row) % 2 === 0) {
-      context.translate(horizontalOffset + tileWidth, top);
-      context.scale(-1, 1);
-      context.drawImage(image, 0, 0, tileWidth + 1, tileHeight + 1);
-    } else {
-      context.drawImage(image, horizontalOffset, top, tileWidth + 1, tileHeight + 1);
+  let palette = texturePaletteCache.get(image);
+  if (!palette) {
+    const sample = document.createElement("canvas");
+    sample.width = 40;
+    sample.height = 40;
+    const sampleContext = sample.getContext("2d", { willReadFrequently: true });
+    if (!sampleContext) throw new Error("The hearth material could not be sampled.");
+    sampleContext.drawImage(image, 0, 0, sample.width, sample.height);
+    const pixels = sampleContext.getImageData(0, 0, sample.width, sample.height).data;
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    let luminance = 0;
+    let luminanceSquared = 0;
+    const count = pixels.length / 4;
+    for (let offset = 0; offset < pixels.length; offset += 4) {
+      red += pixels[offset]!;
+      green += pixels[offset + 1]!;
+      blue += pixels[offset + 2]!;
+      const value =
+        pixels[offset]! * 0.2126 + pixels[offset + 1]! * 0.7152 + pixels[offset + 2]! * 0.0722;
+      luminance += value;
+      luminanceSquared += value * value;
     }
-    context.restore();
+    const averageLuminance = luminance / count;
+    palette = {
+      red: red / count,
+      green: green / count,
+      blue: blue / count,
+      variation: Math.max(
+        7,
+        Math.min(16, Math.sqrt(luminanceSquared / count - averageLuminance ** 2) * 0.52),
+      ),
+    };
+    texturePaletteCache.set(image, palette);
+  }
+
+  const surface = context.createImageData(width, height);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = (y * width + x) * 4;
+      const grain = Math.sin((x + 1) * 12.9898 + (y + 1) * 78.233) * 43758.5453;
+      const normalizedGrain = (grain - Math.floor(grain) - 0.5) * 2;
+      const slate =
+        Math.sin(x * 0.034 + y * 0.011) * 0.32 +
+        Math.sin(x * 0.009 - y * 0.027) * 0.2 +
+        normalizedGrain * 0.48;
+      const variation = slate * palette.variation;
+      surface.data[index] = Math.max(0, Math.min(255, palette.red + variation));
+      surface.data[index + 1] = Math.max(0, Math.min(255, palette.green + variation * 0.94));
+      surface.data[index + 2] = Math.max(0, Math.min(255, palette.blue + variation * 0.9));
+      surface.data[index + 3] = 255;
+    }
+  }
+  context.putImageData(surface, 0, 0);
+
+  // Retain a restrained amount of the official swatch's real surface
+  // character without exposing its low-resolution crop or obvious repeats.
+  const sourceAspect = image.naturalWidth / image.naturalHeight;
+  const tileWidth = Math.max(8, 28 * pixelsPerInch);
+  const tileHeight = tileWidth / sourceAspect;
+  context.save();
+  context.globalAlpha = 0.1;
+  context.filter = `blur(${Math.max(2, pixelsPerInch * 0.42)}px)`;
+  let row = 0;
+  for (let top = -tileHeight * 0.18; top < height; top += tileHeight - 1) {
+    const rowOffset = row % 2 === 0 ? -tileWidth * 0.12 : -tileWidth * 0.58;
+    let column = 0;
+    for (let left = rowOffset; left < width; left += tileWidth - 1) {
+      context.save();
+      context.beginPath();
+      context.rect(Math.max(0, left), Math.max(0, top), tileWidth + 1, tileHeight + 1);
+      context.clip();
+      if ((row + column) % 2 === 1) {
+        context.translate(left + tileWidth, top);
+        context.scale(-1, 1);
+        context.drawImage(image, 0, 0, tileWidth + 1, tileHeight + 1);
+      } else {
+        context.drawImage(image, left, top, tileWidth + 1, tileHeight + 1);
+      }
+      context.restore();
+      column += 1;
+    }
     row += 1;
   }
+  context.restore();
 }
 
-function hearthCapCanvas(
+function hearthSurfaceCanvas(
   image: HTMLImageElement,
   width: number,
   height: number,
   pixelsPerInch: number,
-  pieceIndex: number,
 ): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(2, Math.round(width * pixelsPerInch));
@@ -585,7 +633,7 @@ function hearthCapCanvas(
   if (!context) throw new Error("The hearth renderer could not start.");
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
-  drawHearthSurface(context, image, canvas.width, canvas.height, pieceIndex);
+  drawHearthSurface(context, image, canvas.width, canvas.height, pixelsPerInch);
   const shade = context.createLinearGradient(0, 0, 0, canvas.height);
   shade.addColorStop(0, "rgba(255,255,255,.14)");
   shade.addColorStop(0.55, "rgba(255,255,255,.015)");
@@ -698,7 +746,7 @@ export function projectedHearthGeometry(
     (pointDistance(quad[0]!, quad[3]!) + pointDistance(quad[1]!, quad[2]!)) / 2;
   const perspectiveScale = Math.max(
     1,
-    Math.min(1.16, 1 + (resolvedDepth / Math.max(1, wallHeightPixels)) * 0.58),
+    Math.min(1.06, 1 + (resolvedDepth / Math.max(1, wallHeightPixels)) * 0.24),
   );
   const frontHalfWidth = (rearWidth * perspectiveScale) / 2;
   const frontLeftTop = {
@@ -810,35 +858,33 @@ async function drawProjectedHearth(
     context.restore();
   }
 
+  const cap = hearthSurfaceCanvas(
+    hearthImage,
+    configuration.stoneWidth,
+    depthInches,
+    textureScale,
+  );
+  context.save();
+  context.shadowColor = "rgba(0, 0, 0, .24)";
+  context.shadowBlur = Math.max(2, destinationPixelsPerInch * 0.55);
+  context.shadowOffsetY = Math.max(1, destinationPixelsPerInch * 0.16);
+  projectCanvasLayer(context, cap, [rearLeftTop, rearRightTop, frontRightTop, frontLeftTop]);
+  context.restore();
+
+  const nose = hearthSurfaceCanvas(
+    hearthImage,
+    configuration.stoneWidth,
+    stone.hearthstone.dimensions.thickness,
+    textureScale,
+  );
+  projectCanvasLayer(context, nose, [
+    frontLeftTop,
+    frontRightTop,
+    frontRightCapBottom,
+    frontLeftCapBottom,
+  ]);
+
   const segments = getHearthStoneSegments(configuration.stoneWidth);
-  segments.forEach((segment, index) => {
-    const leftProgress =
-      (segment.centerX - segment.width / 2 + configuration.stoneWidth / 2) /
-      configuration.stoneWidth;
-    const rightProgress =
-      (segment.centerX + segment.width / 2 + configuration.stoneWidth / 2) /
-      configuration.stoneWidth;
-    const cap = hearthCapCanvas(hearthImage, segment.width, depthInches, textureScale, index);
-    projectCanvasLayer(context, cap, [
-      interpolatePoint(rearLeftTop, rearRightTop, leftProgress),
-      interpolatePoint(rearLeftTop, rearRightTop, rightProgress),
-      interpolatePoint(frontLeftTop, frontRightTop, rightProgress),
-      interpolatePoint(frontLeftTop, frontRightTop, leftProgress),
-    ]);
-    const nose = hearthCapCanvas(
-      hearthImage,
-      segment.width,
-      stone.hearthstone.dimensions.thickness,
-      textureScale,
-      index + 2,
-    );
-    projectCanvasLayer(context, nose, [
-      interpolatePoint(frontLeftTop, frontRightTop, leftProgress),
-      interpolatePoint(frontLeftTop, frontRightTop, rightProgress),
-      interpolatePoint(frontLeftCapBottom, frontRightCapBottom, rightProgress),
-      interpolatePoint(frontLeftCapBottom, frontRightCapBottom, leftProgress),
-    ]);
-  });
 
   context.save();
   context.fillStyle = "rgba(42, 39, 35, .58)";
@@ -860,8 +906,8 @@ async function drawProjectedHearth(
   context.restore();
 
   context.save();
-  context.lineWidth = Math.max(1, destinationPixelsPerInch * 0.11);
-  context.strokeStyle = "rgba(35, 31, 28, .52)";
+  context.lineWidth = Math.max(0.75, destinationPixelsPerInch * 0.055);
+  context.strokeStyle = "rgba(35, 31, 28, .28)";
   segments.slice(0, -1).forEach((segment) => {
     const progress =
       (segment.centerX + segment.width / 2 + configuration.stoneWidth / 2) /
@@ -872,6 +918,9 @@ async function drawProjectedHearth(
     context.beginPath();
     context.moveTo(rear.x, rear.y);
     context.lineTo(front.x, front.y);
+    context.stroke();
+    context.beginPath();
+    context.moveTo(front.x, front.y);
     context.lineTo(bottom.x, bottom.y);
     context.stroke();
   });

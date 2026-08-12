@@ -321,6 +321,8 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
     await canvas.click({ position: { x: box.width * x, y: box.height * y } });
   };
   await click(0.12, 0.08);
+  await expect(page.getByTestId("wall-corner-marker-1")).toContainText("1");
+  await expect(page.getByTestId("wall-corner-prompt")).toContainText(/Next · TOP RIGHT/i);
   const alignedBounds = await page.evaluate(() => {
     const bounds = (selector: string) => {
       const rectangle = document.querySelector(selector)!.getBoundingClientRect();
@@ -344,7 +346,10 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
     expect(Math.abs(alignedBox.height - alignedBounds.canvas.height)).toBeLessThanOrEqual(0.01);
   }
   await click(0.88, 0.08);
+  await expect(page.getByTestId("wall-corner-marker-2")).toContainText("2");
+  await expect(page.getByTestId("wall-corner-prompt")).toContainText(/Next · BOTTOM RIGHT/i);
   await click(0.88, 0.92);
+  await expect(page.getByTestId("wall-corner-marker-3")).toContainText("3");
   await click(0.12, 0.92);
   await page.getByLabel("Known measurement in inches").fill("144");
   await click(0.12, 0.75);

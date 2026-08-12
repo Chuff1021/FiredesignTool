@@ -670,7 +670,11 @@ for (const hearthstone of [
 ]) {
   const color = await sharp(path.join(source, hearthstone.sourceName))
     .rotate()
-    .resize(1800, 2000, { fit: "fill", kernel: sharp.kernel.lanczos3 })
+    // These manufacturer files are color/texture swatches, not photographs
+    // of an entire 18 × 20 hearthstone. Preserve the approved source aspect;
+    // stretching the swatch to the physical piece ratio creates long, blurry
+    // streaks once the hearth is projected into a customer photograph.
+    .resize({ width: 2048, kernel: sharp.kernel.lanczos3 })
     .png()
     .toBuffer();
   await sharp(color)

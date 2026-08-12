@@ -79,5 +79,15 @@ describe("customer room hearth projection", () => {
     expect((geometry.frontLeftTop.y + geometry.frontRightTop.y) / 2).toBeCloseTo(774);
     expect(geometry.depthInches).toBe(20);
     expect(geometry.riserHeight).toBe(10.5);
+    const rearWidth = Math.hypot(
+      geometry.rearRightTop.x - geometry.rearLeftTop.x,
+      geometry.rearRightTop.y - geometry.rearLeftTop.y,
+    );
+    const frontWidth = Math.hypot(
+      geometry.frontRightTop.x - geometry.frontLeftTop.x,
+      geometry.frontRightTop.y - geometry.frontLeftTop.y,
+    );
+    expect(frontWidth / rearWidth).toBeGreaterThanOrEqual(1);
+    expect(frontWidth / rearWidth).toBeLessThanOrEqual(1.06);
   });
 });
