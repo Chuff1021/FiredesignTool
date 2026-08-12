@@ -317,6 +317,57 @@ test("repairs a stale release asset cache before opening the showroom", async ({
     .toBe(141_324);
 });
 
+test("repairs a stale cached manifest before opening a saved fireplace", async ({
+  browserName,
+  page,
+  request,
+}, testInfo) => {
+  test.skip(
+    browserName !== "chromium" || testInfo.project.name !== "desktop-chromium",
+    "Legacy-manifest recovery is verified once in desktop Chromium.",
+  );
+
+  const manifestResponse = await request.get("/assets/manifest.json");
+  const currentManifest = (await manifestResponse.json()) as {
+    files: Array<{ path: string; sha256: string; size: number }>;
+    generatedAt: string;
+    version: string;
+  };
+  const staleManifest = {
+    ...currentManifest,
+    files: currentManifest.files.filter(
+      (file) => file.path !== "/assets/firebacks/564-trv-25k-clean-face-common-brick.png",
+    ),
+  };
+
+  await page.evaluate(async () => {
+    localStorage.setItem(
+      "firedesign-configuration",
+      JSON.stringify({
+        state: { fireplaceId: "564-trv-25k-clean-face" },
+        version: 5,
+      }),
+    );
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+  });
+  let servedStaleManifest = false;
+  await page.route("**/assets/manifest.json", async (route) => {
+    if (servedStaleManifest) {
+      await route.continue();
+      return;
+    }
+    servedStaleManifest = true;
+    await route.fulfill({ json: staleManifest, status: 200 });
+  });
+
+  await page.reload();
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("The presentation could not start safely.")).toHaveCount(0);
+});
+
 test("shows a polished startup recovery state when an approved asset is unavailable", async ({
   page,
 }, testInfo) => {

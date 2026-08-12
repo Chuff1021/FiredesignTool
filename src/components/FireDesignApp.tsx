@@ -60,7 +60,8 @@ function isStaleAssetCacheError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   return (
     error.message.includes("unexpected size") ||
-    error.message.includes("failed its integrity check")
+    error.message.includes("failed its integrity check") ||
+    error.message.includes("missing from the manifest")
   );
 }
 
