@@ -88,6 +88,36 @@ describe("customer room hearth projection", () => {
       geometry.frontRightTop.y - geometry.frontLeftTop.y,
     );
     expect(frontWidth / rearWidth).toBeGreaterThanOrEqual(1);
-    expect(frontWidth / rearWidth).toBeLessThanOrEqual(1.06);
+    expect(frontWidth / rearWidth).toBeLessThanOrEqual(1.015);
+  });
+
+  it("keeps a misplaced depth point aligned to the calibrated floor axis", () => {
+    const project = createRoomProject({
+      dataUrl: "data:image/jpeg;base64,AA==",
+      fileName: "room.jpg",
+      width: 1600,
+      height: 900,
+    });
+    project.hearthFrontCenter = { x: 0.78, y: 0.86 };
+    const geometry = projectedHearthGeometry(
+      [
+        { x: 160, y: 90 },
+        { x: 1440, y: 90 },
+        { x: 1360, y: 810 },
+        { x: 240, y: 810 },
+      ],
+      project,
+      {
+        ...DEFAULT_CONFIGURATION,
+        wallWidth: 144,
+        wallHeight: 108,
+        stoneWidth: 96,
+        fireplaceElevation: 12,
+        hearthEnabled: true,
+      },
+    );
+    const rearCenterX = (geometry.rearLeftTop.x + geometry.rearRightTop.x) / 2;
+    const frontCenterX = (geometry.frontLeftTop.x + geometry.frontRightTop.x) / 2;
+    expect(frontCenterX).toBeCloseTo(rearCenterX);
   });
 });

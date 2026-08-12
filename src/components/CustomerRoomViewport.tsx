@@ -1,6 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+  type WheelEvent as ReactWheelEvent,
+} from "react";
 import { useShallow } from "zustand/react/shallow";
 import {
   calibrationLabel,
@@ -67,6 +75,13 @@ const fitDimensionLabels: Record<InsertFitDimension, string> = {
   depth: "depth",
 };
 
+const ROOM_ZOOM_LEVELS = [1, 1.25, 1.5, 2, 2.5, 3] as const;
+
+function nextRoomZoom(current: number, direction: -1 | 1): number {
+  if (direction > 0) return ROOM_ZOOM_LEVELS.find((level) => level > current) ?? 3;
+  return [...ROOM_ZOOM_LEVELS].reverse().find((level) => level < current) ?? 1;
+}
+
 function fitResultLabel(result: InsertFitResult): string {
   if (result.status === "fits-measured-opening") return "passes measured minimums";
   if (result.status === "needs-measurements") {
@@ -95,6 +110,13 @@ export function CustomerRoomViewport() {
   const backupInputRef = useRef<HTMLInputElement>(null);
   const projectRef = useRef<RoomProject | null>(null);
   const saveSequenceRef = useRef(0);
+  const panGestureRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+  } | null>(null);
   const [project, setProject] = useState<RoomProject | null>(null);
   const [projects, setProjects] = useState<RoomProjectSummary[]>([]);
   const [deleteCandidate, setDeleteCandidate] = useState<string | null>(null);
@@ -105,6 +127,8 @@ export function CustomerRoomViewport() {
   const [saving, setSaving] = useState(false);
   const [libraryBusy, setLibraryBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [viewportZoom, setViewportZoom] = useState(1);
+  const [viewportPan, setViewportPan] = useState({ x: 0, y: 0 });
   const [storageHealth, setStorageHealth] = useState(UNAVAILABLE_STORAGE_HEALTH);
   const [backupRecord, setBackupRecord] = useState<RoomProjectBackupRecord | null>(null);
   const [photoFrameSize, setPhotoFrameSize] = useState<{
@@ -167,6 +191,69 @@ export function CustomerRoomViewport() {
   const sourceWidth = project?.source.width ?? 0;
   const sourceHeight = project?.source.height ?? 0;
 
+  const resetViewport = useCallback(() => {
+    setViewportZoom(1);
+    setViewportPan({ x: 0, y: 0 });
+  }, []);
+
+  const setRoomZoom = useCallback((next: number) => {
+    const zoom = Math.min(3, Math.max(1, next));
+    setViewportZoom(zoom);
+    if (zoom === 1) setViewportPan({ x: 0, y: 0 });
+  }, []);
+
+  const handleViewportWheel = useCallback(
+    (event: ReactWheelEvent<HTMLDivElement>) => {
+      if (!project) return;
+      event.preventDefault();
+      setRoomZoom(nextRoomZoom(viewportZoom, event.deltaY < 0 ? 1 : -1));
+    },
+    [project, setRoomZoom, viewportZoom],
+  );
+
+  const beginViewportPan = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (tool !== "view" || viewportZoom <= 1) return;
+      panGestureRef.current = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        originX: viewportPan.x,
+        originY: viewportPan.y,
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+    },
+    [tool, viewportPan, viewportZoom],
+  );
+
+  const moveViewportPan = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      const gesture = panGestureRef.current;
+      if (!gesture || gesture.pointerId !== event.pointerId || !photoFrameSize) return;
+      const maximumX = (photoFrameSize.width * (viewportZoom - 1)) / 2;
+      const maximumY = (photoFrameSize.height * (viewportZoom - 1)) / 2;
+      setViewportPan({
+        x: Math.max(
+          -maximumX,
+          Math.min(maximumX, gesture.originX + event.clientX - gesture.startX),
+        ),
+        y: Math.max(
+          -maximumY,
+          Math.min(maximumY, gesture.originY + event.clientY - gesture.startY),
+        ),
+      });
+    },
+    [photoFrameSize, viewportZoom],
+  );
+
+  const endViewportPan = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
+    if (panGestureRef.current?.pointerId !== event.pointerId) return;
+    panGestureRef.current = null;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, []);
+
   const refreshProjects = useCallback(async () => {
     const [library, health] = await Promise.all([listRoomProjects(), readStorageHealth()]);
     setProjects(library);
@@ -190,6 +277,7 @@ export function CustomerRoomViewport() {
       projectRef.current = activatedProject;
       setProject(activatedProject);
       setForegroundDraft([]);
+      resetViewport();
       setConfiguration(activatedConfiguration);
       void saveRoomProject(activatedProject).catch(() =>
         setMessage("This project could not be upgraded to the current local format."),
@@ -204,7 +292,7 @@ export function CustomerRoomViewport() {
               : "view",
       );
     },
-    [setConfiguration],
+    [resetViewport, setConfiguration],
   );
 
   useEffect(() => {
@@ -961,11 +1049,16 @@ export function CustomerRoomViewport() {
         />
       </div>
 
-      <div className="room-stage" ref={stageRef}>
+      <div className="room-stage" onWheel={handleViewportWheel} ref={stageRef}>
         <div
           className="room-canvas-frame"
+          data-pannable={tool === "view" && viewportZoom > 1}
           data-testid="room-canvas-frame"
           onClick={handleCanvasClick}
+          onPointerCancel={endViewportPan}
+          onPointerDown={beginViewportPan}
+          onPointerMove={moveViewportPan}
+          onPointerUp={endViewportPan}
           style={{
             height:
               photoFrameSize?.sourceWidth === sourceWidth &&
@@ -977,6 +1070,7 @@ export function CustomerRoomViewport() {
               photoFrameSize.sourceHeight === sourceHeight
                 ? photoFrameSize.width
                 : 0,
+            transform: `translate3d(${viewportPan.x}px, ${viewportPan.y}px, 0) scale(${viewportZoom})`,
           }}
         >
           <canvas
@@ -990,6 +1084,29 @@ export function CustomerRoomViewport() {
             project={project}
             tool={tool}
           />
+        </div>
+        <div className="room-zoom-controls" aria-label="Photo zoom controls" role="group">
+          <button
+            aria-label="Zoom out"
+            disabled={viewportZoom <= 1}
+            onClick={() => setRoomZoom(nextRoomZoom(viewportZoom, -1))}
+            type="button"
+          >
+            −
+          </button>
+          <output aria-live="polite">{Math.round(viewportZoom * 100)}%</output>
+          <button
+            aria-label="Zoom in"
+            disabled={viewportZoom >= 3}
+            onClick={() => setRoomZoom(nextRoomZoom(viewportZoom, 1))}
+            type="button"
+          >
+            +
+          </button>
+          <button className="room-zoom-controls__fit" onClick={resetViewport} type="button">
+            Fit
+          </button>
+          {viewportZoom > 1 && tool === "view" ? <small>Drag photo to pan</small> : null}
         </div>
         {rendering || saving ? (
           <div className="room-rendering">

@@ -354,6 +354,15 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   await page.getByLabel("Known measurement in inches").fill("144");
   await click(0.12, 0.75);
   await click(0.88, 0.75);
+  await expect(page.getByRole("group", { name: "Photo zoom controls" })).toBeVisible();
+  await page.getByRole("button", { name: "Zoom in" }).click();
+  await expect(page.getByRole("group", { name: "Photo zoom controls" })).toContainText("125%");
+  await expect(page.getByTestId("room-canvas-frame")).toHaveCSS(
+    "transform",
+    /matrix\(1\.25, 0, 0, 1\.25/,
+  );
+  await page.getByRole("button", { name: "Fit" }).click();
+  await expect(page.getByRole("group", { name: "Photo zoom controls" })).toContainText("100%");
   await expect(page.getByText("Dimensionally scaled")).toBeVisible();
   await page.getByRole("button", { name: "Mark object" }).click();
   await click(0.16, 0.24);

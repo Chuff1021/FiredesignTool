@@ -215,27 +215,19 @@ function drawStoneField(
   context.beginPath();
   context.rect(x, 0, width, height);
   context.clip();
-  const tileWidth = Math.max(36 * pixelsPerInch, Math.min(66 * pixelsPerInch, width));
-  const tileHeight = tileWidth * (image.naturalHeight / image.naturalWidth);
-  let row = 0;
-  for (let top = -tileHeight; top < height + tileHeight; top += tileHeight) {
-    const offset = row % 2 === 0 ? 0 : -tileWidth * 0.47;
-    let column = 0;
-    for (let left = x + offset - tileWidth; left < x + width + tileWidth; left += tileWidth) {
-      context.save();
-      context.globalAlpha = 0.97 + ((row + column) % 3) * 0.01;
-      if ((row + column) % 2 === 0) {
-        context.translate(left + tileWidth, top);
-        context.scale(-1, 1);
-        context.drawImage(image, 0, 0, tileWidth + 1, tileHeight + 1);
-      } else {
-        context.drawImage(image, left, top, tileWidth + 1, tileHeight + 1);
-      }
-      context.restore();
-      column += 1;
-    }
-    row += 1;
-  }
+  // Match the physical texture window used by FeatureWallCanvas. The prior
+  // customer-room path repeated the complete manufacturer photograph every
+  // 36–66 inches, making each stone tiny and exposing mirrored seams. Both
+  // workspaces now use the same centered 192 × 144 inch material reference.
+  const physicalWidth = width / pixelsPerInch;
+  const physicalHeight = height / pixelsPerInch;
+  const horizontalFraction = Math.min(1, physicalWidth / 192);
+  const verticalFraction = Math.min(1, physicalHeight / 144);
+  const sourceWidth = image.naturalWidth * horizontalFraction;
+  const sourceHeight = image.naturalHeight * verticalFraction;
+  const sourceX = (image.naturalWidth - sourceWidth) / 2;
+  const sourceY = (image.naturalHeight - sourceHeight) / 2;
+  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, 0, width, height);
   const depth = context.createLinearGradient(x, 0, x + width, 0);
   depth.addColorStop(0, "rgba(0,0,0,.1)");
   depth.addColorStop(0.08, "rgba(255,255,255,.025)");
@@ -692,7 +684,7 @@ export function projectedHearthGeometry(
   const rearFloorCenter = midpoint(rearLeftFloor, rearRightFloor);
   const destinationPixelsPerInch = pointDistance(quad[3]!, quad[2]!) / configuration.wallWidth;
   const wallDirection = averageFloorDirection(quad);
-  const defaultDepth = Math.max(8, depthInches * destinationPixelsPerInch * 0.72);
+  const defaultDepth = Math.max(5, depthInches * destinationPixelsPerInch * 0.36);
   const requestedFrontCenter = project.hearthFrontCenter
     ? imagePoint(project.hearthFrontCenter, project.source.width, project.source.height)
     : {
@@ -703,31 +695,18 @@ export function projectedHearthGeometry(
     x: requestedFrontCenter.x - rearCenter.x,
     y: requestedFrontCenter.y - rearCenter.y,
   };
-  const requestedLength = Math.hypot(requestedOffset.x, requestedOffset.y) || defaultDepth;
+  // The operator's point controls projected depth only. It must never rotate
+  // the hearth away from the calibrated wall/floor axis; that was the source
+  // of the visibly diagonal hearths in otherwise straight-on room photos.
+  const requestedDepth =
+    requestedOffset.x * wallDirection.x + requestedOffset.y * wallDirection.y;
+  const requestedLength = requestedDepth > 0 ? requestedDepth : defaultDepth;
   const minimumDepth = depthInches * destinationPixelsPerInch * 0.22;
-  const maximumDepth = depthInches * destinationPixelsPerInch * 1.08;
+  const maximumDepth = depthInches * destinationPixelsPerInch * 0.58;
   const resolvedDepth = Math.max(minimumDepth, Math.min(maximumDepth, requestedLength));
-  const requestedDirection = {
-    x: requestedOffset.x / requestedLength,
-    y: requestedOffset.y / requestedLength,
-  };
-  const directionAlignment =
-    requestedDirection.x * wallDirection.x + requestedDirection.y * wallDirection.y;
-  const blendedDirection =
-    directionAlignment < 0.25
-      ? wallDirection
-      : {
-          x: requestedDirection.x * 0.82 + wallDirection.x * 0.18,
-          y: requestedDirection.y * 0.82 + wallDirection.y * 0.18,
-        };
-  const blendedLength = Math.hypot(blendedDirection.x, blendedDirection.y) || 1;
-  const direction = {
-    x: blendedDirection.x / blendedLength,
-    y: blendedDirection.y / blendedLength,
-  };
   const depthOffset = {
-    x: direction.x * resolvedDepth,
-    y: direction.y * resolvedDepth,
+    x: wallDirection.x * resolvedDepth,
+    y: wallDirection.y * resolvedDepth,
   };
   const frontCenter = {
     x: rearCenter.x + depthOffset.x,
@@ -746,7 +725,7 @@ export function projectedHearthGeometry(
     (pointDistance(quad[0]!, quad[3]!) + pointDistance(quad[1]!, quad[2]!)) / 2;
   const perspectiveScale = Math.max(
     1,
-    Math.min(1.06, 1 + (resolvedDepth / Math.max(1, wallHeightPixels)) * 0.24),
+    Math.min(1.015, 1 + (resolvedDepth / Math.max(1, wallHeightPixels)) * 0.08),
   );
   const frontHalfWidth = (rearWidth * perspectiveScale) / 2;
   const frontLeftTop = {
