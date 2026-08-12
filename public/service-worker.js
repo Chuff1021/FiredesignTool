@@ -1,10 +1,14 @@
-const CACHE_VERSION = "firedesign-2026.08.11-3";
+const CACHE_VERSION = "firedesign-2026.08.11-3-c04566b1150a";
 const SHELL = ["/", "/manifest.webmanifest", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 async function loadApprovedManifest(cache) {
-  const cachedManifest = await cache.match("/assets/manifest.json");
-  const manifestResponse =
-    cachedManifest ?? (await fetch("/assets/manifest.json", { cache: "no-store" }));
+  let manifestResponse;
+  try {
+    manifestResponse = await fetch("/assets/manifest.json", { cache: "no-store" });
+  } catch {
+    manifestResponse = await cache.match("/assets/manifest.json");
+  }
+  if (!manifestResponse) throw new Error("Approved asset manifest is unavailable.");
   if (!manifestResponse.ok) throw new Error("Approved asset manifest is unavailable.");
   const manifest = await manifestResponse.clone().json();
   const approvedPaths = Array.isArray(manifest.files)
@@ -70,6 +74,25 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(async () => (await caches.match(request)) ?? (await caches.match("/"))),
+    );
+    return;
+  }
+
+  if (url.pathname === "/assets/manifest.json") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            void caches.open(CACHE_VERSION).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        })
+        .catch(
+          async () =>
+            (await caches.match(request)) ??
+            new Response(null, { status: 503, statusText: "Manifest unavailable" }),
+        ),
     );
     return;
   }

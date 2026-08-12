@@ -281,6 +281,42 @@ test("preloads the active design pack and reloads offline", async ({
   await context.setOffline(false);
 });
 
+test("repairs a stale release asset cache before opening the showroom", async ({
+  browserName,
+  page,
+}, testInfo) => {
+  test.skip(
+    browserName !== "chromium" || testInfo.project.name !== "desktop-chromium",
+    "Release-cache recovery is verified once in desktop Chromium.",
+  );
+
+  await page.evaluate(async () => {
+    await navigator.serviceWorker.ready;
+    const cacheName = (await caches.keys()).find((name) => name.startsWith("firedesign-"));
+    if (!cacheName) throw new Error("The FireDesign release cache was not created.");
+    const cache = await caches.open(cacheName);
+    await cache.put(
+      "/assets/centurion-hearthstone-kentucky.webp",
+      new Response(new Uint8Array(167_830), {
+        headers: { "Content-Type": "image/webp" },
+        status: 200,
+      }),
+    );
+  });
+
+  await page.reload();
+  await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("The presentation could not start safely.")).toHaveCount(0);
+  await expect
+    .poll(() =>
+      page.evaluate(async () => {
+        const response = await fetch("/assets/centurion-hearthstone-kentucky.webp");
+        return (await response.arrayBuffer()).byteLength;
+      }),
+    )
+    .toBe(141_324);
+});
+
 test("shows a polished startup recovery state when an approved asset is unavailable", async ({
   page,
 }, testInfo) => {

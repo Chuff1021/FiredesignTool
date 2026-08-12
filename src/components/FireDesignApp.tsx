@@ -56,6 +56,29 @@ type AssetPackState = {
   total: number;
 };
 
+function isStaleAssetCacheError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  return (
+    error.message.includes("unexpected size") ||
+    error.message.includes("failed its integrity check")
+  );
+}
+
+async function clearStaleReleaseCaches(): Promise<void> {
+  if ("caches" in window) {
+    const cacheNames = await window.caches.keys();
+    await Promise.all(
+      cacheNames
+        .filter((cacheName) => cacheName.startsWith("firedesign-"))
+        .map((cacheName) => window.caches.delete(cacheName)),
+    );
+  }
+  if ("serviceWorker" in navigator) {
+    const registration = await navigator.serviceWorker.getRegistration();
+    await registration?.update().catch(() => undefined);
+  }
+}
+
 export function FireDesignApp() {
   const initialize = useConfigurationStore((state) => state.initialize);
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
@@ -105,9 +128,18 @@ export function FireDesignApp() {
         status: "loading",
         total: requiredPaths.length,
       });
-      const result = await runReadinessChecks(requiredPaths, (complete, total) =>
-        setProgress({ complete, total }),
-      );
+      const reportProgress = (complete: number, total: number) =>
+        setProgress({ complete, total });
+      let result: ReadinessResult;
+      try {
+        result = await runReadinessChecks(requiredPaths, reportProgress);
+      } catch (error) {
+        if (!isStaleAssetCacheError(error)) throw error;
+        console.warn("[FireDesign] Stale release cache detected; rebuilding approved cache.");
+        await clearStaleReleaseCaches();
+        setProgress({ complete: 0, total: requiredPaths.length });
+        result = await runReadinessChecks(requiredPaths, reportProgress);
+      }
       verifiedPacks.current.add(initialFireplaceId);
       setAssetPack({
         complete: requiredPaths.length,

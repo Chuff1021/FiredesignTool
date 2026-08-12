@@ -5,6 +5,7 @@ import path from "node:path";
 const root = process.cwd();
 const assetsDirectory = path.join(root, "public", "assets");
 const manifestPath = path.join(assetsDirectory, "manifest.json");
+const serviceWorkerPath = path.join(root, "public", "service-worker.js");
 
 const files = [];
 
@@ -37,4 +38,20 @@ const manifest = {
 };
 
 await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-console.log(`Wrote ${files.length} asset checksums to ${path.relative(root, manifestPath)}.`);
+const assetFingerprint = createHash("sha256")
+  .update(JSON.stringify(files))
+  .digest("hex")
+  .slice(0, 12);
+const serviceWorker = await readFile(serviceWorkerPath, "utf8");
+const cacheVersion = `firedesign-${manifest.version}-${assetFingerprint}`;
+const updatedServiceWorker = serviceWorker.replace(
+  /^const CACHE_VERSION = "[^"]+";/m,
+  `const CACHE_VERSION = "${cacheVersion}";`,
+);
+if (updatedServiceWorker === serviceWorker && !serviceWorker.includes(cacheVersion)) {
+  throw new Error("The service worker cache version marker could not be updated.");
+}
+await writeFile(serviceWorkerPath, updatedServiceWorker, "utf8");
+console.log(
+  `Wrote ${files.length} asset checksums and cache ${cacheVersion} to the approved release.`,
+);
