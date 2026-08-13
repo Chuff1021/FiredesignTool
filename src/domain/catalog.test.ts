@@ -79,14 +79,21 @@ describe("approved product catalog", () => {
       "cut-stone-arctic-blast",
       "cut-stone-greystone",
     ]);
-    expect(stoneProducts.map((stone) => stone.productCode)).toEqual([
+    expect(stoneProducts).toHaveLength(122);
+    expect(new Set(stoneProducts.map((stone) => stone.patternName)).size).toBe(39);
+    expect(stoneProducts.find((stone) => stone.id === "kentucky-ledge")?.productCode).toBe(
       "150-260-15",
+    );
+    expect(stoneProducts.find((stone) => stone.id === "brown-ledge")?.productCode).toBe(
       "150-200-25",
-    ]);
+    );
+    expect(
+      stoneProducts.filter((stone) => !stone.productCode).map((stone) => stone.name),
+    ).toEqual(["Heather Brookstone Blend", "Summit Palos Verdes"]);
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(APPROVED_ASSET_PATHS).toHaveLength(262);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(672);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
     expect(APPROVED_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });

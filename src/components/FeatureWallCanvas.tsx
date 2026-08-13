@@ -16,11 +16,7 @@ import {
   type PerspectiveCamera as ThreePerspectiveCamera,
   type Texture,
 } from "three";
-import {
-  APPROVED_CORE_ASSET_PATHS,
-  catalogRepository,
-  getApprovedFireplaceAssetPaths,
-} from "@/domain/catalogRepository";
+import { catalogRepository, getApprovedDesignAssetPaths } from "@/domain/catalogRepository";
 import {
   calculateOrthographicZoom,
   getHearthStoneSegments,
@@ -39,16 +35,15 @@ type FeatureWallCanvasProps = {
   onRendererStatus: (status: "ready" | "recovering" | "error") => void;
 };
 
-function usePreparedTextures(fireplaceId: FeatureWallConfiguration["fireplaceId"]) {
+function usePreparedTextures(configuration: FeatureWallConfiguration) {
   const textureAssetPaths = useMemo(
     () =>
-      [
-        ...new Set([
-          ...APPROVED_CORE_ASSET_PATHS,
-          ...getApprovedFireplaceAssetPaths(fireplaceId),
-        ]),
-      ].filter((path) => !path.endsWith(".mp4")),
-    [fireplaceId],
+      getApprovedDesignAssetPaths({
+        fireplaceId: configuration.fireplaceId,
+        stoneId: configuration.stoneId,
+        mantelFinishId: configuration.mantelFinishId,
+      }).filter((path) => !path.endsWith(".mp4")),
+    [configuration.fireplaceId, configuration.mantelFinishId, configuration.stoneId],
   );
   const sources = useLoader(TextureLoader, textureAssetPaths) as Texture[];
   const maxAnisotropy = useThree((state) => state.gl.capabilities.getMaxAnisotropy());
@@ -226,7 +221,7 @@ function FeatureWall({
   onMediaStatus: (status: FireboxMediaStatus) => void;
 }) {
   const groupRef = useRef<Group>(null);
-  const textures = usePreparedTextures(configuration.fireplaceId);
+  const textures = usePreparedTextures(configuration);
   const shadowTexture = useMemo(() => makeShadowTexture(), []);
   const fireplace = catalogRepository.getFireplace(configuration.fireplaceId);
   const face = catalogRepository.getFace(configuration.fireplaceId, configuration.faceOptionId);

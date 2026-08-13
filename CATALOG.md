@@ -127,7 +127,7 @@ for catalog-related pull requests. Each run retains a JSON evidence report for
 the installed showroom application or its Vercel build depend on a manufacturer
 website being available.
 
-Release `2026.08.11-3` contains all 27 models and factory variants in FPX's
+Release `2026.08.13-1` retains all 27 models and factory variants in FPX's
 current marketed gas-fireplace and gas-insert collections plus all three
 current wood fireplaces as checked on 2026-08-11: ten premium traditional fireplaces, two premium linear fireplaces,
 five traditional ProBuilder fireplaces, four linear ProBuilder fireplaces, and
@@ -182,6 +182,15 @@ margins and deficits, rules out a profile as soon as any known dimension is too
 small, and never reports a fit while a required field measurement is missing.
 This is conservative sales screening only; final fit, venting, clearances, and
 installation remain subject to onsite verification.
+
+The same release adds Centurion Stone's complete current published visual
+library: 122 official swatches grouped under all 39 pattern pages. Each record
+stores pattern and color names, pattern code, joint style, published piece-size
+range, official source page and swatch, local wall/relief/thumbnail assets, and
+a mapped official #860 hearth color reference. Product codes appear only when
+the current technical documentation supports the exact pattern/color pairing;
+the application does not invent a code or synthesize a visual for combinations
+that Centurion documents but does not publish as an official swatch.
 
 Superior DRI2000 is the first non-FPX family at `documents-verified`. Its
 current English installation manual is P/N 900787-04, revision H, October 2024.

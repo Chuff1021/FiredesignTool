@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import path from "node:path";
 import sharp from "sharp";
 
@@ -8,6 +9,20 @@ test.beforeEach(async ({ page }) => {
   // pack before first render, so keep this tied to readiness without a brittle cap.
   await expect(page.getByTestId("scene-canvas")).toBeVisible({ timeout: 60_000 });
 });
+
+async function selectFireplace(page: Page, productId: string) {
+  const catalogTrigger = page.getByRole("button", { name: /Browse catalog/i });
+  await catalogTrigger.click();
+  await page.getByTestId(`catalog-product-${productId}`).click();
+  await expect(catalogTrigger).toHaveAttribute("data-product-id", productId);
+}
+
+async function selectStone(page: Page, stoneId: string) {
+  const stoneTrigger = page.getByRole("button", { name: /Browse stone/i });
+  await stoneTrigger.click();
+  await page.getByTestId(`stone-product-${stoneId}`).click();
+  await expect(stoneTrigger).toHaveAttribute("data-stone-id", stoneId);
+}
 
 test("loads the approved showroom composition without customer-facing errors", async ({
   page,
@@ -24,12 +39,61 @@ test("loads the approved showroom composition without customer-facing errors", a
   });
 });
 
+test("browses approved product families with search, filters, favorites, and recent models", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+  const catalogTrigger = page.getByRole("button", { name: /Browse catalog/i });
+  await catalogTrigger.click();
+  await expect(page.getByRole("heading", { name: "Choose a fireplace" })).toBeVisible();
+  await expect(page.getByText("30 exact models across 19 product families")).toBeVisible();
+
+  await page.getByLabel("Filter by installation").selectOption("insert");
+  await expect(page.getByText("6 models")).toBeVisible();
+  await expect(page.getByText("4 families")).toBeVisible();
+  await page.getByRole("button", { name: "Clear filters" }).click();
+
+  await page.getByLabel("Search fireplaces").fill("98500344");
+  await expect(page.getByTestId("catalog-product-4237-ember-glo-clean-face")).toBeVisible();
+  await expect(page.getByText("1 model")).toBeVisible();
+  await page
+    .getByRole("button", { name: /Add 4237 Ember-Glo Clean Face Deluxe to favorites/i })
+    .click();
+  await page.getByRole("button", { name: "Favorites · 1" }).click();
+  await page.getByTestId("catalog-product-4237-ember-glo-clean-face").click();
+  await expect(catalogTrigger).toHaveAttribute("data-product-id", "4237-ember-glo-clean-face");
+
+  await catalogTrigger.click();
+  await page.getByRole("button", { name: /Recent/ }).click();
+  await expect(page.getByTestId("catalog-product-4237-ember-glo-clean-face")).toBeVisible();
+  await page.getByRole("button", { name: "Close" }).click();
+
+  await selectFireplace(page, "864-trv-31k-clean-face");
+  await page.getByLabel("Model variant").selectOption("864-trv-31k-deluxe");
+  await expect(catalogTrigger).toHaveAttribute("data-product-id", "864-trv-31k-deluxe");
+});
+
+test("browses every official Centurion pattern and chooses an exact color", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
+  const stoneTrigger = page.getByRole("button", { name: /Browse stone/i });
+  await stoneTrigger.click();
+  await expect(page.getByRole("heading", { name: "Choose stone" })).toBeVisible();
+  await expect(page.getByText("122 published colors across 39 pattern lines")).toBeVisible();
+  await page.getByLabel("Search stone").fill("150-200-25");
+  await expect(page.getByTestId("stone-product-brown-ledge")).toBeVisible();
+  await expect(page.getByText("1 color", { exact: true })).toBeVisible();
+  await page.getByTestId("stone-product-brown-ledge").click();
+  await expect(stoneTrigger).toHaveAttribute("data-stone-id", "brown-ledge");
+});
+
 test("plays official media only with its approved fireback and every FPX face", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
   const viewport = page.locator(".scene-viewport");
-  await page.getByLabel("Fireplace model").selectOption("864-tv-40k-deluxe");
+  await selectFireplace(page, "864-tv-40k-deluxe");
   for (const face of [
     "classic-arch",
     "arched-french-country",
@@ -48,13 +112,13 @@ test("plays official media only with its approved fireback and every FPX face", 
   await expect(viewport).toHaveAttribute("data-media-status", "playing", {
     timeout: 15_000,
   });
-  await page.getByLabel("Fireplace model").selectOption("4237-ember-glo-clean-face");
+  await selectFireplace(page, "4237-ember-glo-clean-face");
   await expect(viewport).toHaveAttribute("data-media-status", "playing", {
     timeout: 15_000,
   });
 
   for (const product of ["564-trv-25k-deluxe", "564-tv-35k-deluxe"]) {
-    await page.getByLabel("Fireplace model").selectOption(product);
+    await selectFireplace(page, product);
     await expect(viewport).toHaveAttribute("data-media-status", "playing", {
       timeout: 15_000,
     });
@@ -73,7 +137,7 @@ test("plays official media only with its approved fireback and every FPX face", 
   }
 
   for (const product of ["564-trv-25k-clean-face", "564-tv-35k-clean-face"]) {
-    await page.getByLabel("Fireplace model").selectOption(product);
+    await selectFireplace(page, product);
     await expect(page.getByLabel("Face or trim")).toHaveValue("clean-face");
     await expect(viewport).toHaveAttribute("data-media-status", "playing", {
       timeout: 15_000,
@@ -99,12 +163,12 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
   page,
 }, testInfo) => {
   test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
-  await page.getByLabel("Fireplace model").selectOption("4237-ember-glo-clean-face");
+  await selectFireplace(page, "4237-ember-glo-clean-face");
   await expect(
     page.getByRole("heading", { name: "4237 Ember-Glo Clean Face Deluxe" }),
   ).toBeVisible();
   await expect(page.getByLabel("Mantel height")).toHaveValue("45.75");
-  await page.getByLabel("Centurion stone").selectOption("brown-ledge");
+  await selectStone(page, "brown-ledge");
   await page.getByLabel("Mantel style").selectOption("linear");
   await page.getByRole("button", { name: "84″" }).click();
   await page.getByLabel("Mantel finish").selectOption("onyx");
@@ -114,7 +178,7 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
     ),
   ).toBeVisible();
 
-  await page.getByLabel("Fireplace model").selectOption("864-trv-31k-deluxe");
+  await selectFireplace(page, "864-trv-31k-deluxe");
   await page.getByLabel("Face or trim").selectOption("metropolitan");
   await expect(
     page.getByText(
@@ -122,7 +186,7 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
     ),
   ).toBeVisible();
 
-  await page.getByLabel("Fireplace model").selectOption("564-tv-35k-deluxe");
+  await selectFireplace(page, "564-tv-35k-deluxe");
   await page.getByLabel("Face or trim").selectOption("french-country");
   await expect(
     page.getByText(
@@ -139,14 +203,13 @@ test("configures every approved FPX wood fireplace with its manual limits", asyn
 }, testInfo) => {
   test.skip(testInfo.project.name === "showroom-4k", "Covered at desktop scale.");
 
-  const fireplaceModel = page.getByLabel("Fireplace model");
   const face = page.getByLabel("Face or trim");
   const hearth = page.getByLabel("Add raised hearth");
   const stoneWidth = page.getByLabel("Stone width");
   const elevation = page.getByLabel("Fireplace elevation");
   const mantelHeight = page.getByLabel("Mantel height");
 
-  await fireplaceModel.selectOption("42-apex-nexgen-hybrid");
+  await selectFireplace(page, "42-apex-nexgen-hybrid");
   await expect(face.locator("option")).toHaveText([
     "Metropolitan · Charcoal",
     "Universal · Charcoal",
@@ -160,7 +223,7 @@ test("configures every approved FPX wood fireplace with its manual limits", asyn
   await expect(elevation).toHaveAttribute("max", "6.375");
   await expect(mantelHeight).toHaveAttribute("min", "47.375");
 
-  await fireplaceModel.selectOption("36-elite-nexgen-hybrid");
+  await selectFireplace(page, "36-elite-nexgen-hybrid");
   await expect(face.locator("option")).toHaveText([
     "Classic Arch · Single Door · Black",
     "Classic Arch · Double Door · Black",
@@ -172,7 +235,7 @@ test("configures every approved FPX wood fireplace with its manual limits", asyn
   await expect(elevation).toHaveAttribute("max", "6.5");
   await expect(mantelHeight).toHaveAttribute("min", "0");
 
-  await fireplaceModel.selectOption("44-elite-nexgen-hybrid");
+  await selectFireplace(page, "44-elite-nexgen-hybrid");
   await expect(face.locator("option")).toHaveText([
     "Classic Arch · Double Door · Black",
     "Artisan · Double Door · Charcoal",
@@ -464,17 +527,13 @@ test("calibrates and persists a customer room concept", async ({ page }, testInf
   await expect(page.getByRole("button", { name: "Move clean sample" })).toBeVisible();
   await expect(page.getByTestId("room-editor-overlay")).toHaveCount(0);
 
-  const fireplaceModel = page.getByLabel("Fireplace model");
-  await fireplaceModel.selectOption("44-elite-nexgen-hybrid");
-  await expect(fireplaceModel).toHaveValue("44-elite-nexgen-hybrid");
+  await selectFireplace(page, "44-elite-nexgen-hybrid");
   await expect(canvas).toBeVisible();
-  await fireplaceModel.selectOption("4237-ember-glo-clean-face");
-  await expect(fireplaceModel).toHaveValue("4237-ember-glo-clean-face");
+  await selectFireplace(page, "4237-ember-glo-clean-face");
   await expect(
     page.getByRole("heading", { name: "4237 Ember-Glo Clean Face Deluxe" }),
   ).toBeVisible();
-  await fireplaceModel.selectOption("864-trv-31k-clean-face");
-  await expect(fireplaceModel).toHaveValue("864-trv-31k-clean-face");
+  await selectFireplace(page, "864-trv-31k-clean-face");
   await expect(canvas).toBeVisible();
   const pdfDownload = page.waitForEvent("download");
   await page.getByRole("button", { name: "PDF" }).click();
@@ -787,8 +846,8 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   const firstName = page.getByLabel("Project name");
   await firstName.fill("Smith living room");
   await firstName.blur();
-  await page.getByLabel("Centurion stone").selectOption("brown-ledge");
-  await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");
+  await selectStone(page, "brown-ledge");
+  await expect(page.getByLabel("Stone color")).toHaveValue("brown-ledge");
   await page.getByRole("button", { name: "Back to projects" }).click();
   await expect(page.getByRole("button", { name: "Open Smith living room" })).toBeVisible();
   await expect(page.getByText("Project backup recommended")).toBeVisible();
@@ -799,8 +858,8 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   const secondName = page.getByLabel("Project name");
   await secondName.fill("Jones fireplace");
   await secondName.blur();
-  await page.getByLabel("Centurion stone").selectOption("kentucky-ledge");
-  await expect(page.getByLabel("Centurion stone")).toHaveValue("kentucky-ledge");
+  await page.getByLabel("Stone color").selectOption("kentucky-ledge");
+  await expect(page.getByLabel("Stone color")).toHaveValue("kentucky-ledge");
   await page.getByRole("button", { name: "Projects", exact: true }).click();
   await expect(page.getByText("2 projects")).toBeVisible();
 
@@ -810,7 +869,7 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   await page.getByRole("button", { name: "Open Smith living room" }).click();
   await expect(page.getByTestId("room-canvas")).toBeVisible({ timeout: 15_000 });
   await expect(page.getByLabel("Project name")).toHaveValue("Smith living room");
-  await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");
+  await expect(page.getByLabel("Stone color")).toHaveValue("brown-ledge");
   await page.getByTestId("room-photo-input").setInputFiles(photo);
   await expect(page.getByLabel("Project name")).toHaveValue("Smith living room");
   await page.getByRole("button", { name: "Projects", exact: true }).click();
@@ -834,5 +893,5 @@ test("keeps multiple named customer projects and returns without deleting", asyn
   await expect(page.getByText("Projects changed since the last backup")).toBeVisible();
   await page.getByRole("button", { name: "Open Smith living room (restored)" }).click();
   await expect(page.getByLabel("Project name")).toHaveValue("Smith living room (restored)");
-  await expect(page.getByLabel("Centurion stone")).toHaveValue("brown-ledge");
+  await expect(page.getByLabel("Stone color")).toHaveValue("brown-ledge");
 });

@@ -3,11 +3,9 @@
 import {
   type FaceOptionId,
   type FirebackOptionId,
-  type FireplaceId,
   type MantelFinishId,
   type MantelProductId,
   type MantelWidth,
-  type StoneId,
 } from "@/domain/catalog";
 import { catalogRepository } from "@/domain/catalogRepository";
 import {
@@ -25,6 +23,8 @@ import {
 import { useConfigurationStore } from "@/store/configurationStore";
 import { RangeControl } from "@/components/RangeControl";
 import { UiIcon } from "@/components/UiIcon";
+import { FireplaceCatalogBrowser } from "@/components/FireplaceCatalogBrowser";
+import { StoneCatalogBrowser } from "@/components/StoneCatalogBrowser";
 
 type ControlPanelProps = {
   onEnterPresentation: () => void;
@@ -157,20 +157,12 @@ export function ControlPanel({
               <h3>Model & face</h3>
             </div>
           </div>
-          <label className="select-control">
-            <span>Fireplace model</span>
-            <select
-              aria-label="Fireplace model"
-              onChange={(event) => setFireplaceId(event.target.value as FireplaceId)}
-              value={fireplaceId}
-            >
-              {fireplaceProducts.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.shortLabel}
-                </option>
-              ))}
-            </select>
-          </label>
+          <FireplaceCatalogBrowser
+            brands={catalogRepository.listBrands()}
+            currentProductId={fireplaceId}
+            onSelect={setFireplaceId}
+            products={fireplaceProducts}
+          />
           <label className="select-control">
             <span>Face or trim</span>
             <select
@@ -307,20 +299,11 @@ export function ControlPanel({
               <h3>Stone & mantel</h3>
             </div>
           </div>
-          <label className="select-control">
-            <span>Centurion stone</span>
-            <select
-              aria-label="Centurion stone"
-              onChange={(event) => setStoneId(event.target.value as StoneId)}
-              value={stoneId}
-            >
-              {stoneProducts.map((product) => (
-                <option key={product.id} value={product.id}>
-                  {product.name} · {product.productCode}
-                </option>
-              ))}
-            </select>
-          </label>
+          <StoneCatalogBrowser
+            currentStoneId={stoneId}
+            onSelect={setStoneId}
+            products={stoneProducts}
+          />
 
           <label className="select-control">
             <span>Pearl mantel style</span>
@@ -384,7 +367,9 @@ export function ControlPanel({
               />
               <p>
                 <strong>{stone.name}</strong>
-                <small>Centurion · {stone.productCode}</small>
+                <small>
+                  Centurion · {stone.productCode ?? `Pattern #${stone.patternCode}`}
+                </small>
               </p>
             </div>
             <div>

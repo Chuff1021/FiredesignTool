@@ -1,0 +1,8 @@
+# Manufacturer masters and local audit artifacts are retained in Git but are
+# not required by the production build. Only prepared, checksummed files under
+# public/assets ship to the showroom application.
+assets-source/
+tmp/
+playwright-report/
+test-results/
+coverage/

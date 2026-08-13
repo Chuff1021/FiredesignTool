@@ -10,7 +10,7 @@ import {
 
 describe("versioned catalog repository", () => {
   it("indexes the complete approved release behind stable repository methods", () => {
-    expect(catalogRepository.release.version).toBe("2026.08.11-3");
+    expect(catalogRepository.release.version).toBe("2026.08.13-1");
     expect(catalogRepository.listBrands().map((brand) => brand.id)).toEqual([
       "fireplace-xtrordinair",
       "centurion-stone",
@@ -25,11 +25,11 @@ describe("versioned catalog repository", () => {
     );
     expect(catalogRepository.getMantelSize("linear", 84).modelCode).toBe("NCL-84");
     expect(catalogRepository.getStone("kentucky-ledge").productCode).toBe("150-260-15");
-    expect(APPROVED_ASSET_PATHS).toHaveLength(262);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(672);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
   });
 
-  it("partitions shared scene assets from deterministic fireplace packs", () => {
+  it("partitions exact fireplace and material selections into deterministic design packs", () => {
     const fireplaceIds = catalogRepository.listFireplaces().map((product) => product.id);
     const allPackedAssets = new Set(APPROVED_CORE_ASSET_PATHS);
     for (const id of fireplaceIds) {
@@ -37,13 +37,27 @@ describe("versioned catalog repository", () => {
       expect(pack.length).toBeGreaterThan(0);
       expect(pack.every((path) => path.startsWith("/assets/"))).toBe(true);
       pack.forEach((path) => allPackedAssets.add(path));
-      expect(catalogRepository.getStartupAssetPaths(id)).toEqual([
-        ...new Set([...APPROVED_CORE_ASSET_PATHS, ...pack]),
-      ]);
     }
-    expect([...allPackedAssets]).toEqual(APPROVED_ASSET_PATHS);
+    for (const stone of catalogRepository.listStones()) {
+      catalogRepository
+        .getStoneAssetPaths(stone.id)
+        .forEach((path) => allPackedAssets.add(path));
+      expect(APPROVED_ASSET_PATHS).toContain(stone.thumbnailAsset.localPath);
+    }
+    for (const finish of catalogRepository.listMantelFinishes()) {
+      catalogRepository
+        .getMantelFinishAssetPaths(finish.id)
+        .forEach((path) => allPackedAssets.add(path));
+    }
+    expect([...allPackedAssets].every((path) => APPROVED_ASSET_PATHS.includes(path))).toBe(
+      true,
+    );
     expect(
-      catalogRepository.getStartupAssetPaths("864-trv-31k-clean-face").length,
+      catalogRepository.getDesignAssetPaths({
+        fireplaceId: "864-trv-31k-clean-face",
+        stoneId: "kentucky-ledge",
+        mantelFinishId: "graywash",
+      }).length,
     ).toBeLessThan(APPROVED_ASSET_PATHS.length);
   });
 

@@ -11,8 +11,7 @@ import {
   APPROVED_ASSET_PATHS,
   APPROVED_CORE_ASSET_PATHS,
   catalogRepository,
-  getApprovedFireplaceAssetPaths,
-  getApprovedStartupAssetPaths,
+  getApprovedDesignAssetPaths,
 } from "@/domain/catalogRepository";
 import {
   runReadinessChecks,
@@ -50,11 +49,15 @@ const UNKNOWN_GRAPHICS: GraphicsSupport = {
 
 type AssetPackState = {
   complete: number;
+  designKey: string;
   error: string | null;
-  fireplaceId: string;
   status: "loading" | "ready" | "error";
   total: number;
 };
+
+function designAssetKey(fireplaceId: string, stoneId: string, mantelFinishId: string): string {
+  return `${fireplaceId}|${stoneId}|${mantelFinishId}`;
+}
 
 function isStaleAssetCacheError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
@@ -84,6 +87,9 @@ export function FireDesignApp() {
   const initialize = useConfigurationStore((state) => state.initialize);
   const fireplaceId = useConfigurationStore((state) => state.fireplaceId);
   const firebackOptionId = useConfigurationStore((state) => state.firebackOptionId);
+  const stoneId = useConfigurationStore((state) => state.stoneId);
+  const mantelFinishId = useConfigurationStore((state) => state.mantelFinishId);
+  const activeDesignKey = designAssetKey(fireplaceId, stoneId, mantelFinishId);
   const [readiness, setReadiness] = useState<ReadinessResult | null>(null);
   const [startupError, setStartupError] = useState<string | null>(null);
   const [progress, setProgress] = useState({
@@ -92,8 +98,8 @@ export function FireDesignApp() {
   });
   const [assetPack, setAssetPack] = useState<AssetPackState>({
     complete: 0,
+    designKey: activeDesignKey,
     error: null,
-    fireplaceId,
     status: "loading",
     total: 0,
   });
@@ -119,13 +125,22 @@ export function FireDesignApp() {
     setReadiness(null);
     try {
       initialize();
-      const initialFireplaceId = useConfigurationStore.getState().fireplaceId;
-      const requiredPaths = getApprovedStartupAssetPaths(initialFireplaceId);
+      const initial = useConfigurationStore.getState();
+      const initialDesignKey = designAssetKey(
+        initial.fireplaceId,
+        initial.stoneId,
+        initial.mantelFinishId,
+      );
+      const requiredPaths = getApprovedDesignAssetPaths({
+        fireplaceId: initial.fireplaceId,
+        stoneId: initial.stoneId,
+        mantelFinishId: initial.mantelFinishId,
+      });
       setProgress({ complete: 0, total: requiredPaths.length });
       setAssetPack({
         complete: 0,
+        designKey: initialDesignKey,
         error: null,
-        fireplaceId: initialFireplaceId,
         status: "loading",
         total: requiredPaths.length,
       });
@@ -141,11 +156,11 @@ export function FireDesignApp() {
         setProgress({ complete: 0, total: requiredPaths.length });
         result = await runReadinessChecks(requiredPaths, reportProgress);
       }
-      verifiedPacks.current.add(initialFireplaceId);
+      verifiedPacks.current.add(initialDesignKey);
       setAssetPack({
         complete: requiredPaths.length,
+        designKey: initialDesignKey,
         error: null,
-        fireplaceId: initialFireplaceId,
         status: "ready",
         total: requiredPaths.length,
       });
@@ -194,19 +209,25 @@ export function FireDesignApp() {
   useEffect(() => {
     if (!readiness) return;
     const requestId = ++packRequest.current;
-    const requiredPaths = getApprovedStartupAssetPaths(fireplaceId);
-    const modelPaths = getApprovedFireplaceAssetPaths(fireplaceId);
+    const requiredPaths = getApprovedDesignAssetPaths({
+      fireplaceId,
+      stoneId,
+      mantelFinishId,
+    });
+    const selectedPaths = requiredPaths.filter(
+      (path) => !APPROVED_CORE_ASSET_PATHS.includes(path),
+    );
     // A model change is the asset-verification synchronization boundary. The
     // scene is already gated by the mismatched pack ID before these flags reset.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setCacheReady(false);
     setRendererStatus("recovering");
 
-    if (verifiedPacks.current.has(fireplaceId)) {
+    if (verifiedPacks.current.has(activeDesignKey)) {
       setAssetPack({
         complete: requiredPaths.length,
+        designKey: activeDesignKey,
         error: null,
-        fireplaceId,
         status: "ready",
         total: requiredPaths.length,
       });
@@ -222,12 +243,12 @@ export function FireDesignApp() {
 
     setAssetPack({
       complete: APPROVED_CORE_ASSET_PATHS.length,
+      designKey: activeDesignKey,
       error: null,
-      fireplaceId,
       status: "loading",
       total: requiredPaths.length,
     });
-    void verifyApprovedAssets(readiness.manifest, modelPaths, (complete) => {
+    void verifyApprovedAssets(readiness.manifest, selectedPaths, (complete) => {
       if (packRequest.current !== requestId) return;
       setAssetPack((current) => ({
         ...current,
@@ -236,11 +257,11 @@ export function FireDesignApp() {
     })
       .then(() => {
         if (packRequest.current !== requestId) return;
-        verifiedPacks.current.add(fireplaceId);
+        verifiedPacks.current.add(activeDesignKey);
         setAssetPack({
           complete: requiredPaths.length,
+          designKey: activeDesignKey,
           error: null,
-          fireplaceId,
           status: "ready",
           total: requiredPaths.length,
         });
@@ -256,17 +277,17 @@ export function FireDesignApp() {
         if (packRequest.current !== requestId) return;
         setAssetPack({
           complete: APPROVED_CORE_ASSET_PATHS.length,
+          designKey: activeDesignKey,
           error:
             error instanceof Error
               ? error.message
-              : "This fireplace asset pack could not be prepared.",
-          fireplaceId,
+              : "This design asset pack could not be prepared.",
           status: "error",
           total: requiredPaths.length,
         });
         setCacheReady(false);
       });
-  }, [assetPackRetry, fireplaceId, readiness]);
+  }, [activeDesignKey, assetPackRetry, fireplaceId, mantelFinishId, readiness, stoneId]);
 
   const installCompleteCatalog = async () => {
     if (!readiness || completeCatalogStatus === "installing") return;
@@ -358,7 +379,8 @@ export function FireDesignApp() {
     storage: storageHealth,
     verifiedAssets: assetPack.complete,
   };
-  const activePackReady = assetPack.fireplaceId === fireplaceId && assetPack.status === "ready";
+  const activePackReady =
+    assetPack.designKey === activeDesignKey && assetPack.status === "ready";
   const selectedFireplace = catalogRepository.getFireplace(fireplaceId);
 
   return (
@@ -385,7 +407,7 @@ export function FireDesignApp() {
             </strong>
             <span>
               {assetPack.status === "error"
-                ? "The current design is protected. Retry this model or choose another fireplace."
+                ? "The current design is protected. Retry this product or material selection."
                 : `${Math.min(assetPack.complete, assetPack.total)} of ${assetPack.total} approved assets verified`}
             </span>
             {assetPack.status === "error" ? (
@@ -394,7 +416,7 @@ export function FireDesignApp() {
                 onClick={() => setAssetPackRetry((value) => value + 1)}
                 type="button"
               >
-                Retry fireplace pack
+                Retry design pack
               </button>
             ) : null}
           </div>

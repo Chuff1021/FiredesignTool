@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { FPX_OFFICIAL_FIREBACK_SETS } from "@/catalog/fpxFirebacks";
+import { generatedCenturionStoneProducts } from "@/catalog/generated/centurionStoneProducts";
 
 const positiveInches = z.number().positive().finite();
 const catalogIdSchema = z
@@ -121,6 +122,15 @@ export const fireplaceProductSchema = z.object({
   applianceType: z.enum(["fireplace", "insert"]),
   fuel: z.enum(["gas", "wood", "electric", "pellet"]),
   style: z.enum(["traditional", "linear", "portrait", "see-through"]),
+  catalogPresentation: z
+    .object({
+      familyId: catalogIdSchema,
+      familyName: z.string().min(1),
+      variantLabel: z.string().min(1),
+      installation: z.enum(["built-in", "insert", "freestanding"]),
+      environment: z.enum(["indoor", "outdoor", "indoor-outdoor"]),
+    })
+    .optional(),
   viewingArea: z.object({
     width: positiveInches,
     height: positiveInches,
@@ -179,9 +189,13 @@ export const stoneProductSchema = z.object({
   manufacturer: z.string().min(1),
   status: z.literal("approved"),
   name: z.string().min(1),
+  patternName: z.string().min(1),
+  colorName: z.string().min(1),
   patternCode: z.string().min(1),
-  colorCode: z.string().min(1),
-  productCode: z.string().min(1),
+  colorCode: z.string().min(1).optional(),
+  productCode: z.string().min(1).optional(),
+  sourceUrl: z.string().url(),
+  joint: z.enum(["dry-stack", "mortar"]),
   pieceRange: z.object({
     widthMin: positiveInches,
     widthMax: positiveInches,
@@ -189,6 +203,7 @@ export const stoneProductSchema = z.object({
     heightMax: positiveInches,
   }),
   assets: z.array(assetSourceSchema).length(2),
+  thumbnailAsset: assetSourceSchema,
   hearthstone: z.object({
     manufacturer: z.string().min(1),
     name: z.string().min(1),
@@ -2062,16 +2077,20 @@ const ledgePieceRange = {
   heightMax: 2.5,
 };
 
-export const stoneProducts = z.array(stoneProductSchema).parse([
+export const legacyStoneProducts20260805 = z.array(stoneProductSchema).parse([
   {
     id: "kentucky-ledge",
     brandId: "centurion-stone",
     manufacturer: "Centurion Stone",
     status: "approved",
     name: "Kentucky Ledge",
+    patternName: "Ledge",
+    colorName: "Kentucky",
     patternCode: "150",
     colorCode: "260",
     productCode: "150-260-15",
+    sourceUrl: "https://www.centurionstone.com/pattern/ledge/",
+    joint: "dry-stack",
     pieceRange: ledgePieceRange,
     assets: [
       officialLayer(
@@ -2085,6 +2104,11 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
         "Deterministic relief map derived from the official swatch",
       ),
     ],
+    thumbnailAsset: officialLayer(
+      "/assets/centurion-kentucky-ledge.webp",
+      "https://www.centurionstone.com/wp-content/uploads/2024/03/Kentucky-Ledge-Swatch-scaled.jpg",
+      "Official Kentucky Ledge catalog swatch",
+    ),
     hearthstone: {
       manufacturer: "Centurion Stone",
       name: "Hearthstone",
@@ -2112,9 +2136,13 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
     manufacturer: "Centurion Stone",
     status: "approved",
     name: "Brown Ledge",
+    patternName: "Ledge",
+    colorName: "Brown",
     patternCode: "150",
     colorCode: "200",
     productCode: "150-200-25",
+    sourceUrl: "https://www.centurionstone.com/pattern/ledge/",
+    joint: "dry-stack",
     pieceRange: ledgePieceRange,
     assets: [
       officialLayer(
@@ -2128,6 +2156,11 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
         "Deterministic relief map derived from the official swatch",
       ),
     ],
+    thumbnailAsset: officialLayer(
+      "/assets/centurion-brown-ledge.webp",
+      "https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp",
+      "Official Brown Ledge catalog swatch",
+    ),
     hearthstone: {
       manufacturer: "Centurion Stone",
       name: "Hearthstone",
@@ -2151,7 +2184,9 @@ export const stoneProducts = z.array(stoneProductSchema).parse([
   },
 ]);
 
-export const APP_VERSION = "0.26.0";
+export const stoneProducts = z.array(stoneProductSchema).parse(generatedCenturionStoneProducts);
+
+export const APP_VERSION = "0.28.0";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

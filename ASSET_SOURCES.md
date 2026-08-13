@@ -175,29 +175,26 @@ openings in those exact layers, so the video cannot crop or overwrite the face.
 
 ## Centurion Stone
 
-- Pattern: Ledgestone `150`
-- Kentucky color/product code: `260`, `150-260-15`
-- Kentucky swatch:
-  `https://www.centurionstone.com/wp-content/uploads/2024/03/Kentucky-Ledge-Swatch-scaled.jpg`
-- Brown color/product code: `200`, `150-200-25`
-- Brown swatch:
-  `https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp`
-- Specification:
-  `https://www.centurionstone.com/wp-content/uploads/2025/03/centurion_stone_cut_sheets_3_27_25_compressed.pdf`
+- Current visual scope: 122 manufacturer-published color swatches across all 39
+  pattern pages in `https://www.centurionstone.com/our-products/`
+- Current technical source: Centurion's 58-page complete cut-sheet package,
+  `https://www.centurionstone.com/wp-content/uploads/2026/07/compressed-Centurion-stone-all-cut-sheets-pdf-7-24-26.pdf`
+- Each visual record retains its exact official pattern-page and swatch URL;
+  `scripts/sync-centurion-stones.mts` is the reproducible intake path
 - Hearth product: #860 Hearthstone, 18 in W × 20 in D × 1.5 in T
 - Architectural accents:
   `https://www.centurionstone.com/architectural-accents-and-trim/`
-- Kentucky and Brown hearth color swatches:
-  `https://www.centurionstone.com/wp-content/uploads/2024/08/Kentucky.webp`
-  and
-  `https://www.centurionstone.com/wp-content/uploads/2024/08/Brown.webp`
+- Hearth/accent swatches are official Centurion accessory-color images from the
+  architectural accents page; each stone maps to the nearest published
+  accessory reference without recoloring the source
 
-The swatches are edge-cropped and assembled deterministically into a
-4096 × 3072 mural representing 192 × 144 real-world inches. Varied crops and
-feathered joins reduce visible repetition without generating or inventing
-stone. A restrained grayscale relief map is derived from each final mural.
-Manufacturer photography cannot replace an in-person sample for color
-approval.
+The swatches are assembled deterministically into 2048 × 1536 wall atlases.
+Mirrored source crops and restrained blending reduce visible repetition without
+generating, recoloring, or inventing stone. A restrained grayscale relief map
+is derived from each final atlas, and a separate 360 × 240 official-swatch
+thumbnail keeps the catalog responsive. Kentucky and Brown Ledge preserve their
+previously reviewed production masters and stable asset paths. Manufacturer
+photography cannot replace an in-person sample for color approval.
 
 ## Pearl Mantels
 

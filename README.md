@@ -31,9 +31,12 @@ complete three-model FPX wood-fireplace lineup:
 - Muted, automatically looping official Travis Industries burn footage for the
   564 variants, 864 TV 40K variants, and 4237 Clean Face, enabled only on the
   exact fireback shown in each video, with complete offline playback
-- Centurion Stone Kentucky Ledge (`150-260-15`) and Brown Ledge (`150-200-25`)
-- Centurion #860 hearthstones in matching Kentucky and Brown colors, laid out
-  across the exact selected stone-field width with centered field cuts
+- Centurion Stone's complete published visual library: 122 official color
+  swatches across all 39 current pattern lines, with family-first browsing,
+  pattern/joint filters, exact verified codes, and no synthesized colorways
+- Centurion #860 hearthstones mapped to the closest official accessory-color
+  reference for every stone selection and laid out across the exact selected
+  stone-field width with centered field cuts
 - Pearl Mantels Zachary Smooth shelves in Whitewash and Graywash and Zachary
   Wood Look in Little River, each in 48-, 60-, 72-, and 84-inch lengths
 - Pearl Mantels Linear non-combustible shelves in the official 60- and 84-inch
@@ -169,7 +172,7 @@ or physical-sample approval.
   visual master is available. Its mantel rules are explicitly referenced
   to the top of the surround opening, matching its current manual.
 - `src/domain/catalogRepository.ts` validates release integrity, partitions
-  shared assets from model-specific fireplace packs, and is the only product
+  shared assets from exact fireplace, stone, and mantel-finish design packs, and is the only product
   lookup boundary used by configuration, renderers, controls, and exports.
 - `src/domain` contains product schemas, product-specific mantel rules,
   physical constraints, and inch-based calculations.
@@ -189,6 +192,8 @@ or physical-sample approval.
 - `assets-source` preserves the exact official inputs.
 - `scripts/prepare-assets.mjs` performs deterministic cropping, compositing,
   texture preparation, and relief-map generation.
+- `scripts/sync-centurion-stones.mts` audits the 39 official pattern pages and
+  reproducibly prepares the local wall, relief, thumbnail, and hearth assets.
 
 The WebGL surface is dynamically imported and kept behind
 `FeatureWallCanvas`, so a projector route can reuse it without rewriting the

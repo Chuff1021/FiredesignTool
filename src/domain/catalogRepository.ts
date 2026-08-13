@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RELEASE_2026_08_11_3 } from "@/catalog/releases/2026.08.11-3";
+import { RELEASE_2026_08_13_1 } from "@/catalog/releases/2026.08.13-1";
 import {
   assetSourceSchema,
   fireplaceProductSchema,
@@ -81,6 +81,11 @@ export const catalogReleaseSchema = z
       release.stones.map((stone) => stone.id),
       ["stones"],
       "stone ID",
+    );
+    unique(
+      release.stones.flatMap((stone) => (stone.productCode ? [stone.productCode] : [])),
+      ["stones"],
+      "stone product code",
     );
 
     const brandIds = new Set(release.brands.map((brand) => brand.id));
@@ -207,7 +212,7 @@ export const catalogReleaseSchema = z
 export type CatalogRelease = z.infer<typeof catalogReleaseSchema>;
 export type CatalogBrand = z.infer<typeof brandSchema>;
 
-export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_11_3);
+export const APPROVED_CATALOG_RELEASE = catalogReleaseSchema.parse(RELEASE_2026_08_13_1);
 
 export interface CatalogRepository {
   readonly release: CatalogRelease;
@@ -238,9 +243,17 @@ export interface CatalogRepository {
   getStone(id: StoneId): StoneProduct;
   getCoreAssetPaths(): readonly string[];
   getFireplaceAssetPaths(id: FireplaceId): readonly string[];
-  getStartupAssetPaths(id: FireplaceId): readonly string[];
+  getStoneAssetPaths(id: StoneId): readonly string[];
+  getMantelFinishAssetPaths(id: MantelFinishId): readonly string[];
+  getDesignAssetPaths(selection: DesignAssetSelection): readonly string[];
   getAssetPaths(): readonly string[];
 }
+
+export type DesignAssetSelection = {
+  fireplaceId: FireplaceId;
+  stoneId: StoneId;
+  mantelFinishId: MantelFinishId;
+};
 
 export function createCatalogRepository(releaseCandidate: unknown): CatalogRepository {
   const release = catalogReleaseSchema.parse(releaseCandidate);
@@ -252,10 +265,9 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
   const uniqueAssetPaths = (assets: z.infer<typeof assetSourceSchema>[]) => [
     ...new Set(assets.map((asset) => asset.localPath)),
   ];
-  const coreAssetPaths = uniqueAssetPaths([
-    ...release.stones.flatMap((stone) => [...stone.assets, ...stone.hearthstone.assets]),
-    ...release.mantelFinishes.flatMap((finish) => finish.assets),
-  ]);
+  // Keep the always-loaded pack intentionally small. Manufacturer expansion
+  // must not decode every stone and mantel texture into GPU memory at startup.
+  const coreAssetPaths: string[] = [];
   const fireplaceAssetPaths = new Map(
     release.fireplaces.map((product) => [
       product.id,
@@ -269,6 +281,16 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
         ...(product.burnMedia ? [product.burnMedia.video, product.burnMedia.poster] : []),
       ]),
     ]),
+  );
+  const stoneAssetPaths = new Map(
+    release.stones.map((stone) => [
+      stone.id,
+      uniqueAssetPaths([...stone.assets, ...stone.hearthstone.assets]),
+    ]),
+  );
+  const stoneThumbnailPaths = release.stones.map((stone) => stone.thumbnailAsset.localPath);
+  const mantelFinishAssetPaths = new Map(
+    release.mantelFinishes.map((finish) => [finish.id, uniqueAssetPaths(finish.assets)]),
   );
 
   const requireRecord = <T>(record: T | undefined, label: string): T => {
@@ -331,14 +353,32 @@ export function createCatalogRepository(releaseCandidate: unknown): CatalogRepos
     getCoreAssetPaths: () => coreAssetPaths,
     getFireplaceAssetPaths: (id) =>
       requireRecord(fireplaceAssetPaths.get(id), `fireplace asset pack: ${id}`),
-    getStartupAssetPaths: (id) => [
+    getStoneAssetPaths: (id) =>
+      requireRecord(stoneAssetPaths.get(id), `stone asset pack: ${id}`),
+    getMantelFinishAssetPaths: (id) =>
+      requireRecord(mantelFinishAssetPaths.get(id), `mantel finish asset pack: ${id}`),
+    getDesignAssetPaths: ({ fireplaceId, stoneId, mantelFinishId }) => [
       ...new Set([
         ...coreAssetPaths,
-        ...requireRecord(fireplaceAssetPaths.get(id), `fireplace asset pack: ${id}`),
+        ...requireRecord(
+          fireplaceAssetPaths.get(fireplaceId),
+          `fireplace asset pack: ${fireplaceId}`,
+        ),
+        ...requireRecord(stoneAssetPaths.get(stoneId), `stone asset pack: ${stoneId}`),
+        ...requireRecord(
+          mantelFinishAssetPaths.get(mantelFinishId),
+          `mantel finish asset pack: ${mantelFinishId}`,
+        ),
       ]),
     ],
     getAssetPaths: () => [
-      ...new Set([...coreAssetPaths, ...[...fireplaceAssetPaths.values()].flat()]),
+      ...new Set([
+        ...coreAssetPaths,
+        ...[...fireplaceAssetPaths.values()].flat(),
+        ...[...stoneAssetPaths.values()].flat(),
+        ...stoneThumbnailPaths,
+        ...[...mantelFinishAssetPaths.values()].flat(),
+      ]),
     ],
   };
 }
@@ -348,5 +388,9 @@ export const APPROVED_CORE_ASSET_PATHS = catalogRepository.getCoreAssetPaths();
 export const APPROVED_ASSET_PATHS = catalogRepository.getAssetPaths();
 export const getApprovedFireplaceAssetPaths = (id: FireplaceId) =>
   catalogRepository.getFireplaceAssetPaths(id);
-export const getApprovedStartupAssetPaths = (id: FireplaceId) =>
-  catalogRepository.getStartupAssetPaths(id);
+export const getApprovedStoneAssetPaths = (id: StoneId) =>
+  catalogRepository.getStoneAssetPaths(id);
+export const getApprovedMantelFinishAssetPaths = (id: MantelFinishId) =>
+  catalogRepository.getMantelFinishAssetPaths(id);
+export const getApprovedDesignAssetPaths = (selection: DesignAssetSelection) =>
+  catalogRepository.getDesignAssetPaths(selection);
