@@ -9,6 +9,7 @@ import {
   ClampToEdgeWrapping,
   LinearFilter,
   LinearMipmapLinearFilter,
+  RepeatWrapping,
   SRGBColorSpace,
   TextureLoader,
   type Group,
@@ -26,6 +27,7 @@ import {
   inchesLabel,
   type FeatureWallConfiguration,
 } from "@/domain/configuration";
+import { centeredStoneTextureTransform } from "@/domain/stoneTextureMapping";
 import { useConfigurationStore } from "@/store/configurationStore";
 import { FireboxMedia, type FireboxMediaStatus } from "@/components/FireboxMedia";
 
@@ -250,16 +252,25 @@ function FeatureWall({
   const stoneTextures = useMemo(() => {
     const color = requireTexture(textures, stone.assets[0]!.localPath).clone();
     const bump = requireTexture(textures, stone.assets[1]!.localPath).clone();
-    const repeatX = configuration.stoneWidth / 192;
-    const repeatY = configuration.wallHeight / 144;
+    const transform = centeredStoneTextureTransform(
+      configuration.stoneWidth,
+      configuration.wallHeight,
+      stone.textureCoverage,
+    );
     for (const texture of [color, bump]) {
-      texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
-      texture.repeat.set(repeatX, repeatY);
-      texture.offset.set((1 - repeatX) / 2, (1 - repeatY) / 2);
+      texture.wrapS = texture.wrapT = RepeatWrapping;
+      texture.repeat.set(transform.repeatX, transform.repeatY);
+      texture.offset.set(transform.offsetX, transform.offsetY);
       texture.needsUpdate = true;
     }
     return { color, bump };
-  }, [configuration.stoneWidth, configuration.wallHeight, stone.assets, textures]);
+  }, [
+    configuration.stoneWidth,
+    configuration.wallHeight,
+    stone.assets,
+    stone.textureCoverage,
+    textures,
+  ]);
 
   const mantelTextures = useMemo(() => {
     const front = requireTexture(textures, mantelFinish.assets[0]!.localPath).clone();
@@ -293,14 +304,25 @@ function FeatureWall({
     const color = requireTexture(textures, stone.assets[0]!.localPath).clone();
     const bump = requireTexture(textures, stone.assets[1]!.localPath).clone();
     const riserHeight = Math.max(1, configuration.fireplaceElevation - 1.5);
+    const transform = centeredStoneTextureTransform(
+      hearthWidth,
+      riserHeight,
+      stone.textureCoverage,
+    );
     for (const texture of [color, bump]) {
-      texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
-      texture.repeat.set(hearthWidth / 192, riserHeight / 144);
-      texture.offset.set((1 - hearthWidth / 192) / 2, 0.08);
+      texture.wrapS = texture.wrapT = RepeatWrapping;
+      texture.repeat.set(transform.repeatX, transform.repeatY);
+      texture.offset.set(transform.offsetX, transform.offsetY);
       texture.needsUpdate = true;
     }
     return { color, bump };
-  }, [configuration.fireplaceElevation, hearthWidth, stone.assets, textures]);
+  }, [
+    configuration.fireplaceElevation,
+    hearthWidth,
+    stone.assets,
+    stone.textureCoverage,
+    textures,
+  ]);
 
   const fireTexture = requireTexture(textures, fireback.asset.localPath);
   const faceTexture = requireTexture(textures, face.asset.localPath);

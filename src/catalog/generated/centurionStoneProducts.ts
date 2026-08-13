@@ -19,6 +19,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.25,
       heightMax: 11,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/bucks-county-ashlar.webp",
@@ -89,6 +93,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20.75,
       heightMin: 2.25,
       heightMax: 11,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -161,6 +169,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.25,
       heightMax: 11,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/odessa-falls-ashlar.webp",
@@ -231,6 +243,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 23.5,
       heightMin: 6,
       heightMax: 11.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -303,6 +319,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 6,
       heightMax: 11.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/texas-biltmore.webp",
@@ -371,6 +391,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 23.5,
       heightMin: 6,
       heightMax: 11.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -443,6 +467,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.25,
       heightMax: 2.25,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/lexington-brick-stone.webp",
@@ -514,6 +542,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.25,
       heightMax: 2.25,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/mist-brick-stone.webp",
@@ -582,6 +614,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 7.5,
       heightMin: 2.25,
       heightMax: 2.25,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -654,6 +690,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.25,
       heightMax: 2.25,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/chicago-brick-stone.webp",
@@ -724,6 +764,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 7.5,
       heightMin: 2.25,
       heightMax: 2.25,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -796,6 +840,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.25,
       heightMax: 2.25,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/white-wash-brick-stone.webp",
@@ -865,6 +913,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 2,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/cream-brookstone.webp",
@@ -933,6 +985,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 2,
       heightMax: 2,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1005,6 +1061,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 2,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/shoreline-brookstone.webp",
@@ -1074,6 +1134,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/cream-brookstone-4.webp",
@@ -1142,6 +1206,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 4,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1214,6 +1282,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/shoreline-brookstone-4.webp",
@@ -1283,6 +1355,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 6,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/cream-brookstone-6.webp",
@@ -1351,6 +1427,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 6,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1423,6 +1503,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 6,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/shoreline-brookstone-6.webp",
@@ -1491,6 +1575,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 2,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1561,6 +1649,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 2,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1633,6 +1725,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/cream-brookstone-blend.webp",
@@ -1699,6 +1795,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 2,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1768,6 +1868,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 19,
       heightMin: 1.5,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1839,6 +1943,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.5,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/southern-wheat-canyon-ledge.webp",
@@ -1909,6 +2017,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 3.25,
       heightMax: 11,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/plain-cathedral-stone.webp",
@@ -1977,6 +2089,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 22.5,
       heightMin: 3.25,
       heightMax: 11,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2050,6 +2166,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 3.25,
       heightMax: 11,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/alpine-cathedral-stone.webp",
@@ -2120,6 +2240,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 11.5,
       heightMin: 5.5,
       heightMax: 11.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2193,6 +2317,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 5.5,
       heightMax: 11.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/california-centurion-castle.webp",
@@ -2265,6 +2393,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 5.5,
       heightMax: 11.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/gray-centurion-castle.webp",
@@ -2335,6 +2467,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 11.5,
       heightMin: 5.5,
       heightMax: 11.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2408,6 +2544,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 5.5,
       heightMax: 11.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/suede-centurion-castle.webp",
@@ -2476,6 +2616,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20.75,
       heightMin: 1,
       heightMax: 10.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2549,6 +2693,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 10.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/suede-cherokee-blend.webp",
@@ -2617,6 +2765,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20.75,
       heightMin: 1,
       heightMax: 10.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2690,6 +2842,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.25,
       heightMax: 15.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/browns-valley-cheyenne.webp",
@@ -2758,6 +2914,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 1.5,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2830,6 +2990,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.5,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/bucks-county-creekstone.webp",
@@ -2901,6 +3065,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 5.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/arizona-cutface.webp",
@@ -2969,6 +3137,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 19,
       heightMin: 1,
       heightMax: 5.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3039,6 +3211,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 5.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-cutface.webp",
@@ -3107,6 +3283,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 19,
       heightMin: 1,
       heightMax: 5.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3179,6 +3359,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 5.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/suede-cutface.webp",
@@ -3247,6 +3431,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 19,
       heightMin: 1,
       heightMax: 5.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3318,6 +3506,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 5.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/louisville-cutface.webp",
@@ -3386,6 +3578,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 1.75,
       heightMax: 1.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3456,6 +3652,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 1.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/coastal-design-series.webp",
@@ -3524,6 +3724,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 1.75,
       heightMax: 1.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3594,6 +3798,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 1.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-design-series.webp",
@@ -3662,6 +3870,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16,
       heightMin: 1.75,
       heightMax: 1.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3735,6 +3947,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 1.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/mtn-rundle-no-accent-design-series.webp",
@@ -3805,6 +4021,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 20,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/browns-valley-elkmont.webp",
@@ -3873,6 +4093,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 21.75,
       heightMin: 1,
       heightMax: 20,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3943,6 +4167,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4.75,
       heightMax: 18.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-fieldstone.webp",
@@ -4011,6 +4239,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 13.75,
       heightMin: 4.75,
       heightMax: 18.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4083,6 +4315,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4.75,
       heightMax: 18.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/plain-fieldstone.webp",
@@ -4151,6 +4387,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 21.75,
       heightMin: 1.25,
       heightMax: 18.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4223,6 +4463,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 6.75,
       heightMax: 6.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/plain-foundation.webp",
@@ -4291,6 +4535,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 22.75,
       heightMin: 6.75,
       heightMax: 6.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4363,6 +4611,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-georgetown.webp",
@@ -4431,6 +4683,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20,
       heightMin: 1,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4503,6 +4759,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/english-hackett.webp",
@@ -4574,6 +4834,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/tulsa-hackett.webp",
@@ -4642,6 +4906,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 14,
       heightMin: 2,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4712,16 +4980,20 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 3,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
-        localPath: "/assets/centurion-kentucky-ledge.webp",
+        localPath: "/assets/centurion/kentucky-ledge.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Kentucky-Ledge-Swatch-scaled.jpg",
         retrievedAt: "2026-08-13",
         label: "Official Centurion Kentucky Ledge showroom texture",
       },
       {
-        localPath: "/assets/centurion-kentucky-ledge-bump.webp",
+        localPath: "/assets/centurion/kentucky-ledge-bump.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Kentucky-Ledge-Swatch-scaled.jpg",
         retrievedAt: "2026-08-13",
@@ -4729,7 +5001,7 @@ export const generatedCenturionStoneProducts = [
       },
     ],
     thumbnailAsset: {
-      localPath: "/assets/centurion-kentucky-ledge.webp",
+      localPath: "/assets/centurion/thumbs/kentucky-ledge.webp",
       sourceUrl:
         "https://www.centurionstone.com/wp-content/uploads/2024/03/Kentucky-Ledge-Swatch-scaled.jpg",
       retrievedAt: "2026-08-13",
@@ -4781,16 +5053,20 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 3,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
-        localPath: "/assets/centurion-brown-ledge.webp",
+        localPath: "/assets/centurion/brown-ledge.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp",
         retrievedAt: "2026-08-13",
         label: "Official Centurion Brown Ledge showroom texture",
       },
       {
-        localPath: "/assets/centurion-brown-ledge-bump.webp",
+        localPath: "/assets/centurion/brown-ledge-bump.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp",
         retrievedAt: "2026-08-13",
@@ -4798,7 +5074,7 @@ export const generatedCenturionStoneProducts = [
       },
     ],
     thumbnailAsset: {
-      localPath: "/assets/centurion-brown-ledge.webp",
+      localPath: "/assets/centurion/thumbs/brown-ledge.webp",
       sourceUrl:
         "https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp",
       retrievedAt: "2026-08-13",
@@ -4849,6 +5125,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16.75,
       heightMin: 1,
       heightMax: 3,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4921,6 +5201,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 3,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/norris-grey-ledge.webp",
@@ -4992,6 +5276,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 3,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/louisville-ledge.webp",
@@ -5060,6 +5348,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16.75,
       heightMin: 1,
       heightMax: 3,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5132,6 +5424,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 3,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/texas-ledge.webp",
@@ -5200,6 +5496,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 18,
       heightMin: 2,
       heightMax: 12,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5272,6 +5572,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/bucks-county-milano.webp",
@@ -5342,6 +5646,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 12,
       heightMin: 4,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5415,6 +5723,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/oxford-mt-ledge.webp",
@@ -5486,6 +5798,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-mt-ledge.webp",
@@ -5554,6 +5870,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 12,
       heightMin: 4,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5624,6 +5944,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 8.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/browns-valley-ohio-limestone.webp",
@@ -5693,6 +6017,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 17.5,
       heightMin: 1.75,
       heightMax: 8.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5765,6 +6093,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 8.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/texas-ohio-limestone.webp",
@@ -5833,6 +6165,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 17.5,
       heightMin: 1.75,
       heightMax: 8.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5903,6 +6239,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/plain-omaha.webp",
@@ -5971,6 +6311,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20.5,
       heightMin: 1.75,
       heightMax: 13.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6041,6 +6385,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 13.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/pennsylvania-palos-verdes.webp",
@@ -6110,6 +6458,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20.5,
       heightMin: 1.75,
       heightMax: 13.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6182,6 +6534,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 13,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/bucks-county-plantation.webp",
@@ -6252,6 +6608,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 21,
       heightMin: 1.75,
       heightMax: 13,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6324,6 +6684,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.75,
       heightMax: 13,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-plantation.webp",
@@ -6392,6 +6756,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 21,
       heightMin: 1.75,
       heightMax: 13,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6463,6 +6831,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20,
       heightMin: 1.75,
       heightMax: 11,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6536,6 +6908,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4,
       heightMax: 15,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/desert-rust-river-rock.webp",
@@ -6606,6 +6982,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 15,
       heightMin: 4,
       heightMax: 15,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6678,6 +7058,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 4,
       heightMax: 15,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/browns-valley-river-rock.webp",
@@ -6747,6 +7131,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.5,
       heightMax: 8.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/suede-rubble.webp",
@@ -6815,6 +7203,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20,
       heightMin: 2.5,
       heightMax: 8.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6887,6 +7279,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.5,
       heightMax: 8.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/plain-rubble.webp",
@@ -6955,6 +7351,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20,
       heightMin: 2.5,
       heightMax: 8.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7027,6 +7427,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.5,
       heightMax: 8.75,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/tulsa-rubble.webp",
@@ -7095,6 +7499,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20,
       heightMin: 2.5,
       heightMax: 8.75,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7165,6 +7573,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/arizona-rustic.webp",
@@ -7233,6 +7645,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20,
       heightMin: 2,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7303,6 +7719,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-rustic.webp",
@@ -7371,6 +7791,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 20,
       heightMin: 2,
       heightMax: 6,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7443,6 +7867,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2,
       heightMax: 6,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/gray-rustic.webp",
@@ -7513,6 +7941,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 19,
       heightMin: 1.25,
       heightMax: 5.5,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7586,6 +8018,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1.25,
       heightMax: 5.5,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/suede-silhoutte-ledge.webp",
@@ -7654,6 +8090,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 16.75,
       heightMin: 2.75,
       heightMax: 13,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7726,6 +8166,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.75,
       heightMax: 13,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/new-england-splitface.webp",
@@ -7797,6 +8241,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.75,
       heightMax: 13,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/texas-splitface.webp",
@@ -7865,6 +8313,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 18,
       heightMin: 1,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7937,6 +8389,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/norris-grey-stack.webp",
@@ -8007,6 +8463,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 18,
       heightMin: 1,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8079,6 +8539,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/arizona-stack.webp",
@@ -8147,6 +8611,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 18,
       heightMin: 1,
       heightMax: 4,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8217,6 +8685,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 1,
       heightMax: 4,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/kentucky-stack.webp",
@@ -8285,6 +8757,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 12,
       heightMin: 3.75,
       heightMax: 22,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8357,6 +8833,10 @@ export const generatedCenturionStoneProducts = [
       heightMin: 2.25,
       heightMax: 12,
     },
+    textureCoverage: {
+      width: 192,
+      height: 144,
+    },
     assets: [
       {
         localPath: "/assets/centurion/suede-vine-hill.webp",
@@ -8425,6 +8905,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 23,
       heightMin: 1,
       heightMax: 7,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8496,6 +8980,10 @@ export const generatedCenturionStoneProducts = [
       widthMax: 23,
       heightMin: 1,
       heightMax: 7,
+    },
+    textureCoverage: {
+      width: 192,
+      height: 144,
     },
     assets: [
       {

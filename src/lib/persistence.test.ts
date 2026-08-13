@@ -53,7 +53,7 @@ describe("configuration persistence", () => {
     const result = readPersistedConfiguration(storage);
     expect(result.configuration).toMatchObject({
       schemaVersion: 6,
-      catalogVersion: "2026.08.13-1",
+      catalogVersion: "2026.08.13-2",
       stoneWidth: 90,
       hearthEnabled: true,
     });
@@ -145,7 +145,7 @@ describe("configuration persistence", () => {
     expect(readPersistedConfiguration(storage)).toMatchObject({
       configuration: {
         schemaVersion: 6,
-        catalogVersion: "2026.08.13-1",
+        catalogVersion: "2026.08.13-2",
         fireplaceId: "864-trv-31k-deluxe",
         faceOptionId: "metropolitan",
         stoneId: "brown-ledge",

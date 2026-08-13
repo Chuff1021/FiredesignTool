@@ -2,6 +2,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
+sharp.cache(false);
+
 type PieceRange = { widthMin: number; widthMax: number; heightMin: number; heightMax: number };
 type PatternDefinition = {
   slug: string;
@@ -9,6 +11,8 @@ type PatternDefinition = {
   patternCode: string;
   pieceRange: PieceRange;
   joint: "dry-stack" | "mortar";
+  /** Installed width represented by one official swatch crop. */
+  sourceFieldWidth: number;
 };
 
 const patterns: PatternDefinition[] = [
@@ -18,6 +22,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "230",
     pieceRange: { widthMin: 5.75, widthMax: 20.75, heightMin: 2.25, heightMax: 11 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "biltmore",
@@ -25,6 +30,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "400",
     pieceRange: { widthMin: 11.75, widthMax: 23.5, heightMin: 6, heightMax: 11.75 },
     joint: "dry-stack",
+    sourceFieldWidth: 48,
   },
   {
     slug: "brick-stone",
@@ -32,6 +38,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "110",
     pieceRange: { widthMin: 7.5, widthMax: 7.5, heightMin: 2.25, heightMax: 2.25 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "brookstone",
@@ -39,6 +46,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "186",
     pieceRange: { widthMin: 6, widthMax: 16, heightMin: 2, heightMax: 2 },
     joint: "dry-stack",
+    sourceFieldWidth: 48,
   },
   {
     slug: "brookstone-4",
@@ -46,6 +54,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "187",
     pieceRange: { widthMin: 6, widthMax: 16, heightMin: 4, heightMax: 4 },
     joint: "dry-stack",
+    sourceFieldWidth: 48,
   },
   {
     slug: "brookstone-6",
@@ -53,6 +62,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "188",
     pieceRange: { widthMin: 6, widthMax: 16, heightMin: 6, heightMax: 6 },
     joint: "dry-stack",
+    sourceFieldWidth: 48,
   },
   {
     slug: "brookstone-blend",
@@ -60,6 +70,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "189",
     pieceRange: { widthMin: 6, widthMax: 16, heightMin: 2, heightMax: 6 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "canyon-ledge",
@@ -67,6 +78,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "280",
     pieceRange: { widthMin: 5.5, widthMax: 19, heightMin: 1.5, heightMax: 4 },
     joint: "mortar",
+    sourceFieldWidth: 60,
   },
   {
     slug: "cathedral-stone",
@@ -74,6 +86,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "140",
     pieceRange: { widthMin: 11, widthMax: 22.5, heightMin: 3.25, heightMax: 11 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "centurion-castle",
@@ -81,6 +94,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "070",
     pieceRange: { widthMin: 5.5, widthMax: 11.5, heightMin: 5.5, heightMax: 11.5 },
     joint: "mortar",
+    sourceFieldWidth: 36,
   },
   {
     slug: "cherokee-blend",
@@ -88,6 +102,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "450",
     pieceRange: { widthMin: 4, widthMax: 20.75, heightMin: 1, heightMax: 10.5 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "cheyenne",
@@ -95,6 +110,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "480",
     pieceRange: { widthMin: 5, widthMax: 23, heightMin: 1.25, heightMax: 15.5 },
     joint: "dry-stack",
+    sourceFieldWidth: 60,
   },
   {
     slug: "creekstone",
@@ -102,6 +118,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "425",
     pieceRange: { widthMin: 6, widthMax: 16, heightMin: 1.5, heightMax: 6 },
     joint: "mortar",
+    sourceFieldWidth: 60,
   },
   {
     slug: "cutface",
@@ -109,6 +126,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "270",
     pieceRange: { widthMin: 4, widthMax: 19, heightMin: 1, heightMax: 5.5 },
     joint: "dry-stack",
+    sourceFieldWidth: 60,
   },
   {
     slug: "design-series",
@@ -116,6 +134,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "290",
     pieceRange: { widthMin: 4, widthMax: 16, heightMin: 1.75, heightMax: 1.75 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "elkmont",
@@ -123,6 +142,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "460",
     pieceRange: { widthMin: 5, widthMax: 21.75, heightMin: 1, heightMax: 20 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "fieldstone",
@@ -130,6 +150,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "020",
     pieceRange: { widthMin: 2, widthMax: 13.75, heightMin: 4.75, heightMax: 18.75 },
     joint: "mortar",
+    sourceFieldWidth: 60,
   },
   {
     slug: "flint-ridge",
@@ -137,6 +158,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "430",
     pieceRange: { widthMin: 2, widthMax: 21.75, heightMin: 1.25, heightMax: 18.75 },
     joint: "dry-stack",
+    sourceFieldWidth: 48,
   },
   {
     slug: "foundation",
@@ -144,6 +166,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "530",
     pieceRange: { widthMin: 22.75, widthMax: 22.75, heightMin: 6.75, heightMax: 6.75 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "georgetown",
@@ -151,6 +174,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "440",
     pieceRange: { widthMin: 4, widthMax: 20, heightMin: 1, heightMax: 6 },
     joint: "dry-stack",
+    sourceFieldWidth: 84,
   },
   {
     slug: "hackett",
@@ -158,6 +182,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "050",
     pieceRange: { widthMin: 4, widthMax: 14, heightMin: 2, heightMax: 4 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "ledge",
@@ -165,6 +190,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "150",
     pieceRange: { widthMin: 6.75, widthMax: 16.75, heightMin: 1, heightMax: 3 },
     joint: "dry-stack",
+    sourceFieldWidth: 96,
   },
   {
     slug: "mesa",
@@ -172,6 +198,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "420",
     pieceRange: { widthMin: 4, widthMax: 18, heightMin: 2, heightMax: 12 },
     joint: "dry-stack",
+    sourceFieldWidth: 60,
   },
   {
     slug: "milano",
@@ -179,6 +206,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "485",
     pieceRange: { widthMin: 4, widthMax: 18, heightMin: 2, heightMax: 6 },
     joint: "dry-stack",
+    sourceFieldWidth: 60,
   },
   {
     slug: "mt-ledge",
@@ -186,6 +214,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "210",
     pieceRange: { widthMin: 8, widthMax: 12, heightMin: 4, heightMax: 4 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "ohio-limestone",
@@ -193,6 +222,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "190",
     pieceRange: { widthMin: 5, widthMax: 17.5, heightMin: 1.75, heightMax: 8.5 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "omaha",
@@ -200,6 +230,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "475",
     pieceRange: { widthMin: 4, widthMax: 18, heightMin: 2, heightMax: 6 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "palos-verdes",
@@ -207,6 +238,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "040",
     pieceRange: { widthMin: 5, widthMax: 20.5, heightMin: 1.75, heightMax: 13.5 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "plantation",
@@ -214,6 +246,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "295",
     pieceRange: { widthMin: 4, widthMax: 21, heightMin: 1.75, heightMax: 13 },
     joint: "mortar",
+    sourceFieldWidth: 72,
   },
   {
     slug: "quarry-stone",
@@ -221,6 +254,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "255",
     pieceRange: { widthMin: 6, widthMax: 20, heightMin: 1.75, heightMax: 11 },
     joint: "mortar",
+    sourceFieldWidth: 72,
   },
   {
     slug: "river-rock",
@@ -228,6 +262,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "080",
     pieceRange: { widthMin: 4, widthMax: 15, heightMin: 4, heightMax: 15 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "rubble",
@@ -235,6 +270,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "250",
     pieceRange: { widthMin: 4.75, widthMax: 20, heightMin: 2.5, heightMax: 8.75 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "rustic",
@@ -242,6 +278,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "900",
     pieceRange: { widthMin: 4, widthMax: 20, heightMin: 2, heightMax: 6 },
     joint: "dry-stack",
+    sourceFieldWidth: 60,
   },
   {
     slug: "silhoutte-ledge",
@@ -249,6 +286,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "160",
     pieceRange: { widthMin: 4.5, widthMax: 19, heightMin: 1.25, heightMax: 5.5 },
     joint: "mortar",
+    sourceFieldWidth: 60,
   },
   {
     slug: "splitface",
@@ -256,6 +294,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "200",
     pieceRange: { widthMin: 4, widthMax: 16.75, heightMin: 2.75, heightMax: 13 },
     joint: "mortar",
+    sourceFieldWidth: 48,
   },
   {
     slug: "stack",
@@ -263,6 +302,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "100",
     pieceRange: { widthMin: 3.5, widthMax: 18, heightMin: 1, heightMax: 4 },
     joint: "dry-stack",
+    sourceFieldWidth: 60,
   },
   {
     slug: "topeka",
@@ -270,6 +310,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "175",
     pieceRange: { widthMin: 2, widthMax: 12, heightMin: 3.75, heightMax: 22 },
     joint: "mortar",
+    sourceFieldWidth: 36,
   },
   {
     slug: "vine-hill",
@@ -277,6 +318,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "410",
     pieceRange: { widthMin: 4, widthMax: 23, heightMin: 2.25, heightMax: 12 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
   {
     slug: "weather-edge",
@@ -284,6 +326,7 @@ const patterns: PatternDefinition[] = [
     patternCode: "260",
     pieceRange: { widthMin: 6.5, widthMax: 23, heightMin: 1, heightMax: 7 },
     joint: "dry-stack",
+    sourceFieldWidth: 72,
   },
 ];
 
@@ -427,52 +470,289 @@ async function fetchBuffer(url: string) {
   return Buffer.from(await response.arrayBuffer());
 }
 
-async function makeAtlas(sourceBuffer: Buffer) {
+const ATLAS_WIDTH = 2048;
+const ATLAS_HEIGHT = 1536;
+const ATLAS_PHYSICAL_WIDTH = 192;
+const ATLAS_PHYSICAL_HEIGHT = 144;
+
+function deterministicRandom(seed: string) {
+  let state = 2166136261;
+  for (const character of seed) {
+    state ^= character.charCodeAt(0);
+    state = Math.imul(state, 16777619);
+  }
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function patchPositions(total: number, patch: number, overlap: number) {
+  const positions: number[] = [];
+  const last = total - patch;
+  for (let position = 0; position < last; position += patch - overlap) positions.push(position);
+  if (positions.at(-1) !== last) positions.push(last);
+  return positions;
+}
+
+async function makeFoundationAtlas(
+  sourceBuffer: Buffer,
+  sourceFieldWidth: number,
+  seed: string,
+) {
+  void seed;
+  const tileWidth = Math.round((sourceFieldWidth / ATLAS_PHYSICAL_WIDTH) * ATLAS_WIDTH);
+  // Six published 6.75-inch courses plus the photographed mortar joints occupy
+  // approximately 43.5 installed inches in the square manufacturer swatch.
+  const tileHeight = Math.round((43.5 / ATLAS_PHYSICAL_HEIGHT) * ATLAS_HEIGHT);
+  const tile = await sharp(sourceBuffer)
+    .rotate()
+    .resize(tileWidth, tileHeight, { fit: "fill", kernel: sharp.kernel.lanczos3 })
+    .removeAlpha()
+    .png()
+    .toBuffer();
+  const columns = Math.ceil(ATLAS_WIDTH / tileWidth);
+  const rows = Math.ceil(ATLAS_HEIGHT / tileHeight);
+  const tiled = await sharp({
+    create: {
+      width: columns * tileWidth + 1,
+      height: rows * tileHeight + 1,
+      channels: 3,
+      background: "#8c8274",
+    },
+  })
+    .composite(
+      Array.from({ length: rows }, (_, row) =>
+        Array.from({ length: columns }, (_, column) => ({
+          input: tile,
+          left: column * tileWidth,
+          top: row * tileHeight,
+        })),
+      ).flat(),
+    )
+    .png()
+    .toBuffer();
+  return sharp(tiled)
+    .extract({ left: 0, top: 0, width: ATLAS_WIDTH, height: ATLAS_HEIGHT })
+    .png()
+    .toBuffer();
+}
+
+/**
+ * Builds one physically calibrated 192 x 144 inch field from the official swatch.
+ * Overlapping source patches are selected by edge similarity, preserving the real
+ * stone scale without the kaleidoscope seams produced by full-image mirroring.
+ */
+async function makeAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: string) {
   const rotated = await sharp(sourceBuffer).rotate().toBuffer();
   const metadata = await sharp(rotated).metadata();
   if (!metadata.width || !metadata.height) throw new Error("Invalid Centurion swatch image");
   const insetX = Math.max(2, Math.round(metadata.width * 0.025));
   const insetY = Math.max(2, Math.round(metadata.height * 0.025));
-  const cropped = await sharp(rotated)
+  const cropped = sharp(rotated)
     .extract({
       left: insetX,
       top: insetY,
       width: metadata.width - insetX * 2,
       height: metadata.height - insetY * 2,
     })
-    .png()
-    .toBuffer();
-  const variants: { input: Buffer; left: number; top: number }[] = [];
-  for (let index = 0; index < 4; index += 1) {
-    let image = sharp(cropped).resize(1088, 832, {
-      fit: "cover",
-      position: "centre",
+    .resize({
+      width: Math.round((sourceFieldWidth / ATLAS_PHYSICAL_WIDTH) * ATLAS_WIDTH),
       kernel: sharp.kernel.lanczos3,
-    });
-    if (index % 2) image = image.flop();
-    if (index > 1) image = image.flip();
-    const buffer = await image
-      .extract({ left: (index * 19) % 65, top: (index * 13) % 65, width: 1024, height: 768 })
-      .png()
-      .toBuffer();
-    variants.push({
-      input: buffer,
-      left: (index % 2) * 1024,
-      top: Math.floor(index / 2) * 768,
-    });
+    })
+    .removeAlpha();
+  const { data: source, info } = await cropped.raw().toBuffer({ resolveWithObject: true });
+  const sourceWidth = info.width;
+  const sourceHeight = info.height;
+  const channels = info.channels;
+  const patchWidth = Math.min(512, Math.max(240, Math.floor(sourceWidth * 0.72)));
+  const patchHeight = Math.min(
+    384,
+    Math.max(192, Math.min(Math.floor(sourceHeight * 0.62), Math.floor(patchWidth * 0.8))),
+  );
+  const overlap = Math.max(48, Math.round(Math.min(patchWidth, patchHeight) * 0.2));
+  const xPositions = patchPositions(ATLAS_WIDTH, patchWidth, overlap);
+  const yPositions = patchPositions(ATLAS_HEIGHT, patchHeight, overlap);
+  const target = Buffer.alloc(ATLAS_WIDTH * ATLAS_HEIGHT * channels);
+  const filled = new Uint8Array(ATLAS_WIDTH * ATLAS_HEIGHT);
+  const random = deterministicRandom(seed);
+  const maxSourceX = Math.max(0, sourceWidth - patchWidth);
+  const maxSourceY = Math.max(0, sourceHeight - patchHeight);
+
+  const scoreCandidate = (
+    targetX: number,
+    targetY: number,
+    sourceX: number,
+    sourceY: number,
+  ) => {
+    let score = 0;
+    let samples = 0;
+    for (let patchY = 0; patchY < patchHeight; patchY += 4) {
+      const outputY = targetY + patchY;
+      for (let patchX = 0; patchX < patchWidth; patchX += 4) {
+        const outputX = targetX + patchX;
+        const outputPixel = outputY * ATLAS_WIDTH + outputX;
+        if (filled[outputPixel] !== 1) continue;
+        const sourcePixel = (sourceY + patchY) * sourceWidth + sourceX + patchX;
+        const outputOffset = outputPixel * channels;
+        const sourceOffset = sourcePixel * channels;
+        for (let channel = 0; channel < 3; channel += 1) {
+          const difference = target[outputOffset + channel]! - source[sourceOffset + channel]!;
+          score += difference * difference;
+        }
+        samples += 1;
+      }
+    }
+    return samples === 0 ? 0 : score / samples;
+  };
+
+  const pixelDifference = (outputPixel: number, sourcePixel: number) => {
+    const outputOffset = outputPixel * channels;
+    const sourceOffset = sourcePixel * channels;
+    let difference = 0;
+    for (let channel = 0; channel < 3; channel += 1) {
+      const delta = target[outputOffset + channel]! - source[sourceOffset + channel]!;
+      difference += delta * delta;
+    }
+    return difference;
+  };
+
+  const verticalSeam = (
+    targetX: number,
+    targetY: number,
+    sourceX: number,
+    sourceY: number,
+    overlapWidth: number,
+  ) => {
+    const backtrack = new Int16Array(overlapWidth * patchHeight);
+    let previous = new Float64Array(overlapWidth);
+    let current = new Float64Array(overlapWidth);
+    for (let y = 0; y < patchHeight; y += 1) {
+      for (let x = 0; x < overlapWidth; x += 1) {
+        const outputPixel = (targetY + y) * ATLAS_WIDTH + targetX + x;
+        const sourcePixel = (sourceY + y) * sourceWidth + sourceX + x;
+        let predecessor = x;
+        if (y > 0) {
+          if (x > 0 && previous[x - 1]! < previous[predecessor]!) predecessor = x - 1;
+          if (x + 1 < overlapWidth && previous[x + 1]! < previous[predecessor]!)
+            predecessor = x + 1;
+        }
+        backtrack[y * overlapWidth + x] = predecessor;
+        current[x] =
+          pixelDifference(outputPixel, sourcePixel) + (y === 0 ? 0 : previous[predecessor]!);
+      }
+      [previous, current] = [current, previous];
+    }
+    let cursor = 0;
+    for (let x = 1; x < overlapWidth; x += 1) if (previous[x]! < previous[cursor]!) cursor = x;
+    const seam = new Int16Array(patchHeight);
+    for (let y = patchHeight - 1; y >= 0; y -= 1) {
+      seam[y] = cursor;
+      cursor = backtrack[y * overlapWidth + cursor]!;
+    }
+    return seam;
+  };
+
+  const horizontalSeam = (
+    targetX: number,
+    targetY: number,
+    sourceX: number,
+    sourceY: number,
+    overlapHeight: number,
+  ) => {
+    const backtrack = new Int16Array(overlapHeight * patchWidth);
+    let previous = new Float64Array(overlapHeight);
+    let current = new Float64Array(overlapHeight);
+    for (let x = 0; x < patchWidth; x += 1) {
+      for (let y = 0; y < overlapHeight; y += 1) {
+        const outputPixel = (targetY + y) * ATLAS_WIDTH + targetX + x;
+        const sourcePixel = (sourceY + y) * sourceWidth + sourceX + x;
+        let predecessor = y;
+        if (x > 0) {
+          if (y > 0 && previous[y - 1]! < previous[predecessor]!) predecessor = y - 1;
+          if (y + 1 < overlapHeight && previous[y + 1]! < previous[predecessor]!)
+            predecessor = y + 1;
+        }
+        backtrack[x * overlapHeight + y] = predecessor;
+        current[y] =
+          pixelDifference(outputPixel, sourcePixel) + (x === 0 ? 0 : previous[predecessor]!);
+      }
+      [previous, current] = [current, previous];
+    }
+    let cursor = 0;
+    for (let y = 1; y < overlapHeight; y += 1) if (previous[y]! < previous[cursor]!) cursor = y;
+    const seam = new Int16Array(patchWidth);
+    for (let x = patchWidth - 1; x >= 0; x -= 1) {
+      seam[x] = cursor;
+      cursor = backtrack[x * overlapHeight + cursor]!;
+    }
+    return seam;
+  };
+
+  for (let yIndex = 0; yIndex < yPositions.length; yIndex += 1) {
+    const targetY = yPositions[yIndex]!;
+    const topOverlap = yIndex === 0 ? 0 : yPositions[yIndex - 1]! + patchHeight - targetY;
+    for (let xIndex = 0; xIndex < xPositions.length; xIndex += 1) {
+      const targetX = xPositions[xIndex]!;
+      const leftOverlap = xIndex === 0 ? 0 : xPositions[xIndex - 1]! + patchWidth - targetX;
+      let bestSourceX = 0;
+      let bestSourceY = 0;
+      let bestScore = Number.POSITIVE_INFINITY;
+      const candidateCount = targetX === 0 && targetY === 0 ? 1 : 18;
+      for (let candidate = 0; candidate < candidateCount; candidate += 1) {
+        const sourceX = Math.round(random() * maxSourceX);
+        const sourceY = Math.round(random() * maxSourceY);
+        const score = scoreCandidate(targetX, targetY, sourceX, sourceY);
+        if (score < bestScore) {
+          bestScore = score;
+          bestSourceX = sourceX;
+          bestSourceY = sourceY;
+        }
+      }
+
+      const leftSeam =
+        leftOverlap > 0
+          ? verticalSeam(targetX, targetY, bestSourceX, bestSourceY, leftOverlap)
+          : undefined;
+      const topSeam =
+        topOverlap > 0
+          ? horizontalSeam(targetX, targetY, bestSourceX, bestSourceY, topOverlap)
+          : undefined;
+
+      for (let patchY = 0; patchY < patchHeight; patchY += 1) {
+        const outputY = targetY + patchY;
+        for (let patchX = 0; patchX < patchWidth; patchX += 1) {
+          const outputX = targetX + patchX;
+          const outputPixel = outputY * ATLAS_WIDTH + outputX;
+          const sourcePixel = (bestSourceY + patchY) * sourceWidth + bestSourceX + patchX;
+          const outputOffset = outputPixel * channels;
+          const sourceOffset = sourcePixel * channels;
+          const crossesLeftSeam = leftSeam === undefined || patchX >= leftSeam[patchY]!;
+          const crossesTopSeam = topSeam === undefined || patchY >= topSeam[patchX]!;
+          if (filled[outputPixel] === 0 || (crossesLeftSeam && crossesTopSeam)) {
+            for (let channel = 0; channel < channels; channel += 1)
+              target[outputOffset + channel] = source[sourceOffset + channel]!;
+          }
+          filled[outputPixel] = 1;
+        }
+      }
+    }
   }
-  return sharp({ create: { width: 2048, height: 1536, channels: 3, background: "#71685e" } })
-    .composite(variants)
+
+  return sharp(target, { raw: { width: ATLAS_WIDTH, height: ATLAS_HEIGHT, channels } })
     .png()
     .toBuffer();
 }
 
-async function writeWallAssets(id: string, sourceUrl: string) {
-  const legacy = id === "kentucky-ledge" || id === "brown-ledge";
-  if (legacy) return;
+async function writeWallAssets(id: string, sourceUrl: string, sourceFieldWidth: number) {
   const sourceBuffer = await fetchBuffer(sourceUrl);
   await writeFile(path.join(sourceDirectory, `${id}.source`), sourceBuffer);
-  const atlas = await makeAtlas(sourceBuffer);
+  const atlas = id.endsWith("-foundation")
+    ? await makeFoundationAtlas(sourceBuffer, sourceFieldWidth, id)
+    : await makeAtlas(sourceBuffer, sourceFieldWidth, id);
   await Promise.all([
     sharp(atlas)
       .webp({ quality: 82, smartSubsample: true, effort: 5 })
@@ -525,6 +805,7 @@ await Promise.all(
 
 const products: Record<string, unknown>[] = [];
 const swatchUrlByColor = new Map<string, string>();
+const sourceFieldWidthByProductId = new Map<string, number>();
 for (const pattern of patterns) {
   const sourceUrl = `https://www.centurionstone.com/pattern/${pattern.slug}/`;
   const html = await (await fetch(sourceUrl)).text();
@@ -543,9 +824,9 @@ for (const pattern of patterns) {
     const accessoryName = accessoryByColor[colorSlug] ?? colorName;
     const accessorySlug = slugify(accessoryName);
     swatchUrlByColor.set(colorSlug, swatchUrl);
-    const legacy = id === "kentucky-ledge" || id === "brown-ledge";
-    const wallBase = legacy ? `/assets/centurion-${id}` : `/assets/centurion/${id}`;
-    const thumbPath = legacy ? `${wallBase}.webp` : `/assets/centurion/thumbs/${id}.webp`;
+    sourceFieldWidthByProductId.set(id, pattern.sourceFieldWidth);
+    const wallBase = `/assets/centurion/${id}`;
+    const thumbPath = `/assets/centurion/thumbs/${id}.webp`;
     const legacyHearth = accessorySlug === "kentucky" || accessorySlug === "brown";
     const hearthBase = legacyHearth
       ? `/assets/centurion-hearthstone-${accessorySlug}`
@@ -564,6 +845,10 @@ for (const pattern of patterns) {
       sourceUrl,
       joint: pattern.joint,
       pieceRange: pattern.pieceRange,
+      textureCoverage: {
+        width: ATLAS_PHYSICAL_WIDTH,
+        height: ATLAS_PHYSICAL_HEIGHT,
+      },
       assets: [
         {
           localPath: `${wallBase}.webp`,
@@ -614,14 +899,29 @@ if (products.length !== 122)
   throw new Error(`Expected 122 official Centurion swatches, found ${products.length}`);
 
 if (!process.argv.includes("--catalog-only")) {
-  const concurrency = 3;
+  const onlyId = process.argv.find((argument) => argument.startsWith("--only="))?.slice(7);
+  const assetProducts = onlyId
+    ? products.filter((product) => (product as { id: string }).id === onlyId)
+    : products;
+  if (onlyId && assetProducts.length !== 1)
+    throw new Error(`Unknown Centurion product: ${onlyId}`);
+  // Texture quilting is intentionally memory-heavy; serialize asset construction so
+  // the full 122-swatch release is deterministic on showroom/developer hardware.
+  const concurrency = 1;
   let cursor = 0;
   await Promise.all(
     Array.from({ length: concurrency }, async () => {
-      while (cursor < products.length) {
-        const product = products[cursor++] as { id: string; assets: { sourceUrl: string }[] };
-        process.stdout.write(`Preparing ${cursor}/${products.length} ${product.id}\n`);
-        await writeWallAssets(product.id, product.assets[0]!.sourceUrl);
+      while (cursor < assetProducts.length) {
+        const product = assetProducts[cursor++] as {
+          id: string;
+          assets: { sourceUrl: string }[];
+        };
+        process.stdout.write(`Preparing ${cursor}/${assetProducts.length} ${product.id}\n`);
+        await writeWallAssets(
+          product.id,
+          product.assets[0]!.sourceUrl,
+          sourceFieldWidthByProductId.get(product.id)!,
+        );
       }
     }),
   );

@@ -11,6 +11,10 @@ import {
   type BuiltInSide,
   type RoomProject,
 } from "@/domain/roomProject";
+import {
+  centeredStoneTileOrigin,
+  type StoneTextureCoverage,
+} from "@/domain/stoneTextureMapping";
 import { loadImage } from "@/lib/roomImage";
 import { projectCanvasLayer } from "@/lib/roomPerspective";
 
@@ -210,24 +214,28 @@ function drawStoneField(
   width: number,
   height: number,
   pixelsPerInch: number,
+  coverage: StoneTextureCoverage,
 ) {
   context.save();
   context.beginPath();
   context.rect(x, 0, width, height);
   context.clip();
-  // Match the physical texture window used by FeatureWallCanvas. The prior
-  // customer-room path repeated the complete manufacturer photograph every
-  // 36–66 inches, making each stone tiny and exposing mirrored seams. Both
-  // workspaces now use the same centered 192 × 144 inch material reference.
   const physicalWidth = width / pixelsPerInch;
   const physicalHeight = height / pixelsPerInch;
-  const horizontalFraction = Math.min(1, physicalWidth / 192);
-  const verticalFraction = Math.min(1, physicalHeight / 144);
-  const sourceWidth = image.naturalWidth * horizontalFraction;
-  const sourceHeight = image.naturalHeight * verticalFraction;
-  const sourceX = (image.naturalWidth - sourceWidth) / 2;
-  const sourceY = (image.naturalHeight - sourceHeight) / 2;
-  context.drawImage(image, sourceX, sourceY, sourceWidth, sourceHeight, x, 0, width, height);
+  const origin = centeredStoneTileOrigin(physicalWidth, physicalHeight, coverage);
+  const tileWidth = coverage.width * pixelsPerInch;
+  const tileHeight = coverage.height * pixelsPerInch;
+  let firstX = x + origin.x * pixelsPerInch;
+  let firstY = origin.y * pixelsPerInch;
+  while (firstX > x) firstX -= tileWidth;
+  while (firstX + tileWidth <= x) firstX += tileWidth;
+  while (firstY > 0) firstY -= tileHeight;
+  while (firstY + tileHeight <= 0) firstY += tileHeight;
+  for (let top = firstY; top < height; top += tileHeight) {
+    for (let left = firstX; left < x + width; left += tileWidth) {
+      context.drawImage(image, left, top, tileWidth, tileHeight);
+    }
+  }
   const depth = context.createLinearGradient(x, 0, x + width, 0);
   depth.addColorStop(0, "rgba(0,0,0,.1)");
   depth.addColorStop(0.08, "rgba(255,255,255,.025)");
@@ -358,7 +366,15 @@ async function createDesignLayer(
       rightWidth,
       pixelsPerInch,
     );
-    drawStoneField(context, stoneImage, stoneLeft, stoneWidth, canvas.height, pixelsPerInch);
+    drawStoneField(
+      context,
+      stoneImage,
+      stoneLeft,
+      stoneWidth,
+      canvas.height,
+      pixelsPerInch,
+      stone.textureCoverage,
+    );
   }
 
   const faceWidth = face.visibleFace.width * pixelsPerInch;
@@ -640,6 +656,7 @@ function stoneRiserCanvas(
   width: number,
   height: number,
   pixelsPerInch: number,
+  coverage: StoneTextureCoverage,
 ): HTMLCanvasElement {
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(2, Math.round(width * pixelsPerInch));
@@ -648,7 +665,7 @@ function stoneRiserCanvas(
   if (!context) throw new Error("The hearth renderer could not start.");
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
-  drawStoneField(context, image, 0, canvas.width, canvas.height, pixelsPerInch);
+  drawStoneField(context, image, 0, canvas.width, canvas.height, pixelsPerInch, coverage);
   const shade = context.createLinearGradient(0, 0, 0, canvas.height);
   shade.addColorStop(0, "rgba(0,0,0,.08)");
   shade.addColorStop(1, "rgba(0,0,0,.2)");
@@ -823,6 +840,7 @@ async function drawProjectedHearth(
       configuration.stoneWidth,
       riserHeight,
       textureScale,
+      stone.textureCoverage,
     );
     context.save();
     context.shadowColor = "rgba(0,0,0,.38)";

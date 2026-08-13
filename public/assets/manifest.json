@@ -1,426 +1,436 @@
 {
-  "version": "2026.08.13-1",
-  "generatedAt": "2026-08-13T18:00:00.000Z",
+  "version": "2026.08.13-2",
+  "generatedAt": "2026-08-13T21:00:00.000Z",
   "files": [
     {
       "path": "/assets/centurion/alpine-cathedral-stone-bump.webp",
-      "sha256": "ac08369f29592d75e876a9a21b518a3264982247f45d131ad38837098ef63fca",
-      "size": 110570
+      "sha256": "7c6f33fbe672211754e70dd54c9b25a1ad3f696736b116abbddfded514ada65a",
+      "size": 141206
     },
     {
       "path": "/assets/centurion/alpine-cathedral-stone.webp",
-      "sha256": "714898c83f3ef5722795f1fe16964fc1549eac05319684885de9173d98de4372",
-      "size": 634614
+      "sha256": "aef57108be7c0b2b50aa56980707bfb84f1479725bade41028288fc82307863b",
+      "size": 693218
     },
     {
       "path": "/assets/centurion/appalachian-mesa-bump.webp",
-      "sha256": "55d5776fe4893585688fa15eccf0a61fc8d0a3b4c650f84bc0955dc4f9f815e8",
-      "size": 149304
+      "sha256": "f9331c43af267719cc6e7c7500d57f9a9c6dff0d0f8ec19f486073d4fd4683b2",
+      "size": 159386
     },
     {
       "path": "/assets/centurion/appalachian-mesa.webp",
-      "sha256": "534a41c0972e60f0419e32f8d770f9eb8ccb5dc78edbfa3dc90debcc7a416583",
-      "size": 929716
+      "sha256": "e82607f493e3b0d4ced002f4a4a59f9f85e90ba2add1bfc8150ab3fdaae09980",
+      "size": 1134470
     },
     {
       "path": "/assets/centurion/arizona-cutface-bump.webp",
-      "sha256": "d60030bec4927c1bc72ad427a0dd92268a30f8ba08623623d0b03910112e0282",
-      "size": 120134
+      "sha256": "742dcc73c6e7b4b7f6a0da7efa77933e596c444f595d596fb63d5ee047738310",
+      "size": 130426
     },
     {
       "path": "/assets/centurion/arizona-cutface.webp",
-      "sha256": "e9ed675d752919c5f803182453c9a49732e7c3cf62c4b01e8d88b211399159f3",
-      "size": 955348
+      "sha256": "88916021f97510f73de1a5b84434b4697eadfb61a7b40572d6075bef42c71cc5",
+      "size": 1112874
     },
     {
       "path": "/assets/centurion/arizona-rustic-bump.webp",
-      "sha256": "b044451a13c092650e9c06a6470b501fbf37e735179d6f6b7d545afbe8cb1922",
-      "size": 99284
+      "sha256": "69f74f7c2164c7440bf2978f2fd97776d3a550d3f774f4377507debb86247278",
+      "size": 111892
     },
     {
       "path": "/assets/centurion/arizona-rustic.webp",
-      "sha256": "e1debe4170df5b3596ba5b76e7bc0019a2689a3856fd6a152f7531d3888d2355",
-      "size": 825480
+      "sha256": "bff03df5c82c7bb246d670d667b32ecf341d90e9342784b4416ba6d406e352a3",
+      "size": 973782
     },
     {
       "path": "/assets/centurion/arizona-stack-bump.webp",
-      "sha256": "fa8c680e703fe9f3ae631bb1b6bfcc508f02303e3a8746e136bdcafd00db83c0",
-      "size": 99334
+      "sha256": "d6189d65f046d1c52be44498dfc4f8f7cbe312aed44e8d4c32a41ca27cbe80d7",
+      "size": 111692
     },
     {
       "path": "/assets/centurion/arizona-stack.webp",
-      "sha256": "cc39485ff9a788127f6d03096163917a6f7d0928cc0616b3d05caa1de0c1b8c9",
-      "size": 914230
+      "sha256": "c5c036ad0a1b06e19c60416e71d0db77b37cb9fd52f202f33e6ab58e39fa202c",
+      "size": 996534
     },
     {
       "path": "/assets/centurion/austin-design-series-bump.webp",
-      "sha256": "9898bc5f8f8a9368c5fc8a61dd611e9e417e4ab908fe1093022d408dd3f1a10b",
-      "size": 70560
+      "sha256": "df6c44fb329cd186f939e98c293be9706e15868ef669591c03daebb20a0e4620",
+      "size": 76344
     },
     {
       "path": "/assets/centurion/austin-design-series.webp",
-      "sha256": "d3e58441dc6876a57951aae8960099f8ab7697234db0fa20a7afdf08d58ea2e9",
-      "size": 261844
+      "sha256": "c2cbd3df657aeb92f4b677077b1c77fd85644b2aa4db593fceeadac74b79c3e2",
+      "size": 291838
     },
     {
       "path": "/assets/centurion/austin-hackett-bump.webp",
-      "sha256": "1c1b1e5ea98110ec33048d3b903ea88e52e749f7f849c46bb153528d55992ba4",
-      "size": 104022
+      "sha256": "6feebb900c4feed3d9b38d69d548a21fab75eb979094821280afb9796a3b1bc9",
+      "size": 122162
     },
     {
       "path": "/assets/centurion/austin-hackett.webp",
-      "sha256": "55f05d7df35cf5e1e573d9dc8f4d38eee8c9c0965183ed1b28107177ddbbb30f",
-      "size": 721962
+      "sha256": "65860a5dddc7595a33c6bc788c90b6ca53f6aee37d2193a52f7bf4b8975e11a8",
+      "size": 824632
     },
     {
       "path": "/assets/centurion/austin-mt-ledge-bump.webp",
-      "sha256": "eae64f4849a0f447073f6e68aadf3a90db9b68b40d865e1e16b6f5566ea97357",
-      "size": 86658
+      "sha256": "0e73a6934caf5ab4f472e9f878f36e39d9b9c1b4e1bfaf05ab12cc8915ebcbac",
+      "size": 100522
     },
     {
       "path": "/assets/centurion/austin-mt-ledge.webp",
-      "sha256": "fe3b5776571aacda1d9233a132e5cc1780d140ceae20138ed61653e094d30d4a",
-      "size": 337716
+      "sha256": "14e5dd04db545c0a6458ece6a5e2c65b2915d393f9a8ce2e21dd585d3dca7d2a",
+      "size": 427056
     },
     {
       "path": "/assets/centurion/beige-brick-stone-bump.webp",
-      "sha256": "89ab73ff6e7e05d0e15a96307150dc36e404bd6008d7eb20db3fabf24ff01626",
-      "size": 87368
+      "sha256": "e60699b290a7ca447f166c18643ba83b99dcfac27922d914c1c18a3f2efab7da",
+      "size": 110906
     },
     {
       "path": "/assets/centurion/beige-brick-stone.webp",
-      "sha256": "b19caddc6719ce7dfeea3ff7d0da70777bbef285571dd8ff053f25ffb49e92a9",
-      "size": 276096
+      "sha256": "ed5c4979af653a32343df83462aaab3a391b72d4011469a694ff09301c2d33b6",
+      "size": 342558
     },
     {
       "path": "/assets/centurion/bell-harbour-quarry-stone-bump.webp",
-      "sha256": "fe89ced3cd2296fb7bfe5d34813df9ebc5897b3c9cf399f035fe46dd538935da",
-      "size": 98940
+      "sha256": "0595e6668a6b92637c00fbac7bbb6d426af2737663ca2330a9aad7191899a00a",
+      "size": 107224
     },
     {
       "path": "/assets/centurion/bell-harbour-quarry-stone.webp",
-      "sha256": "0a9335b4f3f27b55185d06ef6e74d4a853b2fc8897b0e48069018280ff30baea",
-      "size": 447202
+      "sha256": "6c530aca1a6dbef2634abdee3295666efcad49b1863afc95c585dcbed4760584",
+      "size": 506182
     },
     {
       "path": "/assets/centurion/brown-cutface-bump.webp",
-      "sha256": "28a66aa2506020d6a68a3fcdb521f4cfb9cb9f6c3f8868583b0bdc8126edd758",
-      "size": 105152
+      "sha256": "85ea19f1837b75a1c4a748b6004020941168e2246b1411d7472090f308b4aa78",
+      "size": 115922
     },
     {
       "path": "/assets/centurion/brown-cutface.webp",
-      "sha256": "61637fa605cd49bb055ed0b9a4e7d3ad2e0d4c36f47de1a8017387fadce65837",
-      "size": 896918
+      "sha256": "f37aba5038efc00c1a3446bbcbb608b42909440e69ca7dee65cb164f6b0b00f0",
+      "size": 1022408
+    },
+    {
+      "path": "/assets/centurion/brown-ledge-bump.webp",
+      "sha256": "679b03bf372a65e07aa3f0b4dc026b4b4e224276a34681db7a8e5f8844721725",
+      "size": 132446
+    },
+    {
+      "path": "/assets/centurion/brown-ledge.webp",
+      "sha256": "541bcc1e1205a1cb74dbe0ebaf7054d652510f4a307095885c75eabfeaf855ce",
+      "size": 1185522
     },
     {
       "path": "/assets/centurion/brown-rustic-bump.webp",
-      "sha256": "33606e1e97bccf56534404713fa2763f433484bda4c956711bc9a80b382808aa",
-      "size": 110292
+      "sha256": "8091805ea85799a2ff5929cfa069a6b60e7ef064b37e7a4bc41d4ad88a331fbc",
+      "size": 126794
     },
     {
       "path": "/assets/centurion/brown-rustic.webp",
-      "sha256": "0f57f6bf2e0bc5c0ba5fa3b538a946b497f5a079dd86c20ad7fa3477b6e1caf4",
-      "size": 947410
+      "sha256": "0b21739fd6f00e85fc87e02dcad1c99191c660928e6daf314d6b26e654bf9271",
+      "size": 1096062
     },
     {
       "path": "/assets/centurion/browns-valley-canyon-ledge-bump.webp",
-      "sha256": "2651e84f3ad7ee70c8c628724586f54f440b937cf007d95cf6e3c1e75861b279",
-      "size": 101322
+      "sha256": "0b8d2e226954c0f40324b909f7f165861d6d3cb1387b91ede66f0fea7b8f91ec",
+      "size": 117282
     },
     {
       "path": "/assets/centurion/browns-valley-canyon-ledge.webp",
-      "sha256": "2d4a7efcde862fc6cd8e4152887a6416ba275665d9580e38e1c8388c2388bea1",
-      "size": 360806
+      "sha256": "79d072b00547d70c23c3ed3b00d7681a78c263d754aaa96eed76bede7775803b",
+      "size": 604216
     },
     {
       "path": "/assets/centurion/browns-valley-cheyenne-bump.webp",
-      "sha256": "74613565afd0965a507b072157ebaf2fe518df2f4159b5930f0458ee50ff2a87",
-      "size": 107672
+      "sha256": "2f510e9ccca9b424ee2d5494ded9d5a4de321a789471a5b3ee988b9e718ab4af",
+      "size": 120604
     },
     {
       "path": "/assets/centurion/browns-valley-cheyenne.webp",
-      "sha256": "86d54e46ce17a34ceb1969056af35f992bf916dd1ae55f3c2915621a7d070cee",
-      "size": 623704
+      "sha256": "0987905ce3d15f89b976bce26c84d5e254ddfc736c71918e3b2b387d83c9d930",
+      "size": 954416
     },
     {
       "path": "/assets/centurion/browns-valley-elkmont-bump.webp",
-      "sha256": "7be0f56bb05e4dd6d942ce315962d274a15c4b42f8bde60089a8a717a205480d",
-      "size": 98738
+      "sha256": "2d9069af133d2a67699e34901c344856463761d75ae4d6da2f2887b039a0958b",
+      "size": 105506
     },
     {
       "path": "/assets/centurion/browns-valley-elkmont.webp",
-      "sha256": "9aa6ea4c185bb38f6d02345445eabc0ab7c8c99e4dfca347c38c59f6af16cbb1",
-      "size": 553206
+      "sha256": "1e925a72db6cde545293fe5774aa0f151aca1f097350efb4b59ad136b6b6d641",
+      "size": 737402
     },
     {
       "path": "/assets/centurion/browns-valley-ohio-limestone-bump.webp",
-      "sha256": "8033e5fe77528f0e89be96e61bb18f1bf604b41361b32dddbc577f312682ba06",
-      "size": 90196
+      "sha256": "1ceff0a2fe556d1f2ee2d7ac8bcafc795f1ca5aeb27a407dc33ead484e136e39",
+      "size": 91936
     },
     {
       "path": "/assets/centurion/browns-valley-ohio-limestone.webp",
-      "sha256": "3fbf09c8f3b9696a26496689744479c65c5d55d0245bd91f4aa7a46a3f6ca5c8",
-      "size": 460138
+      "sha256": "b78023c13f7d1b15839bc36b46a15d0965809d2cb4799e3ed0ccd1c71e64d9bc",
+      "size": 836240
     },
     {
       "path": "/assets/centurion/browns-valley-river-rock-bump.webp",
-      "sha256": "dce6a0cb295ff80290b48015e3bb261a56ad3236cbe3e205d48290385ec0c34d",
-      "size": 84840
+      "sha256": "040eafc84ace69a3d96ddee171349b885726ddad439191e6ac49d5d3e5a2e188",
+      "size": 121218
     },
     {
       "path": "/assets/centurion/browns-valley-river-rock.webp",
-      "sha256": "1382394d85a20bc12085bc740efb6c6b5e32bc7c957b4c1bd38b169eb0ac4249",
-      "size": 397622
+      "sha256": "6b081cba94cc35395420efd647dbdef43a6805afa460c664b209769ca8cb3b9d",
+      "size": 658792
     },
     {
       "path": "/assets/centurion/bucks-county-ashlar-bump.webp",
-      "sha256": "12225d8e23dd7e68df81cf0802a153f7a884fdc0b4990bd61b3489078b63081d",
-      "size": 79984
+      "sha256": "2eedca24aa38f4e34f95efaa7e4795adc5d6a8a5976471c441973297e74503c4",
+      "size": 98052
     },
     {
       "path": "/assets/centurion/bucks-county-ashlar.webp",
-      "sha256": "b63b5469ac7cc4ecb5e302b5b2d1e654a5193c97937f4ee17f8e6e33a16811d3",
-      "size": 576272
+      "sha256": "9b172e4dd8dc2c27dc6b563a385fcb385e6ee5ea48f629dcfd4b4a2937fb2fb3",
+      "size": 627810
     },
     {
       "path": "/assets/centurion/bucks-county-centurion-castle-bump.webp",
-      "sha256": "c32051e2f44ce591ef7f75481300b32feae6c192d81729080b29fb96f5366ce8",
-      "size": 120932
+      "sha256": "92824aac3df5922eedfb6b4a8bc14e530c953969de0df3563ee8a84f3ba40a28",
+      "size": 140496
     },
     {
       "path": "/assets/centurion/bucks-county-centurion-castle.webp",
-      "sha256": "ca4a70a02df51a8181d41a9456c38cd360744c42f1c5bc6664831bf8e07aebb2",
-      "size": 1041026
+      "sha256": "6d05e8736053e0ea540995cf81ac2a909d029ac7daf39ce8795cbd2ec3a387e4",
+      "size": 1146026
     },
     {
       "path": "/assets/centurion/bucks-county-cherokee-blend-bump.webp",
-      "sha256": "9a8d0fea4fb44e5cda3fa205f66f11c1e3c2c8ccbe57c863908eb1949cd45f72",
-      "size": 87268
+      "sha256": "9bc3abddecb62746b5f8af2d4505a90c690423b0c74cea6ce23605760422596e",
+      "size": 105204
     },
     {
       "path": "/assets/centurion/bucks-county-cherokee-blend.webp",
-      "sha256": "61a166ca9de30cf2393b3f0c0da976822df52907a0d8548b10e958d64e9addd6",
-      "size": 347272
+      "sha256": "7a80d299bffc3a9c8d750c3801933a5545216201fb2b9f14545a5482925b8c88",
+      "size": 416496
     },
     {
       "path": "/assets/centurion/bucks-county-creekstone-bump.webp",
-      "sha256": "f9c64153666003c148c105f610811d21d942dc2a8a5aa5a2a28f08ade52289a0",
-      "size": 112628
+      "sha256": "5237d789fd5f06ee02c052f89730d1761195ddd05a9941523f53e6218b096d5c",
+      "size": 132698
     },
     {
       "path": "/assets/centurion/bucks-county-creekstone.webp",
-      "sha256": "4898b99e06e7fc549e5fe5a5d41e5a78f6cc6bc3b8128839e85174f263d667ed",
-      "size": 500892
+      "sha256": "95a035d9b699b3028c131208a7eb6bab4461a378fa588c229d05c9cbd32e4135",
+      "size": 698688
     },
     {
       "path": "/assets/centurion/bucks-county-ledge-bump.webp",
-      "sha256": "219632a96b51f47060fc801a94b29278cd1e7c355680e445fbdfa21e94712fc5",
-      "size": 134620
+      "sha256": "1751e73f020cccb357ef8a66884781c3ac7091aec5f1f160c695978cdf629187",
+      "size": 133038
     },
     {
       "path": "/assets/centurion/bucks-county-ledge.webp",
-      "sha256": "1f61e3cb55cfb73990eeb1f6ea0dac7eea5b557b923dcd1595da0bf7dd33ddf4",
-      "size": 1085754
+      "sha256": "3d30b260fbfe6a9a271da104333bd2c7aafe7109720419b166dad44b10093bea",
+      "size": 1165658
     },
     {
       "path": "/assets/centurion/bucks-county-milano-bump.webp",
-      "sha256": "8d59fbfab724f212787b1babb91b6a9878773fea238feab9ba3f12219b574238",
-      "size": 90814
+      "sha256": "8e84ac132f74e3a06b0130b0eee5084fd11b1c9e398a10f7dc66f28a93fa08f6",
+      "size": 112134
     },
     {
       "path": "/assets/centurion/bucks-county-milano.webp",
-      "sha256": "0a88ac27c6aaa3d675482dfd256dc9250f93baf309611e521ab2d82b1fced408",
-      "size": 467630
+      "sha256": "7659cbdb4ff23bc386a43303d214bfb477df1e38f04132fc236c83abf0dddbf2",
+      "size": 631930
     },
     {
       "path": "/assets/centurion/bucks-county-mt-ledge-bump.webp",
-      "sha256": "8784aa2bd72aeb429363a7979ba3604bd187fb392f65f84f6d2baf92272a1e37",
-      "size": 93266
+      "sha256": "f159cf3a06d4637faf2ff5bc123a0463d295353b6333ec572aa44e1e49ac4348",
+      "size": 106216
     },
     {
       "path": "/assets/centurion/bucks-county-mt-ledge.webp",
-      "sha256": "f1011d01ad1eaff341a3a0d542440ea1d13f3ba3f4f7d1e25fbae5d06bb2e96b",
-      "size": 456084
+      "sha256": "5405cac5ae5e61dec9006fe0516ba0117c1d2d4ee337dcac300a49181efcf32e",
+      "size": 496886
     },
     {
       "path": "/assets/centurion/bucks-county-plantation-bump.webp",
-      "sha256": "510860a661f60a5c87f2457dea19cfed7c60df1cba39233668972813e67a97d3",
-      "size": 78830
+      "sha256": "ac03dd483978f81233907cb6eca3073e7511c8370ee63e7196f8fe2b3312495b",
+      "size": 77854
     },
     {
       "path": "/assets/centurion/bucks-county-plantation.webp",
-      "sha256": "eab3dd1a8ec9fb7717643a71387d67b09faa227652a4387215bfaeadd5a94271",
-      "size": 395048
+      "sha256": "8cd0aa9a6a595c066845d27bcc5f1a78e1f5b24c4fc7753344f80cff71047ee7",
+      "size": 460182
     },
     {
       "path": "/assets/centurion/bucks-county-rubble-bump.webp",
-      "sha256": "9d543a4ecc1058b493624e20de497f66fd44120731a3abe650006973780d20de",
-      "size": 113584
+      "sha256": "9aee591ffe1a7f989bde0f490470a3aa7c2988c491a87785e0e6451ec625a35e",
+      "size": 134116
     },
     {
       "path": "/assets/centurion/bucks-county-rubble.webp",
-      "sha256": "a682bee6ccf7f4774a7a80553b39eca54bccedd82587c6a58690c9205ca11d95",
-      "size": 1010022
+      "sha256": "c361d3654c85939e571fc0ae8c6a7fda7b04251103c0d61b349228d6d9ce9a8f",
+      "size": 1115344
     },
     {
       "path": "/assets/centurion/bucks-county-stack-bump.webp",
-      "sha256": "a5c9a55e5d1e46cb13bf786af875f45ca8da754d767a48c8548e882b9fdf6b9c",
-      "size": 78780
+      "sha256": "6e851817aeec2eae0c14386b186ea4f4feb30bf7bd2beffbaab47f451205525a",
+      "size": 103766
     },
     {
       "path": "/assets/centurion/bucks-county-stack.webp",
-      "sha256": "ee76589615368166f2ecc98594498f4d0d2fe782d08c490f324259fcabf45ef5",
-      "size": 399334
+      "sha256": "fe3a43578acd424dc362e675fc2b616d4ec7b15a17d86e24319e20cbe47cd8b1",
+      "size": 500310
     },
     {
       "path": "/assets/centurion/california-centurion-castle-bump.webp",
-      "sha256": "aa355a2e6659945290fdfa8b4dfe86a7684ce94d9818e836663f9a75c558e2cc",
-      "size": 96090
+      "sha256": "c81baf3046df5b07560956391a0665daced3f69e92b8aaf32e633813ec8daeab",
+      "size": 127762
     },
     {
       "path": "/assets/centurion/california-centurion-castle.webp",
-      "sha256": "7d1773ed1a3d2d4862fc0cb8b61802ad85b1fba3432390d07c36e898286cd4fe",
-      "size": 777358
+      "sha256": "c1b17e8f64cfac87a884f2d76253a37d18eae4556c37fc9f6b3e002608b4a675",
+      "size": 907324
     },
     {
       "path": "/assets/centurion/catalina-silhoutte-ledge-bump.webp",
-      "sha256": "2aaeca2b5d7eeeb9f7f687f19f5fbf4e3dd7cf7fe3fa4520d672338132e8e65e",
-      "size": 112078
+      "sha256": "22766e9f575ab7f774c053267a1348aad2c2748476e276c451067382168ceb94",
+      "size": 121106
     },
     {
       "path": "/assets/centurion/catalina-silhoutte-ledge.webp",
-      "sha256": "0c9c39f8cfe644f2ff08d35e90024e819e60a07f6b8b660f38d27b8b55670a44",
-      "size": 974600
+      "sha256": "987c04176d07b57baecaff537b45cd8c48af4b00ac5d671628310bae96f44756",
+      "size": 1096614
     },
     {
       "path": "/assets/centurion/chardonnay-design-series-bump.webp",
-      "sha256": "ab85395d31c7be57bbd55812d1888e3fdeffc28183de26f53ce2d8f9a56f28f5",
-      "size": 87840
+      "sha256": "8fba8e992613b0e7c4177cc8e6d306fb4206b9fb01ba203187e9c73dff90cc85",
+      "size": 100282
     },
     {
       "path": "/assets/centurion/chardonnay-design-series.webp",
-      "sha256": "91b56ddaa58b59d626c675b560e1f0fce237ecbfbea68dcdaf00a2362d1d6a07",
-      "size": 375542
+      "sha256": "4ff08ad8d6091f4b95a96e947120d1dd3a01e632c96bbb5c54fcc258c5d42103",
+      "size": 441586
     },
     {
       "path": "/assets/centurion/chardonnay-stack-bump.webp",
-      "sha256": "5cedca907f6b1dcad95993eec78adf86b61026587552996c49f1bcdb08332917",
-      "size": 89216
+      "sha256": "f269419b1b25af335387f1d9b17707ef37f67cc1a1288e52070c62596dd807bd",
+      "size": 101478
     },
     {
       "path": "/assets/centurion/chardonnay-stack.webp",
-      "sha256": "46b02d26b29369b8a8cb7204a6170a785eb0aca8c516a079e8813531e814a607",
-      "size": 854270
+      "sha256": "7b404c0212378a1b0f1e3ea8d6023b347c1a05288305fef33ad482fa2d35d962",
+      "size": 816460
     },
     {
       "path": "/assets/centurion/chicago-brick-stone-bump.webp",
-      "sha256": "61176a2523acc688b6e7e06e4a8866c3df659fa5c80842a5fe1343ca5d41c37d",
-      "size": 78426
+      "sha256": "4a4820344cfb3075c8ff6d1204894893b237f54a6136ae6b547524288d6e248e",
+      "size": 109748
     },
     {
       "path": "/assets/centurion/chicago-brick-stone.webp",
-      "sha256": "a8d4cf78ccf28973a1c4a962edc99852f005f056ce67e8015bd37426de622cb2",
-      "size": 318190
+      "sha256": "40ddf3f50f47fcff2068ed4b9d7828113fee5759815f100c80827feef407f17e",
+      "size": 393978
     },
     {
       "path": "/assets/centurion/coastal-design-series-bump.webp",
-      "sha256": "e4525184f8f07a913acec62d94b15c95bad4c248cb1135ec15f6656e62948cb4",
-      "size": 63112
+      "sha256": "7b683ae928954ed141b0af441be77e24ecace718dc727289732409d0f2d31f88",
+      "size": 79744
     },
     {
       "path": "/assets/centurion/coastal-design-series.webp",
-      "sha256": "85afe27edbfb76e3465333ced9ce76990d04f93e47bf300d48c18857ccbd306e",
-      "size": 193022
+      "sha256": "37aad71770ac69f61926dbe11fa657a4899c48c1d52ae1a9f1139eb5eaf1f09b",
+      "size": 255902
     },
     {
       "path": "/assets/centurion/cream-brookstone-4-bump.webp",
-      "sha256": "d44c8f3c614b03374f01129fdebe125537163ecaabdfaac61e3868dd3612c61a",
-      "size": 78136
+      "sha256": "81e79979134fbf8a750f6d2307f9bbbd6c30b235f02df3aed4c1b53382c88a04",
+      "size": 128596
     },
     {
       "path": "/assets/centurion/cream-brookstone-4.webp",
-      "sha256": "69f6f6b9507a16f62c69ca9d24fc055a59c2c700ff1f706dcc5b60f8a4e221e3",
-      "size": 221512
+      "sha256": "fdd2c7c89ead6c39f4b8a2d6176f0f1428ea4dc79fd241ba961fadd6cc2f0554",
+      "size": 405738
     },
     {
       "path": "/assets/centurion/cream-brookstone-6-bump.webp",
-      "sha256": "d44c8f3c614b03374f01129fdebe125537163ecaabdfaac61e3868dd3612c61a",
-      "size": 78136
+      "sha256": "0002de47a3991cef1d4e2494e65e97f34ad1e862816f5d2160d7b7a38b0dd7f4",
+      "size": 130662
     },
     {
       "path": "/assets/centurion/cream-brookstone-6.webp",
-      "sha256": "69f6f6b9507a16f62c69ca9d24fc055a59c2c700ff1f706dcc5b60f8a4e221e3",
-      "size": 221512
+      "sha256": "03f8730c7c0f1cd2dbe5523adf775926ab87a824004987e0d204f5d4b7862c53",
+      "size": 409080
     },
     {
       "path": "/assets/centurion/cream-brookstone-blend-bump.webp",
-      "sha256": "d44c8f3c614b03374f01129fdebe125537163ecaabdfaac61e3868dd3612c61a",
-      "size": 78136
+      "sha256": "510c75e9c1548096704d69ba8cabff71ae717487b8e57c3305acd0a91f81da19",
+      "size": 108268
     },
     {
       "path": "/assets/centurion/cream-brookstone-blend.webp",
-      "sha256": "69f6f6b9507a16f62c69ca9d24fc055a59c2c700ff1f706dcc5b60f8a4e221e3",
-      "size": 221512
+      "sha256": "8ffada0297420c3dcc8c6ea2374cfae96e78c0f02fdb7b66f5183bcc1d8d2f44",
+      "size": 305864
     },
     {
       "path": "/assets/centurion/cream-brookstone-bump.webp",
-      "sha256": "d44c8f3c614b03374f01129fdebe125537163ecaabdfaac61e3868dd3612c61a",
-      "size": 78136
+      "sha256": "30e6f2c75f8349466e64e5690fee3e4ae2d6cc10a831098503e59b3f335f48f5",
+      "size": 129344
     },
     {
       "path": "/assets/centurion/cream-brookstone.webp",
-      "sha256": "69f6f6b9507a16f62c69ca9d24fc055a59c2c700ff1f706dcc5b60f8a4e221e3",
-      "size": 221512
+      "sha256": "28c5d2bfdbcfe48c19731e61756513a621082c775872bbdf272528a73f320295",
+      "size": 403940
     },
     {
       "path": "/assets/centurion/crimson-foundation-bump.webp",
-      "sha256": "e28c06eb1f8e37dd73add39e36bb0d6c048d87ee5a5ed7b502f63539211da8c0",
-      "size": 96110
+      "sha256": "60f8a94b9ef37e476b17f14fda4a4f24f9b2a897fb4fc2039581f96e95b04b89",
+      "size": 119728
     },
     {
       "path": "/assets/centurion/crimson-foundation.webp",
-      "sha256": "a3d4770a55147f7677e9e3949aba51ec266dd3b6bcb601fd6ef57055dc432c62",
-      "size": 542920
+      "sha256": "372e435e087c15a0f7c539d747b8fbae558347400f91d016ac468ab1624dae33",
+      "size": 657276
     },
     {
       "path": "/assets/centurion/desert-rust-river-rock-bump.webp",
-      "sha256": "ac5eef138a51a3bc5a3fec670f065ec6f01e3ebe172dfd02b70312716dc3b372",
-      "size": 65378
+      "sha256": "8445b71381ff8c7e8faf80fbf7b88c5cb904d4bb0246d29fd0bcf8f4d937383c",
+      "size": 86890
     },
     {
       "path": "/assets/centurion/desert-rust-river-rock.webp",
-      "sha256": "d09d31300c2216d0a0dcae37d20e76a7e1d293030622461408b14fd1223c4e32",
-      "size": 637602
+      "sha256": "739534f09f3d3824c42304601ad5b29ae32027b58090afc7f2c4aee3693c4faf",
+      "size": 705566
     },
     {
       "path": "/assets/centurion/english-hackett-bump.webp",
-      "sha256": "07a84db4d0e4ce3283ec908163f31ee753f9821c748384dac979447d3096077b",
-      "size": 77492
+      "sha256": "22fe8026975d1f95dc527091049cb2fe0237118194ad4827aea2d5d092a825de",
+      "size": 96256
     },
     {
       "path": "/assets/centurion/english-hackett.webp",
-      "sha256": "fc409cd790135d2f01577e487a27100bfd8c8e5543f7353593fb8c589de02b7a",
-      "size": 273710
+      "sha256": "8e75267a2ad2384f6bcf171b99efaa209849e21861eedcfd3219d070b712ea88",
+      "size": 388064
     },
     {
       "path": "/assets/centurion/gray-centurion-castle-bump.webp",
-      "sha256": "452fe8de9beeaa8aeb663ffebbd6dc32538e78b53693d13214506bc690bffb74",
-      "size": 73916
+      "sha256": "f116ccd9ec0d6f13b5adbddf21d9dcc180fb0123d19b718ff509f924b7b640e2",
+      "size": 103944
     },
     {
       "path": "/assets/centurion/gray-centurion-castle.webp",
-      "sha256": "e47fccb037c27ba466893e98b95baa3d304787b0417c9ccfa9afe1312b36d346",
-      "size": 549582
+      "sha256": "f87c216ae9e4d93d1060a9d460717e33d7f7da54bf47be088fa658aa0d6a9e19",
+      "size": 670850
     },
     {
       "path": "/assets/centurion/gray-rustic-bump.webp",
-      "sha256": "e42dca967e3df4ffead50b8ada2c1efa9e7fab070c063cb94c8e3eb81d5baefa",
-      "size": 85008
+      "sha256": "a4a4f7cccef2e14af499f9d1f7b7c325336b4a159040765ec840748e1815efbc",
+      "size": 98626
     },
     {
       "path": "/assets/centurion/gray-rustic.webp",
-      "sha256": "9160fc2d94bdd15eeb0fb4233e5cf74532e0a80f30dbe966faf29361e258277d",
-      "size": 796802
+      "sha256": "d57c82ecc28612042267f4b14090f5cdd3a4a13f471e8fb4c1da85383a2df124",
+      "size": 784862
     },
     {
       "path": "/assets/centurion/hearth/alpine-bump.webp",
@@ -674,733 +684,743 @@
     },
     {
       "path": "/assets/centurion/heather-brookstone-blend-bump.webp",
-      "sha256": "fa394427dce2e0789390c1691d9b227798a49315941e37de676a63e2d40c9031",
-      "size": 83842
+      "sha256": "3be01a71aaa76f740e5b5f0fb153c8ecbf9f3f91e50f9dedfda792cee52c4a88",
+      "size": 91848
     },
     {
       "path": "/assets/centurion/heather-brookstone-blend.webp",
-      "sha256": "25ab06d168ea192d51a089a00ecd51ab31de8af69e32d1125a56c0ca84adeec3",
-      "size": 230512
+      "sha256": "eb2db2d28033b896fd9253639ca917d0a065161e091b053e53ad44cecf057be8",
+      "size": 270482
     },
     {
       "path": "/assets/centurion/kentucky-cutface-bump.webp",
-      "sha256": "5ce67e36d94c8f5d8480f249eb83484b4e2701e9c33134bcb5fbccce7407e612",
-      "size": 95616
+      "sha256": "bca846e3785b8e7ccb8b291817f8089da8bf7bf117a1b8915e9f6616075413cc",
+      "size": 107864
     },
     {
       "path": "/assets/centurion/kentucky-cutface.webp",
-      "sha256": "79a2685d4cc7a0c64b5099912d8760b2cf5e5b43743e9a28436dd53b5e61e1ed",
-      "size": 871372
+      "sha256": "760cdf2fb4bfedb882891eda9bdc669d38ab5e3500ea702b99bc99b90255918f",
+      "size": 984474
     },
     {
       "path": "/assets/centurion/kentucky-design-series-bump.webp",
-      "sha256": "b504b7af958029523e66c9a7845f4b40705493c30978b42f6590f72c8e258fac",
-      "size": 88154
+      "sha256": "43a6a90a5625ba697ff32e24a17a5be0e6b3a94092cfd9a3b1d563d1cb8f73cf",
+      "size": 100368
     },
     {
       "path": "/assets/centurion/kentucky-design-series.webp",
-      "sha256": "be74c823e175f5704e87d20b7f13426a3ff8dbd60745c2752e9a3027098f0a3e",
-      "size": 399162
+      "sha256": "3ff5f55ee1c3619e14f3f759498657b44630d95e6bcc3f272d9bdfc8c35309f7",
+      "size": 447732
     },
     {
       "path": "/assets/centurion/kentucky-elkmont-bump.webp",
-      "sha256": "54b8546a820be2164269b80a28909bf140aec741117d4bf8b9287fb8ffca2bb3",
-      "size": 71372
+      "sha256": "aa7b66305265bec04cc393c71b747477357581a898744f909f39e315679d487f",
+      "size": 92110
     },
     {
       "path": "/assets/centurion/kentucky-elkmont.webp",
-      "sha256": "41e98d25bee1b994447c9cedec25daadc46a505cada4002c6da53badd41d6270",
-      "size": 242774
+      "sha256": "d0b3beb57f005240f80d978bc8f0a7efc8384c59e704f24a874a3bc6500a1bae",
+      "size": 329260
     },
     {
       "path": "/assets/centurion/kentucky-fieldstone-bump.webp",
-      "sha256": "03597c0505d2ec3b89112def3e6019e6f66486d3deae28b692a3557d2e844264",
-      "size": 78652
+      "sha256": "806a3b132df61c518a9447214ca55a7e3e8dac11c3ee33f1b27445f5e8e2d1f5",
+      "size": 90044
     },
     {
       "path": "/assets/centurion/kentucky-fieldstone.webp",
-      "sha256": "19c004daa88d06ecca210f4c62875cbf9ee28120e2511c644a0fff1ea4135189",
-      "size": 610694
+      "sha256": "083243b45c8eb875eec5babc14e0c61fc142f9877c167ef1972e8093ef7419da",
+      "size": 761290
     },
     {
       "path": "/assets/centurion/kentucky-georgetown-bump.webp",
-      "sha256": "1e88997700c17f3030417f6d7e5b92d586cb19ceb4a7300489151d7d9990b7a8",
-      "size": 123120
+      "sha256": "6be6e59139ce2a089c7cc260b9f3f0b048c1585916e9db40419132cc93dc4ec8",
+      "size": 129472
     },
     {
       "path": "/assets/centurion/kentucky-georgetown.webp",
-      "sha256": "be7f2c589d241eb9d05f5683e37a38b9ffd440e36df0dc638abc7bafd5cbc409",
-      "size": 671314
+      "sha256": "439c3918c23e397909d893210855991bc50732930794fb42ce8782625619e3f8",
+      "size": 840348
+    },
+    {
+      "path": "/assets/centurion/kentucky-ledge-bump.webp",
+      "sha256": "2ad1317c3d0647e2f2c8f3494138b912d0b64217728bf1eb6dcb080ef397e31f",
+      "size": 119112
+    },
+    {
+      "path": "/assets/centurion/kentucky-ledge.webp",
+      "sha256": "0b0e2eb94d52b582d4e948a578a1b7e721b67ec50031ccda6af7ed641b6d19c4",
+      "size": 997736
     },
     {
       "path": "/assets/centurion/kentucky-mt-ledge-bump.webp",
-      "sha256": "0422a137371fb9d175df1ab682ae7516a17f5cf363bafbd5e8462c375af28090",
-      "size": 96956
+      "sha256": "9f099723a7056c9b579c8b7b8dea97491e782d65009e17d19e395346bdc27269",
+      "size": 113008
     },
     {
       "path": "/assets/centurion/kentucky-mt-ledge.webp",
-      "sha256": "ad546644a2d1629c794f6f803f9d24afe0bd12793a240ce289ab9ca70e9a5c08",
-      "size": 359198
+      "sha256": "af1db3ebb7a111d792386caa137aa59687c783020006e32c5b71cbd6d85d720b",
+      "size": 502706
     },
     {
       "path": "/assets/centurion/kentucky-palos-verdes-bump.webp",
-      "sha256": "485b35ce4b396156d81a7d9ca1634e26a9f3b1754a7937f4506387e59ed6be94",
-      "size": 116706
+      "sha256": "1bb58c47c5c746776ab86afeff9fa0c2a00e27340cbfca861caa579280f71419",
+      "size": 124804
     },
     {
       "path": "/assets/centurion/kentucky-palos-verdes.webp",
-      "sha256": "a6f3ba0608bffe03f5c3d3080553aafeb0aac7d6f0bdab2810fdefe3d8a71282",
-      "size": 999918
+      "sha256": "5825176bf7b57afe2af6a12c5cf74435b3a877352b7fbbf302b2e1951048e5e9",
+      "size": 1049972
     },
     {
       "path": "/assets/centurion/kentucky-plantation-bump.webp",
-      "sha256": "e3d23126105e9f39bfef2bddfea1bf9aa73ca8d477897b11d833ea710d29edba",
-      "size": 86702
+      "sha256": "db0fa99c7448a2d12dfef702d20731fe1fc9ba4ca8077ae0a11728b3c6810d73",
+      "size": 107582
     },
     {
       "path": "/assets/centurion/kentucky-plantation.webp",
-      "sha256": "f50243459e53815fd986915b69f15358b9203bf0b23b5365edc17aca8e7f03b3",
-      "size": 291122
+      "sha256": "728176fb02eb1127bf821b0d453826f0d075589ce8ceb0f34d6553626eb8f877",
+      "size": 437346
     },
     {
       "path": "/assets/centurion/kentucky-rubble-bump.webp",
-      "sha256": "e1e33f27d21f0310b130a9ba1ec32208a66dfcd2d3ada4fee7b74160b5ad238e",
-      "size": 74324
+      "sha256": "563316301e2be3131f9ef57b2118c3dc81104a8d3f7f10f0e08a9752b691f965",
+      "size": 114414
     },
     {
       "path": "/assets/centurion/kentucky-rubble.webp",
-      "sha256": "a488db5fab0aa36e273aa2ccc883e78114519aff5581071c2eb6e78c7cc62ddd",
-      "size": 246752
+      "sha256": "a8289bd50ef17e95252eebc066221128e326e2cf3678b6cb94d0464d96b69d82",
+      "size": 512276
     },
     {
       "path": "/assets/centurion/kentucky-rustic-bump.webp",
-      "sha256": "8343d4e3daff83210b839515d4527c4bc6399e892978b10fd042c1ffa9529858",
-      "size": 102092
+      "sha256": "0be74d0f9eff83f20f2ea2834d73241c2a69d9211bf23fd66635747271087d17",
+      "size": 118362
     },
     {
       "path": "/assets/centurion/kentucky-rustic.webp",
-      "sha256": "302b7d19dfc4e3ec49282f65db3fda2561b54f651b24eed9e25f6e60a43faa6f",
-      "size": 936262
+      "sha256": "09c8d4a92d23e6099476365bf8b27277be71440cfdb56f96c8fafcb062cfd363",
+      "size": 1029306
     },
     {
       "path": "/assets/centurion/kentucky-stack-bump.webp",
-      "sha256": "898afca1d03b5955b9043f67f27c18da59317026d354efb9bba51c8107860c80",
-      "size": 99350
+      "sha256": "6931af05eafecaf2a2195c87c3bec3f8cc4d9b5768b901dbe7d6209e912b5429",
+      "size": 110334
     },
     {
       "path": "/assets/centurion/kentucky-stack.webp",
-      "sha256": "2ca19031dd5d272ca244d8f4207a4270a3654c9b7a7a07215c877a4ed87da7e1",
-      "size": 849370
+      "sha256": "c8bbb0134fdab510db2735674d0237e5741ee5d5fb0ccf9c5841f824cb7cc275",
+      "size": 996914
     },
     {
       "path": "/assets/centurion/kentucky-weather-edge-bump.webp",
-      "sha256": "fc863980c795e6bd9ba5be10b02a9d3163e803f691cd184e83f05f9a24c076c2",
-      "size": 102806
+      "sha256": "802c8dea58c0368b9ee925c31059dfbc7c0cd4925b2ad006956b265a77c6cf98",
+      "size": 105408
     },
     {
       "path": "/assets/centurion/kentucky-weather-edge.webp",
-      "sha256": "4777f6fb82df336989aaedb9ef33c87ba944a00fff147edccfcd2c9b52c53d8f",
-      "size": 955344
+      "sha256": "592d3703db143f043b022f43095aef1bc54694035d3471864786264d8c719623",
+      "size": 1073264
     },
     {
       "path": "/assets/centurion/lexington-brick-stone-bump.webp",
-      "sha256": "a0dcb53a87ebeaa9a0930763c8b717d918ae79f062b1236647dfc5be15b859ed",
-      "size": 76394
+      "sha256": "9d8556af78fdde033605a7ee29eba522138c7ef7919d8c915e2af00fe8b106d3",
+      "size": 102714
     },
     {
       "path": "/assets/centurion/lexington-brick-stone.webp",
-      "sha256": "12d3dab18f6b4db254d3f3bf0bd1e22e1f2e36e9344f3a87db1d666336226a1e",
-      "size": 330144
+      "sha256": "704dc76cabea272adbf02e0f8b5a7ea697a59e2d9352e2584ae48beb0fc82a05",
+      "size": 455796
     },
     {
       "path": "/assets/centurion/lonestar-weather-edge-bump.webp",
-      "sha256": "2f71d11b04d0180d83eeed177c4019acdd51d1e5bb818a7efc72233bc03fbf93",
-      "size": 66860
+      "sha256": "123b07d12088dbb14d4023584bdb2cfb5409d840d85b05258202f2470037efb4",
+      "size": 82038
     },
     {
       "path": "/assets/centurion/lonestar-weather-edge.webp",
-      "sha256": "b14f35bb23539dbbb16ed859efcb4335fb871e3527e4ec8938656a5e77d35c1e",
-      "size": 325740
+      "sha256": "ca304efeb6832b8db6a86fe88b6a67b51b99ae068ed492b88f523c1b3978cd01",
+      "size": 374698
     },
     {
       "path": "/assets/centurion/louisville-cutface-bump.webp",
-      "sha256": "974939c30013fa555ff8ebbb6a44174c92ec22a93910eb160d91643f0e3d4a00",
-      "size": 91230
+      "sha256": "f25d8758c3075fca9ea73f4d6a33a512ba1759ac976dce2d2eabc89a3f256a0c",
+      "size": 113970
     },
     {
       "path": "/assets/centurion/louisville-cutface.webp",
-      "sha256": "56d439b7ff68e75931179621db54e0238de1aa8a8ea7032e4e76a4ce21ff9421",
-      "size": 667194
+      "sha256": "171ceb175f82b28fec0e53d34e349b70a9e270999848074fa117f8fa3d4140db",
+      "size": 766522
     },
     {
       "path": "/assets/centurion/louisville-ledge-bump.webp",
-      "sha256": "a720dc4829b6c2c32b18ee8b3873ae2e8325f767fbb06eb6ce51fa944760ff90",
-      "size": 93782
+      "sha256": "393f13a6ae855d85f92388c09b3c2f4e9b8f8601b4276091e2880f5213996c24",
+      "size": 102910
     },
     {
       "path": "/assets/centurion/louisville-ledge.webp",
-      "sha256": "fca463c031de3c10fe21089ed69d3c61ee28df697f043657fdab0099b3e4a430",
-      "size": 472780
+      "sha256": "7b1afeba70c93f605f2c761b2b49490a9773a7cea240baa53361703fac93b7b9",
+      "size": 537110
     },
     {
       "path": "/assets/centurion/mesa-valley-design-series-bump.webp",
-      "sha256": "1e5fd61a0b1aa26bd4f8548a8f26c5c7d99ce1bb0ced72ad36988cbc211d12f9",
-      "size": 70428
+      "sha256": "52bf00250f0c30e8c91f6f0697b6796446214df2a7cac00c67a52e47832ffe6c",
+      "size": 83036
     },
     {
       "path": "/assets/centurion/mesa-valley-design-series.webp",
-      "sha256": "a2f20e54ee40242b4fd2fe34ec5623ecadbfe86c95b02bcf50d4b9257688b9e1",
-      "size": 255658
+      "sha256": "34ac7720324a8e1c1da24829feb42886ccfd6e06ab422a6332c5db953e3ab55a",
+      "size": 307670
     },
     {
       "path": "/assets/centurion/midnight-brick-stone-bump.webp",
-      "sha256": "b55a399c8a9c7c510856839e9e33b06b24a9a55bbb401cd4e312b9221cb6ede6",
-      "size": 70150
+      "sha256": "254e78f19c83a5264159ed0bacecd4c37d3207c79d1f7262c4b63b8a38ecca3a",
+      "size": 91784
     },
     {
       "path": "/assets/centurion/midnight-brick-stone.webp",
-      "sha256": "829c1b32e3f3c8096b09d607ea9a3cabe6f8087963564f1f630f66794138d1c5",
-      "size": 142822
+      "sha256": "06196cf0785db814caaeb57b010f0863ae11621445a1ea960e308ab947f547f7",
+      "size": 174752
     },
     {
       "path": "/assets/centurion/millwood-ohio-limestone-bump.webp",
-      "sha256": "28cd48a43f57baf1389bf0b7746faa81877b31f4eaae7ac13795185a836ffee0",
-      "size": 92558
+      "sha256": "0c824045c23624e823bd76d0239bef48dafaeed27ad9faf5d55a6cbfe97bdaed",
+      "size": 106950
     },
     {
       "path": "/assets/centurion/millwood-ohio-limestone.webp",
-      "sha256": "34a8d0b3ba57bc448f79cec0e401bd2f807b2f515440e1d157019d313b322012",
-      "size": 404846
+      "sha256": "efe5d4fe42586b96db833d38b26d69bebc9ea965df58367e6366b56a60bf2fd1",
+      "size": 727254
     },
     {
       "path": "/assets/centurion/mist-brick-stone-bump.webp",
-      "sha256": "fa8f97dc5ade7132a74ccc1aa9f29a2b06fdf3dffe6cfe92bbe95af4d20f78bf",
-      "size": 82744
+      "sha256": "de247548ebb317b2ca1e04a5a54626186ae6b3e210da595f6e74146fb2e1be4e",
+      "size": 100168
     },
     {
       "path": "/assets/centurion/mist-brick-stone.webp",
-      "sha256": "ba88701fc6cb033b389df7b13e691a63dacbb516c841d80714e01d14a1fb4c2c",
-      "size": 248388
+      "sha256": "ccbef34c9579715175998035e2bd8d2ed835a40923f55871b42917530bbee259",
+      "size": 308826
     },
     {
       "path": "/assets/centurion/mtn-rundle-no-accent-cutface-bump.webp",
-      "sha256": "c6841ad41145d21e06cb1b0783d6795d8139859a70e473d523677c7ed624dcff",
-      "size": 88296
+      "sha256": "cc0dfc2622d598b818231a92b96cd644a5bf188575dcd179f4128b9ad48b8757",
+      "size": 120424
     },
     {
       "path": "/assets/centurion/mtn-rundle-no-accent-cutface.webp",
-      "sha256": "b5ab976d543df7e1c2891b2751170587db011533b4fe7b15e1364dcd358b9d2c",
-      "size": 251658
+      "sha256": "c54fb751a1ac88a0f1a7b0edddaab6af0ca9f6527e305e6c3347515554963cff",
+      "size": 410588
     },
     {
       "path": "/assets/centurion/mtn-rundle-no-accent-design-series-bump.webp",
-      "sha256": "18b2d1e59ec58a6ce19627d23100269e588735e5de2ca79f0309d9427118954d",
-      "size": 66764
+      "sha256": "fb4d98aaf8043c58fc7dcc316d435a7e7c721f6b190bf3e1cf0729e3567c49ab",
+      "size": 79502
     },
     {
       "path": "/assets/centurion/mtn-rundle-no-accent-design-series.webp",
-      "sha256": "f5ef253f9953dac0e35a564458a0c2d878632fb4887cb66f4a00159e98139677",
-      "size": 345974
+      "sha256": "46e2a037b40d9eec5613f418a4c47190892c0feeb7c9d905ddacae901ec088f1",
+      "size": 362002
     },
     {
       "path": "/assets/centurion/new-england-splitface-bump.webp",
-      "sha256": "c84e934c16303b11f9343fe19c2c24239954aa2c016348b95aee9ddcb18f8700",
-      "size": 85884
+      "sha256": "0b93d413bee49a543c99c90b62dad4d52cbd4b64b42acd7476b9f23854d52c9b",
+      "size": 108906
     },
     {
       "path": "/assets/centurion/new-england-splitface.webp",
-      "sha256": "b409d5ec632c7458691cb95f5f3ea741b04e5e4e0905af7a0835d1d4aacf1c84",
-      "size": 689870
+      "sha256": "35cf318e591cefe096ba7e9beddec0d847bd084441a50b94343d5476d0c1b888",
+      "size": 818430
     },
     {
       "path": "/assets/centurion/norris-grey-ledge-bump.webp",
-      "sha256": "f54dbea7bbe0b88c9804c4684174f3a0ba3469340b37fbfa5f2cd871f4d3fd43",
-      "size": 108716
+      "sha256": "daf2ae15f1c32166375874716f5c6677ec3447db659d2674933e57791b879f50",
+      "size": 113980
     },
     {
       "path": "/assets/centurion/norris-grey-ledge.webp",
-      "sha256": "73465089be037dbbbfb0df0e47c8c9d89abdf8d923e603e9b7cfda488b4ddcd3",
-      "size": 791082
+      "sha256": "9d6b059d67a94c1044a0b889e43a6d1f5aee24de69893ca5e15d69af3f6df45c",
+      "size": 820410
     },
     {
       "path": "/assets/centurion/norris-grey-plantation-bump.webp",
-      "sha256": "784fbf87ddff7568b9718087991905aa064d1df213f3f010d3f009828dafde8e",
-      "size": 72674
+      "sha256": "69d99491deeeb50508aae915578225193567ed07b2d5a5b96d2719542c00e859",
+      "size": 89132
     },
     {
       "path": "/assets/centurion/norris-grey-plantation.webp",
-      "sha256": "e3bc9bf87629a5d30715395346b637bccd9fcd624504d86542a50a4e753473e1",
-      "size": 177810
+      "sha256": "767de342940dd25e18230b35c5666b45c79c25989a1b8ca9499078a900dc7c48",
+      "size": 240650
     },
     {
       "path": "/assets/centurion/norris-grey-stack-bump.webp",
-      "sha256": "971336ca5a680b99dd05656a5eb29b6d9dbc3d5e763dbf5726e807840fe9fa91",
-      "size": 81660
+      "sha256": "997dc10ce1e995843a6e16081a224d8d1914460ec82fbc40453d8f1c5d9f6791",
+      "size": 99294
     },
     {
       "path": "/assets/centurion/norris-grey-stack.webp",
-      "sha256": "b3ca2663917f0fd228228a230e46ae77be54e56ed21b824c9c07af58d351e6f9",
-      "size": 640662
+      "sha256": "d6e1ff76a76b8af2b3c79abf5805583a022a56194d3922aebfe39c6ce3dd45dc",
+      "size": 730324
     },
     {
       "path": "/assets/centurion/odessa-falls-ashlar-bump.webp",
-      "sha256": "ecf486c6dfc10e6b1698633df8556d6d7765500a6cd33dd0a86038f2dd166659",
-      "size": 82636
+      "sha256": "facc67ef8e2d82a50feab6c5b570eae1820bfd2a3706ac6d8f8a3ceb0e2429eb",
+      "size": 96944
     },
     {
       "path": "/assets/centurion/odessa-falls-ashlar.webp",
-      "sha256": "aaaada758db582ca697f992a6c7e54c0032553cbf907e90a168e8bda88e18774",
-      "size": 720020
+      "sha256": "48e50f13d49f7915e9e0f3200c8c14f674e21a4a3fd1da6f74d8899a4e03a642",
+      "size": 786680
     },
     {
       "path": "/assets/centurion/oxford-creekstone-bump.webp",
-      "sha256": "4c66d630a1f076b982f5d7b38a17d48848228a788e570c4c4bcdc790d45c1b6b",
-      "size": 137186
+      "sha256": "7f2915b99a5c228873a4fa5f1cafd21387e300647bfc39aa430396ab0bc1bfaf",
+      "size": 160112
     },
     {
       "path": "/assets/centurion/oxford-creekstone.webp",
-      "sha256": "d93d8230d7a8fdfa15b500f3db51d8def976c5a5ac5b2ec037d2c843c4d56c0a",
-      "size": 663122
+      "sha256": "137d8865602cc205995e91eadf9e6938a820c23846495ec217f55c25de444fec",
+      "size": 862764
     },
     {
       "path": "/assets/centurion/oxford-mt-ledge-bump.webp",
-      "sha256": "2fa473a184148faf690706dbb3236f15f079e897812d72b85d7fde33336756ba",
-      "size": 114418
+      "sha256": "4fdc51ad8eaa51beb6af13fa186980a0d0b102fef604ac689fb20b6b217f109c",
+      "size": 126620
     },
     {
       "path": "/assets/centurion/oxford-mt-ledge.webp",
-      "sha256": "32cb3a47e316195e13ec83c941c0458c7adda97104a1e08e2e6a9847fdd3da88",
-      "size": 562594
+      "sha256": "99aadfe12d5d9028dfda6c544f1af2026bc1e895a7320e12e13abe16174b4df6",
+      "size": 677342
     },
     {
       "path": "/assets/centurion/oxford-plantation-bump.webp",
-      "sha256": "f199ebb51ca882516966ca79209335dc04cef7174abfda4537660758dbee5547",
-      "size": 92792
+      "sha256": "803a9438e193b68ab5867635ab4626055b7d72a2a3d58e3ce5490fcc286ddab8",
+      "size": 107236
     },
     {
       "path": "/assets/centurion/oxford-plantation.webp",
-      "sha256": "ff42353234702e71fbfd46da54fbac75563c3bf27e69140850c156765106496b",
-      "size": 420338
+      "sha256": "27a44db4b59e4f37cabb9b5b8b81151d8efe61269db7de3d1b0b2fe1c0426796",
+      "size": 478408
     },
     {
       "path": "/assets/centurion/pennsylvania-ashlar-bump.webp",
-      "sha256": "eebd1994e362484b3b6e4ca1f34e5442da46952508ee2caee89ab39d06e45b96",
-      "size": 86910
+      "sha256": "842fe34be86d25971ceb6a80622430e6e71dc55b73f42c365b8d17da81a66fb9",
+      "size": 92268
     },
     {
       "path": "/assets/centurion/pennsylvania-ashlar.webp",
-      "sha256": "dd107940d6395a6248cee3329b0a02cd3e421bb861c0e422e767686309ce9bd1",
-      "size": 796508
+      "sha256": "20c992a87077292a8de10513801d85d085dd85b62bc0fecfc5fc7afca9cee480",
+      "size": 788986
     },
     {
       "path": "/assets/centurion/pennsylvania-biltmore-bump.webp",
-      "sha256": "29888e7073a72f04d9c5017ad0c5cfaba0cfa5ef688fcd39981f116775c77041",
-      "size": 95632
+      "sha256": "00b5bf4243da3c0fc36894da61f6fc865a4385c2d2fbe972ba2b1edee29a9d12",
+      "size": 111276
     },
     {
       "path": "/assets/centurion/pennsylvania-biltmore.webp",
-      "sha256": "2a31d1a8000f3acf7a0898536b53247dbf9937ab4cd28f2c0468d24ca6da8e1b",
-      "size": 694776
+      "sha256": "b61d83eb61cd04f962964ae3fb48d06e0030905d38eb0d2d58e4d0db5a7061ba",
+      "size": 844898
     },
     {
       "path": "/assets/centurion/pennsylvania-centurion-castle-bump.webp",
-      "sha256": "bf71cd3865e8157a0853a932e7c2c69dddfb2a1506730f06625259859f7bb0b5",
-      "size": 97820
+      "sha256": "0fd66d835774152ff99c2a42666e05d7fdf042fe5598c594c65034e86fcd5e68",
+      "size": 115232
     },
     {
       "path": "/assets/centurion/pennsylvania-centurion-castle.webp",
-      "sha256": "628ec5f20c9f5efe1454ef2a811a0b3a20aeb26a8bb8b90a100909dfa9ca5af3",
-      "size": 808472
+      "sha256": "4151bf8af7bd2fbfb01baa2121f32d0933e2cedea25d5895c93d31b329274638",
+      "size": 892560
     },
     {
       "path": "/assets/centurion/pennsylvania-cherokee-blend-bump.webp",
-      "sha256": "008546e11b59c8ff42038f7ae51fd47d6fe1fef5702a87458f8a86b31030b977",
-      "size": 108258
+      "sha256": "c524936e4db920951d8a00d9525c40b005522ca946a9027a6af1be2444224954",
+      "size": 118626
     },
     {
       "path": "/assets/centurion/pennsylvania-cherokee-blend.webp",
-      "sha256": "a0dd7244bbf11b48508e963762440d0afd07a71766e3f788892a546f63c5d1e6",
-      "size": 913050
+      "sha256": "e0860818c3d5df22a44ed02fd69298c96a9ee176f50a10e4a190e045b1c18944",
+      "size": 1060164
     },
     {
       "path": "/assets/centurion/pennsylvania-cutface-bump.webp",
-      "sha256": "f0d409bafb8a4ad87ee2d3176a802dded8e08349d52c0918434e45b70ac9ecab",
-      "size": 100184
+      "sha256": "0749c1c92c1f2a7c26051c4732688d22e8a18e1801f072dcce6376e6d0bdcf8d",
+      "size": 117546
     },
     {
       "path": "/assets/centurion/pennsylvania-cutface.webp",
-      "sha256": "32c74563bf9cece1eb9b70d98d3026b68a341bda1dd5558404446dd72175d4f3",
-      "size": 772678
+      "sha256": "7040512e7fc5e28698a76e05a4fd272929fd9f7580f286d34fd18e07542d8ce2",
+      "size": 888910
     },
     {
       "path": "/assets/centurion/pennsylvania-fieldstone-bump.webp",
-      "sha256": "ec7d2e5642d66a154ae6ee0481136fdf431fedfcc39532cfa5aa35d122a85e00",
-      "size": 70098
+      "sha256": "514199dbb966ef6ff3e52f730a53964061a65b52f7e1ede540b7d0b99d539c64",
+      "size": 82846
     },
     {
       "path": "/assets/centurion/pennsylvania-fieldstone.webp",
-      "sha256": "2b770d08874c45e817771c1b70ff57397ae04c64043db00138b396fb27988a81",
-      "size": 516068
+      "sha256": "814e286c51b8470d6a29ee79d54de81228a71be656f88226476e2e19d9ca6944",
+      "size": 626992
     },
     {
       "path": "/assets/centurion/pennsylvania-flint-ridge-bump.webp",
-      "sha256": "4692cd8ef2e8b55aaf7d68d1a33d1dbf848a517e33c127652bd804b6daabbeb3",
-      "size": 127580
+      "sha256": "779c1a1913d978f5ccd69fbeefc4f31e1b32446049b9e55dd2f5a35a30f17c36",
+      "size": 125870
     },
     {
       "path": "/assets/centurion/pennsylvania-flint-ridge.webp",
-      "sha256": "ca5fcd9b53da5c5ef207b795df02974065de4f1a7c3f58ab9c9c04998336eeeb",
-      "size": 890882
+      "sha256": "3b527ff61197cdd851bfc56ab7dcacc5f977373ccf9eb61a04b8151a2f08986c",
+      "size": 1169038
     },
     {
       "path": "/assets/centurion/pennsylvania-ledge-bump.webp",
-      "sha256": "7daa5cfa6324a56ad8f7fbaf24e360c9d66e7b4b5e9ef3cedbe38d512ec03311",
-      "size": 126642
+      "sha256": "81b779aa67b9e8b7182b55d051ec9a962b8255420b2712a8d1c4dada279d6612",
+      "size": 126742
     },
     {
       "path": "/assets/centurion/pennsylvania-ledge.webp",
-      "sha256": "02a6090d86fde3fc5042b592a741e07eb1cd8ad9b83b65b8a285964de66443fb",
-      "size": 944232
+      "sha256": "42621e553bb2f6b82b2ec9eda4ead71fa3b39879633bc988cea4a17a26bf68b2",
+      "size": 1036834
     },
     {
       "path": "/assets/centurion/pennsylvania-palos-verdes-bump.webp",
-      "sha256": "1430531bc034114080bc3e85ff9991eb979fa686de0f48ee18fbf168af750522",
-      "size": 102386
+      "sha256": "b3a91a0d46774a19e12c43141907ad5b501c74a02bb174ed4ade2a9b3aa72123",
+      "size": 120770
     },
     {
       "path": "/assets/centurion/pennsylvania-palos-verdes.webp",
-      "sha256": "4c6c297165637840d22b4abe4b70db843b42edc6e68f0036875505230e0a07cc",
-      "size": 676462
+      "sha256": "5d7f0e9948b358c87e1f6de020afaaa181b8a286b9b24bb6f5d15807fc257d78",
+      "size": 807816
     },
     {
       "path": "/assets/centurion/pennsylvania-rubble-bump.webp",
-      "sha256": "90856f842e61fc8a381bdd0995e174037eecba8290099cbb611512991ed8eb6a",
-      "size": 95898
+      "sha256": "fd3393bcc4ba2f4a4ed2fcd2606b5b28a69b45601702018709d6fc3276ec3e9d",
+      "size": 107252
     },
     {
       "path": "/assets/centurion/pennsylvania-rubble.webp",
-      "sha256": "b75813f984d8b60a1a18aa6bbd7c8f46772835dfafc393a3f4baec5bc41de81f",
-      "size": 863476
+      "sha256": "de4efdaa2ca799e4d8ed4a48d68b1e5461ad3d7287f91cc602e439468ea6dd5c",
+      "size": 921108
     },
     {
       "path": "/assets/centurion/pennsylvania-rustic-bump.webp",
-      "sha256": "162922f77404a2e2e1293c28c8d46f92f095d29ef0abf98202d99fddfb56e4ac",
-      "size": 98434
+      "sha256": "688e910e004c7d9cd51a281595bf51cd29fe3d8667815715be5acdc3e78e0709",
+      "size": 111834
     },
     {
       "path": "/assets/centurion/pennsylvania-rustic.webp",
-      "sha256": "9af45ae01b3871099e2da635dde54466f0069816c0ea421c06e2daacd4209c4c",
-      "size": 736552
+      "sha256": "85fb8f3bf801f9ebb80b5d4595420090aeee38dd56a8ce0919aed8b22f88cc33",
+      "size": 869900
     },
     {
       "path": "/assets/centurion/pennsylvania-splitface-bump.webp",
-      "sha256": "588e80bdf396330f61f394e44a4d234c00d190c310a774c3dcadaedf7cfd8932",
-      "size": 99948
+      "sha256": "ec8c2bcaaf9a1e1f4387489cea4fc1d1fbf8a8a7cd8aae8d479549140adddb22",
+      "size": 124164
     },
     {
       "path": "/assets/centurion/pennsylvania-splitface.webp",
-      "sha256": "af31cfe41ca7c627bbeacc15658d6d8b491aa75091697f24cbbf1b8ae590a348",
-      "size": 703354
+      "sha256": "7f82929a4aad0b5030f9c6fdc2ecafa37071485febc20db6fb0944a3de5e158f",
+      "size": 852930
     },
     {
       "path": "/assets/centurion/pennsylvania-stack-bump.webp",
-      "sha256": "bde1671f99c004059adcbc5339d83627f3e0186112a61a4be37e01d4d181d287",
-      "size": 86988
+      "sha256": "8118ea0a91aae89414439250ce701f10df88fc2d751a79fcdb7ee067549c6047",
+      "size": 113510
     },
     {
       "path": "/assets/centurion/pennsylvania-stack.webp",
-      "sha256": "33aca10c470acd46a14ca1aaf9e3b6bdf259d4231ec08b366522c5173471806a",
-      "size": 572878
+      "sha256": "90a5a44af74efd9134c119322364f8b2f37fa9ba216fb6ce7ddec6fe5c91bf9c",
+      "size": 740812
     },
     {
       "path": "/assets/centurion/plain-cathedral-stone-bump.webp",
-      "sha256": "79b57887d89ff8470569425fab178e689aecd1c96b255ac81faae96a1fa899d5",
-      "size": 113028
+      "sha256": "4042f9c34d88e5d3bb17bcdb44c5dcebef02b9b7adf1d777c64f9579dfde91dd",
+      "size": 119586
     },
     {
       "path": "/assets/centurion/plain-cathedral-stone.webp",
-      "sha256": "62331993b559cbd6e08000121a90f1713f519113ea7512d40d1b6acdd24210c7",
-      "size": 964088
+      "sha256": "a5b39017730bae256272280c95b32d43e9b6cb325a44270bd393736cc7d6deec",
+      "size": 994980
     },
     {
       "path": "/assets/centurion/plain-fieldstone-bump.webp",
-      "sha256": "7039449b09617c2f254cb00651fd1d9e2d5d70699bd14eb64393202fd1809569",
-      "size": 61698
+      "sha256": "f1aec220d32f4a53fff97b69602f7ca9905e16e8a93b98decc89b37f7cacf20f",
+      "size": 91222
     },
     {
       "path": "/assets/centurion/plain-fieldstone.webp",
-      "sha256": "f522a82dd947f921b0cd020c37bc35abf6e12a558fbbd3578b9cddaaf12afed3",
-      "size": 187556
+      "sha256": "cc03b6127cba495d53d3297bb3d50cf0ee7427e68771a8ec06d8a95b6d524062",
+      "size": 292882
     },
     {
       "path": "/assets/centurion/plain-foundation-bump.webp",
-      "sha256": "44e8581ef0f14984f7e4e2b15ecd407b9c1a129ea074a967f61c83fcc0d63017",
-      "size": 67236
+      "sha256": "1d5192fe55d964847881ff5511dad45f5cf042927542f6b8258d4fa815c4d8f0",
+      "size": 73716
     },
     {
       "path": "/assets/centurion/plain-foundation.webp",
-      "sha256": "247a71608b946b775999a2eef96cf9a81036f1fc84880d0f26762c25847e510e",
-      "size": 468940
+      "sha256": "d6fc64d56282f4fc557a297353b7d43ad8f9e4c463c12f52cb71d00cda58397b",
+      "size": 559182
     },
     {
       "path": "/assets/centurion/plain-omaha-bump.webp",
-      "sha256": "7c449c32a8a96957de8724ca802d02093e344758e5ad5ad3b399b732a4c7d1f9",
-      "size": 82860
+      "sha256": "034ba7f0c8ee7642973fc47356514524f2150f5543e00abfc7158cb8bb71dd71",
+      "size": 105006
     },
     {
       "path": "/assets/centurion/plain-omaha.webp",
-      "sha256": "6deb998915590242a2e124c0f67e826a2352094ee47791f8d09980118cba470c",
-      "size": 239684
+      "sha256": "4256576e4fc9073b159da1152a9008ceeeaeefed06ab1bb965ba56efe85f4600",
+      "size": 325172
     },
     {
       "path": "/assets/centurion/plain-rubble-bump.webp",
-      "sha256": "29d3718969c65fc9e8bbf61c81d84bc75dd66d3c7c982150436c798e754fffd4",
-      "size": 103742
+      "sha256": "676b94d835c30a973ad824b42cfa1bdc90e3b7bafdc93b6bc1487256e11b06a0",
+      "size": 133348
     },
     {
       "path": "/assets/centurion/plain-rubble.webp",
-      "sha256": "0ddda09af0ff2795088d0997c753d6b8f755e44d3b8db40ab6789d0aca2a8d1b",
-      "size": 799640
+      "sha256": "4f5eca260bc8021ca1d791cc21fd2ee213df7ce0441a0638048a0eed7f438898",
+      "size": 954544
     },
     {
       "path": "/assets/centurion/rocky-brookstone-4-bump.webp",
-      "sha256": "7a7636f0a45f0852ad1fc80e406cee0549effc87c787985da3368a5726042836",
-      "size": 56956
+      "sha256": "fed2934b6146ee26c7cd7eec00c7d55f5dabd0de0de69bb68cd230de7276af96",
+      "size": 96692
     },
     {
       "path": "/assets/centurion/rocky-brookstone-4.webp",
-      "sha256": "f4eae200c8ce5f8f99923aeea642c60067c27bde88e5e2d5e0df5da8879f4922",
-      "size": 112568
+      "sha256": "761d0b6eae758d219c52fc920826edd6b0efe85f153a002f91bd2b8deb9b7070",
+      "size": 197046
     },
     {
       "path": "/assets/centurion/rocky-brookstone-6-bump.webp",
-      "sha256": "7a7636f0a45f0852ad1fc80e406cee0549effc87c787985da3368a5726042836",
-      "size": 56956
+      "sha256": "9f2fdc23b7273517693665447a9a2498f5d02c7e79ba9e2629d6f8be4b4fc1cb",
+      "size": 93798
     },
     {
       "path": "/assets/centurion/rocky-brookstone-6.webp",
-      "sha256": "f4eae200c8ce5f8f99923aeea642c60067c27bde88e5e2d5e0df5da8879f4922",
-      "size": 112568
+      "sha256": "0b51c419c41f1b3d923c05c29096ab38de12069cc471213679af652f3ea830d4",
+      "size": 196950
     },
     {
       "path": "/assets/centurion/rocky-brookstone-blend-bump.webp",
-      "sha256": "7a7636f0a45f0852ad1fc80e406cee0549effc87c787985da3368a5726042836",
-      "size": 56956
+      "sha256": "fdf8caaea599ef1d1e46c6639bb8932fd52ff1e485c42b2895abf5df1e1f7d77",
+      "size": 76604
     },
     {
       "path": "/assets/centurion/rocky-brookstone-blend.webp",
-      "sha256": "f4eae200c8ce5f8f99923aeea642c60067c27bde88e5e2d5e0df5da8879f4922",
-      "size": 112568
+      "sha256": "846ffe37ff8b2c9902e96655c321069ffa58d50637ef51c48fcb8380de5b4872",
+      "size": 143620
     },
     {
       "path": "/assets/centurion/rocky-brookstone-bump.webp",
-      "sha256": "7a7636f0a45f0852ad1fc80e406cee0549effc87c787985da3368a5726042836",
-      "size": 56956
+      "sha256": "5126d16875957e5dec3c76325bac0a7935930feccfefff13454a421847e06734",
+      "size": 96408
     },
     {
       "path": "/assets/centurion/rocky-brookstone.webp",
-      "sha256": "f4eae200c8ce5f8f99923aeea642c60067c27bde88e5e2d5e0df5da8879f4922",
-      "size": 112568
+      "sha256": "5462acb9a08bc1360a5f7eb38437820889484f2ab191d7be6ef49b00defd4aea",
+      "size": 200376
     },
     {
       "path": "/assets/centurion/sage-valley-cathedral-stone-bump.webp",
-      "sha256": "26dfc50ebef1318006de02dbbfc50c481157a788d45dfcbf29c317bce8810f9d",
-      "size": 125332
+      "sha256": "0125dccc6e02ce808acaaaf174627f54d2900c8d59b7d976b3875f11ffd84814",
+      "size": 130708
     },
     {
       "path": "/assets/centurion/sage-valley-cathedral-stone.webp",
-      "sha256": "25c7858d8da25ad6e14c0dd8902256a85fbcdcd9978678db04829c9c4d303828",
-      "size": 1023332
+      "sha256": "427947be443614697636a59082ace682dc07c024efe94464732f1966599863ac",
+      "size": 1053726
     },
     {
       "path": "/assets/centurion/santos-topeka-bump.webp",
-      "sha256": "fd7e4749a1ee94e92b45052eff8fba9ceb3c3bfb2530ecc8334ac4ae4a9c046b",
-      "size": 106838
+      "sha256": "cd508ecbdb5c4f7a4d664a648a0ab5e7a6adf74732a914df1e4e683bc1eaf304",
+      "size": 129754
     },
     {
       "path": "/assets/centurion/santos-topeka.webp",
-      "sha256": "33154848e1984d197fac561a9bcf91573bf1a1185cfb6e89db12ae2b9aa12b34",
-      "size": 608804
+      "sha256": "1068e547d00842da2d646720c919739798ca2f7b57dbe1571d58751285674fe3",
+      "size": 691698
     },
     {
       "path": "/assets/centurion/shoreline-brookstone-4-bump.webp",
-      "sha256": "42a214a429b5b234bd3ea7a0e7ad1218fc627af52cef28e8602ea46dd32cb9b9",
-      "size": 58650
+      "sha256": "de28c0820f046885ce12130ce6926fa9a5614967190d74b2ef8043898f4f09cc",
+      "size": 92782
     },
     {
       "path": "/assets/centurion/shoreline-brookstone-4.webp",
-      "sha256": "7578e0d69ea7b15ec23d6da50c6d699adb25a6f1852d9c3a668e2d73a8e23df8",
-      "size": 150472
+      "sha256": "8aaa1e562be698f1abd3da8e60188f77629b9df93b2d8f8fc652d2930f25cd2d",
+      "size": 264472
     },
     {
       "path": "/assets/centurion/shoreline-brookstone-6-bump.webp",
-      "sha256": "42a214a429b5b234bd3ea7a0e7ad1218fc627af52cef28e8602ea46dd32cb9b9",
-      "size": 58650
+      "sha256": "d78e047a7796a5d4cb1dd849365356ec850d97747db31877046d764f85e4a92b",
+      "size": 92632
     },
     {
       "path": "/assets/centurion/shoreline-brookstone-6.webp",
-      "sha256": "7578e0d69ea7b15ec23d6da50c6d699adb25a6f1852d9c3a668e2d73a8e23df8",
-      "size": 150472
+      "sha256": "6add541d5cda7563a0048a3e90b3e7e0c0ed925c9ed3d7a37509ee63f891bb2b",
+      "size": 262662
     },
     {
       "path": "/assets/centurion/shoreline-brookstone-blend-bump.webp",
-      "sha256": "546705e7ec6113c70dfdbe8531b0a8a1521f230658a8ed32c1ff7457e91e2c96",
-      "size": 68890
+      "sha256": "06e69a241a572342a57a8a78442caf7fc21af18d3d721bc4ebe07191864a8b7b",
+      "size": 87048
     },
     {
       "path": "/assets/centurion/shoreline-brookstone-blend.webp",
-      "sha256": "394296a0323a49437fc971612220bd01f44bd73ba4730b5249abaaeda170efbb",
-      "size": 167840
+      "sha256": "06f864722db9a9b3219481e2d87f89b00252718b34373a62c3eb60076fdabe7c",
+      "size": 232502
     },
     {
       "path": "/assets/centurion/shoreline-brookstone-bump.webp",
-      "sha256": "42a214a429b5b234bd3ea7a0e7ad1218fc627af52cef28e8602ea46dd32cb9b9",
-      "size": 58650
+      "sha256": "90886667292c16e8e8f32fc54f44383abd286c153c64aeec2c766b6b07f69961",
+      "size": 91652
     },
     {
       "path": "/assets/centurion/shoreline-brookstone.webp",
-      "sha256": "7578e0d69ea7b15ec23d6da50c6d699adb25a6f1852d9c3a668e2d73a8e23df8",
-      "size": 150472
+      "sha256": "77dc8e61c8c199d35592b64cc84f5d91a0b4b103305b0b5c683456b5c3ab4b80",
+      "size": 266968
     },
     {
       "path": "/assets/centurion/smoke-biltmore-bump.webp",
-      "sha256": "85da6cc0f28051c4fb1d520a90eb0d5b97922d918b68a6bab4518432d0d6760a",
-      "size": 76998
+      "sha256": "fb4f365811aace34910743a2f9690ac19bd71026bb2e01f98f9c41695408f55b",
+      "size": 113462
     },
     {
       "path": "/assets/centurion/smoke-biltmore.webp",
-      "sha256": "5e443be916d92f124f32d56b399d71b4accbf5f341f6cbad11ade9c345704543",
-      "size": 224180
+      "sha256": "d19f3be04f120d8fbec26034993b3f01bd911942961110c34359866aaff4e916",
+      "size": 401060
     },
     {
       "path": "/assets/centurion/smoke-georgetown-bump.webp",
-      "sha256": "0e6f9c23f4f71a751a028531e14ceea9dd64a839b252067b6303c5482dc070fc",
-      "size": 91564
+      "sha256": "18825af392be4a6990f37a48189727204d2ce23488ab696177d93518d904782e",
+      "size": 108704
     },
     {
       "path": "/assets/centurion/smoke-georgetown.webp",
-      "sha256": "92d438480a4ee684e72a24fc53e371ec7627b69184dd90569aca2b4f194e91db",
-      "size": 257146
+      "sha256": "bc84d422852ecad11ac91125c82857e5ab31bb820778629f875fff4a9ac27be5",
+      "size": 307704
     },
     {
       "path": "/assets/centurion/southern-wheat-canyon-ledge-bump.webp",
-      "sha256": "1421fffd051f010f9418d750fa6100f2b018171984928dedf208ddad4ef8a399",
-      "size": 112142
+      "sha256": "52178c411256c01ec197a0469eb062e3e68b798ca3888f1075db0b9fe44cb463",
+      "size": 119854
     },
     {
       "path": "/assets/centurion/southern-wheat-canyon-ledge.webp",
-      "sha256": "92977a417e905b74ae5f9291f2cc1e38f6d1129d9a44f20eb03deaca267f16e3",
-      "size": 976086
+      "sha256": "d3f9f5e16af2eb8f047d6b3c3d2528b3cd1721d6425db26a166b7dda662cc2a3",
+      "size": 1082840
     },
     {
       "path": "/assets/centurion/suede-centurion-castle-bump.webp",
-      "sha256": "eea9c71f482b3a445bb5925237bdda6bee6d1a29cb516580990869d32722039a",
-      "size": 95890
+      "sha256": "4f9e03e49a36f2082be9c7a299d780f6f5ccda6f314290ba4ddd6da007aed642",
+      "size": 130040
     },
     {
       "path": "/assets/centurion/suede-centurion-castle.webp",
-      "sha256": "bff607e80f20f6efaee5d1caff055074f6e8c820b618b0f324e6777a56303816",
-      "size": 774160
+      "sha256": "4b6c3c92cc0cd78bb1a6c039e8d271057f9cabd29e977b94b39c6eecd16552b6",
+      "size": 897266
     },
     {
       "path": "/assets/centurion/suede-cherokee-blend-bump.webp",
-      "sha256": "d22604ccaa338abcdaea2d76a3ab2266d689c6a21c739ae8d76143bead411f5c",
-      "size": 91824
+      "sha256": "1ee1e218136786e500f984803fe5140f243d412fbef79c2196b760398775177a",
+      "size": 94772
     },
     {
       "path": "/assets/centurion/suede-cherokee-blend.webp",
-      "sha256": "6d7bad230612b01e4f695002e7cd425ceb672951785a957bc0fbf5c017073af7",
-      "size": 743734
+      "sha256": "4adb47017e48b60bb6b2a17dbde25cdb0f71fa11c86260f4869baa5c53e19762",
+      "size": 861214
     },
     {
       "path": "/assets/centurion/suede-cutface-bump.webp",
-      "sha256": "518bef230632b6a56cc2cba36f01c334fe1300045639d5804b627a8df622cd30",
-      "size": 92128
+      "sha256": "314455550c11be85d29426dd377404e13eec637b5ac26a609907c006b1cc1c13",
+      "size": 106094
     },
     {
       "path": "/assets/centurion/suede-cutface.webp",
-      "sha256": "6d28006ac868f2a8667175e131bc04ae4229768adc1cc6c226a4580f352485e5",
-      "size": 687764
+      "sha256": "b804cbb12fdfd2de0c13ff0698fa669556d87f4173d94ff1dec63930704bbecd",
+      "size": 818518
     },
     {
       "path": "/assets/centurion/suede-rubble-bump.webp",
-      "sha256": "0955d5accf61917090253ba913f76b35d8f3c0d4c2a1e2b521c9895a026b4b4f",
-      "size": 93804
+      "sha256": "ea3119b45887ffd06312180ceffb1dde5c455a107b56066df03117f6495a2b17",
+      "size": 114016
     },
     {
       "path": "/assets/centurion/suede-rubble.webp",
-      "sha256": "39b036cfb768031dc5fe2ae56df1108898d9b421711813a1fc5e790e5b120c6b",
-      "size": 750782
+      "sha256": "ac48cba94fc4cfb4090ee9121d4f4deca859d732fd891c61c051b8ea43e36339",
+      "size": 892070
     },
     {
       "path": "/assets/centurion/suede-silhoutte-ledge-bump.webp",
-      "sha256": "a2917ae84bdafaac957a3d99be538502711cc236d8193c60880fb56293f6369a",
-      "size": 121278
+      "sha256": "abc9b7333b2233856cd98f9f51f272d284658dc86bcba2ee84cad59341fef190",
+      "size": 130498
     },
     {
       "path": "/assets/centurion/suede-silhoutte-ledge.webp",
-      "sha256": "6e14477c64662ea7954ca00d136ff29016ab6d0318eee6b72b7d3471b473144e",
-      "size": 889962
+      "sha256": "30b15647976f2d706578778a785d34fb31af2ae789d31c96a8bdc7737defab86",
+      "size": 990294
     },
     {
       "path": "/assets/centurion/suede-vine-hill-bump.webp",
-      "sha256": "65aeb254c4c23d421119bfb48ff1ea96ce403335e05981b836db0619ed5daeab",
-      "size": 140696
+      "sha256": "ba308b67c431541311d8d9f4100fe744d6d8068059d692c24c1bf7aab2d68934",
+      "size": 137406
     },
     {
       "path": "/assets/centurion/suede-vine-hill.webp",
-      "sha256": "14f78b1c1b810244eae7a9fcccaa777ad46926c3830131a4b2a5a37737cab8d6",
-      "size": 933578
+      "sha256": "3c8f4725d6fbe75291719c86fac1dd849629bd45b44f6a582ed67a0cc8d0afe6",
+      "size": 1075912
     },
     {
       "path": "/assets/centurion/summit-palos-verdes-bump.webp",
-      "sha256": "2d97dd895f991fac50f370ef7458037b73a45e15bd57239dfcab8d2b28a80698",
-      "size": 112740
+      "sha256": "8dc38d793bc73d9fdd84b810d3c219b78202a7e8d5141a318bd255dec9ab3f24",
+      "size": 153496
     },
     {
       "path": "/assets/centurion/summit-palos-verdes.webp",
-      "sha256": "97bdbca3d8d15b8684787ba4ee472f67b1d63f60c975aa5e296a93c6f8c52c48",
-      "size": 421768
+      "sha256": "8ec7647a7f880f55c56a4ceedf51796a0fcb650d966d3b5ad12bdc53caf9198f",
+      "size": 847218
     },
     {
       "path": "/assets/centurion/texas-biltmore-bump.webp",
-      "sha256": "47473dd7409ffc244dfc9634f449503f4dc1036871d6dfc7109348b8fc84e5ca",
-      "size": 53950
+      "sha256": "ba92170fc1ba499eb3fc99ce7ec74a3b947add59e8eb63acffb50964552030ce",
+      "size": 77888
     },
     {
       "path": "/assets/centurion/texas-biltmore.webp",
-      "sha256": "a0b9538e2043577d7af51fddab382e452f35aa335d4b1e087ccc95756ab7e657",
-      "size": 243016
+      "sha256": "d5d90e2adf59d70760ddc74c77b8ada37596f7834bdc3f30b14605a6cdfb5b16",
+      "size": 300500
     },
     {
       "path": "/assets/centurion/texas-ledge-bump.webp",
-      "sha256": "20975206a516bf417c3c42ba68ea72d08752e8b9f6e8c7057d4c97288c07693b",
-      "size": 87250
+      "sha256": "8d96ab90530ad4e772d687d361ec5ee1eb10b8710205dc005c328241eacff7d5",
+      "size": 87880
     },
     {
       "path": "/assets/centurion/texas-ledge.webp",
-      "sha256": "129665d51305db10ecedcc5c7d8ce7572d5ca94e7efcb5d1d80ad3d48b663607",
-      "size": 355798
+      "sha256": "319c68a14e58a24c13bec58f28d07c3592b810a8107274811e697550077d754e",
+      "size": 349768
     },
     {
       "path": "/assets/centurion/texas-ohio-limestone-bump.webp",
-      "sha256": "193ab88cbbd8429de000029738765b2e00073394fc76727d0e98d55f0c9aa640",
-      "size": 68260
+      "sha256": "1450758976ab37c35a506d9889a45fdbc41bda414e0a6e8918fe4327ce251efb",
+      "size": 88426
     },
     {
       "path": "/assets/centurion/texas-ohio-limestone.webp",
-      "sha256": "01b4d319c78f39b1fbb276d9b1988a52e2ad341172e0c88dfccbc3d4672e45e4",
-      "size": 109310
+      "sha256": "cf2835dda2b754171d06f5d6317be375f6ff8f952ecdc22f26706d62c8266478",
+      "size": 188350
     },
     {
       "path": "/assets/centurion/texas-splitface-bump.webp",
-      "sha256": "8fb11222aacf1f1dcbeabcddf1f91decec121e9d33ac4d2b865775efcedde52e",
-      "size": 98562
+      "sha256": "0438826e5ae4b58591e1b35ca19f369f198a7960c319eba996440ccaef4b74e2",
+      "size": 131262
     },
     {
       "path": "/assets/centurion/texas-splitface.webp",
-      "sha256": "e62294caf9bcafbc85a85be03286d47041857c9a6dd5288a0940b178ffa43f33",
-      "size": 263336
+      "sha256": "2c2ee54dbcd687b72e56fe6a9ec3fa79e6ac800bfcd457550f5752cd433c4ef2",
+      "size": 412328
     },
     {
       "path": "/assets/centurion/thumbs/alpine-cathedral-stone.webp",
@@ -1456,6 +1476,11 @@
       "path": "/assets/centurion/thumbs/brown-cutface.webp",
       "sha256": "1e763ec80203cffbad6b7a8cb4949cdfbe059d2ffcf5de25624950ccfb3ac691",
       "size": 27804
+    },
+    {
+      "path": "/assets/centurion/thumbs/brown-ledge.webp",
+      "sha256": "ffc562fbf027596a97580c9e7d227e6d00bb45ea4ad497d343767347fc065540",
+      "size": 32206
     },
     {
       "path": "/assets/centurion/thumbs/brown-rustic.webp",
@@ -1641,6 +1666,11 @@
       "path": "/assets/centurion/thumbs/kentucky-georgetown.webp",
       "sha256": "a0a8e3cec475f71560dd1fbac44b61128cece86d06a06fe2740e39876806f32c",
       "size": 31072
+    },
+    {
+      "path": "/assets/centurion/thumbs/kentucky-ledge.webp",
+      "sha256": "d38941281b6c9915cd951b4179bfa63a4760a671b4082f9ecd04e259636aa6a1",
+      "size": 26694
     },
     {
       "path": "/assets/centurion/thumbs/kentucky-mt-ledge.webp",
@@ -2004,63 +2034,53 @@
     },
     {
       "path": "/assets/centurion/tulsa-hackett-bump.webp",
-      "sha256": "2cc9d035b7513713b2e6adabda021ce2af3ae49b26fcb695b8eb2627df154b26",
-      "size": 115492
+      "sha256": "6f75d3445e3c2b733ac875e3f9321021f0e1086871cc12f303433663c20245fc",
+      "size": 124912
     },
     {
       "path": "/assets/centurion/tulsa-hackett.webp",
-      "sha256": "801ccc86dedc42415cebec226263d564bb61c131be594eea93678d280cae909c",
-      "size": 1021546
+      "sha256": "3d2d121503c05c5752f71d678e63a8b9c233ca7bf3eec528c42f8e86bd79a3b6",
+      "size": 1053086
     },
     {
       "path": "/assets/centurion/tulsa-ohio-limestone-bump.webp",
-      "sha256": "9bbe92bc71c9aa3103d98dbaa8ae5ff3b45a95f5816bdf392023b984c90bf394",
-      "size": 75264
+      "sha256": "9e9193128d5d20921d72d208b8cfa264fb545d8df04c00bc8f9fbf29548a6e2f",
+      "size": 111660
     },
     {
       "path": "/assets/centurion/tulsa-ohio-limestone.webp",
-      "sha256": "bfba3203e58c1f5007ac419f59f6dd901e9f96530d89675cb9851d010ba03219",
-      "size": 232192
+      "sha256": "763adb35a312bc8b7c04280b9ee86074e5d8a55ca3cfe43ffa2cb7cdd02eb3c8",
+      "size": 382454
     },
     {
       "path": "/assets/centurion/tulsa-rubble-bump.webp",
-      "sha256": "da85bda345ef75f63c2a648557b673067c467bde84516aeaa16b56279f5b95b5",
-      "size": 99990
+      "sha256": "0762735395a0ab81e301d17bc3b824eb547b4a212aa04778f590e1a30b2db2d7",
+      "size": 117316
     },
     {
       "path": "/assets/centurion/tulsa-rubble.webp",
-      "sha256": "d401479b6138705fb3927e75bf4ee2f4a78a8227cb57c69e8b4abd722abae7bb",
-      "size": 475132
+      "sha256": "b13ba1e346d58b5b763215f344b11a16dc2155fb475ffde27c8e2bf2b7671121",
+      "size": 530530
     },
     {
       "path": "/assets/centurion/valley-brook-river-rock-bump.webp",
-      "sha256": "2c72f57aeb0943924200b177f0a8c8369aac4c3eded6ffda6308f87464131ee0",
-      "size": 62452
+      "sha256": "8233019ebc07096221e601b42ce5e27dff4513cfcb5a1c5c83f62fa0301fb10b",
+      "size": 82444
     },
     {
       "path": "/assets/centurion/valley-brook-river-rock.webp",
-      "sha256": "d889405f38a7b2173938c09745ded8702256e998551453a75dad95aa445bfa6d",
-      "size": 519794
+      "sha256": "ad64eb309268577a7ed07063dafd782298ae60f70c39605058aadcfb306f1a15",
+      "size": 706340
     },
     {
       "path": "/assets/centurion/white-wash-brick-stone-bump.webp",
-      "sha256": "9f38af1a1ccce18f7f1a23664e20b6b4feb097e7e1f0d5ceddd46ae02754538e",
-      "size": 102430
+      "sha256": "c6defde1cd8139137d20f9a16aaedeecf0c5f281bb03ba57497746d56f27ae0a",
+      "size": 133146
     },
     {
       "path": "/assets/centurion/white-wash-brick-stone.webp",
-      "sha256": "ca4e94f696893adb582f5dc1f5cf0ecaeed31b293a00cd4c885eaf0c03dbb6ff",
-      "size": 195922
-    },
-    {
-      "path": "/assets/centurion-brown-ledge-bump.webp",
-      "sha256": "afd82b25ca4f9211224db1184e228fbc1648b588ed774a8a3b0c03d788788ba5",
-      "size": 3354632
-    },
-    {
-      "path": "/assets/centurion-brown-ledge.webp",
-      "sha256": "9e4ef4370bf7a17665b950324699c2748ab73ecaae5687ff86ab7389361a515d",
-      "size": 6512908
+      "sha256": "b38ee67d52564048fae43f416c1dbe904f3262f448325d998848a3f1f5d2f094",
+      "size": 205490
     },
     {
       "path": "/assets/centurion-hearthstone-brown-bump.webp",
@@ -2081,16 +2101,6 @@
       "path": "/assets/centurion-hearthstone-kentucky.webp",
       "sha256": "e570da36e1cea4081a0e3507305b0f28a2c92b74439b29e6d8b6340c0cb7eefe",
       "size": 141324
-    },
-    {
-      "path": "/assets/centurion-kentucky-ledge-bump.webp",
-      "sha256": "911231eadce9baad4f36b072c0046c05ff96b64784d936f914b79a458838e7c7",
-      "size": 3407540
-    },
-    {
-      "path": "/assets/centurion-kentucky-ledge.webp",
-      "sha256": "ae5344bbce61910ced9af3c9c194ec2798b1876950948ef147bad612cc431bb0",
-      "size": 6174196
     },
     {
       "path": "/assets/firebacks/32-dvs-deluxe-ember-glo-black-glass.png",

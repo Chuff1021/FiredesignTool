@@ -90,10 +90,23 @@ describe("approved product catalog", () => {
     expect(
       stoneProducts.filter((stone) => !stone.productCode).map((stone) => stone.name),
     ).toEqual(["Heather Brookstone Blend", "Summit Palos Verdes"]);
+    expect(
+      stoneProducts.every(
+        (stone) =>
+          stone.textureCoverage.width >= stone.pieceRange.widthMax * 2 &&
+          stone.textureCoverage.height >= stone.pieceRange.heightMax * 2,
+      ),
+    ).toBe(true);
+    for (const patternName of new Set(stoneProducts.map((stone) => stone.patternName))) {
+      const coverages = stoneProducts
+        .filter((stone) => stone.patternName === patternName)
+        .map((stone) => `${stone.textureCoverage.width}x${stone.textureCoverage.height}`);
+      expect(new Set(coverages).size).toBe(1);
+    }
   });
 
   it("keeps every runtime asset local, unique, and readiness-gated", () => {
-    expect(APPROVED_ASSET_PATHS).toHaveLength(672);
+    expect(APPROVED_ASSET_PATHS).toHaveLength(674);
     expect(new Set(APPROVED_ASSET_PATHS).size).toBe(APPROVED_ASSET_PATHS.length);
     expect(APPROVED_ASSET_PATHS.every((path) => path.startsWith("/assets/"))).toBe(true);
   });

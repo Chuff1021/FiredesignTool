@@ -188,13 +188,23 @@ openings in those exact layers, so the video cannot crop or overwrite the face.
   architectural accents page; each stone maps to the nearest published
   accessory reference without recoloring the source
 
-The swatches are assembled deterministically into 2048 × 1536 wall atlases.
-Mirrored source crops and restrained blending reduce visible repetition without
-generating, recoloring, or inventing stone. A restrained grayscale relief map
-is derived from each final atlas, and a separate 360 × 240 official-swatch
-thumbnail keeps the catalog responsive. Kentucky and Brown Ledge preserve their
-previously reviewed production masters and stable asset paths. Manufacturer
-photography cannot replace an in-person sample for color approval.
+The swatches are assembled deterministically into 2048 × 1536 wall atlases
+covering the tool's complete 192 × 144 inch stone-field range. Each pattern's
+official photograph is first calibrated by comparing its visible pieces with
+that pattern's published minimum and maximum dimensions; the calibrated source
+width ranges from 36 to 96 inches rather than assigning every pattern one
+scale. Edge-matched texture quilting then fills the larger field with
+overlapping sections of that same official photograph. Minimum-error seam cuts
+remove hard joins without mirroring, recoloring, generating, or inventing
+stone. Fixed-course Foundation Stone uses a course-preserving repeat of the
+official swatch so its published 22.75 × 6.75 inch units are never cut by the
+irregular-stone seam algorithm. A restrained grayscale relief map is derived
+from each final atlas, and a separate 360 × 240 official-swatch thumbnail keeps
+the catalog responsive.
+Kentucky and Brown Ledge use this same calibrated pipeline; the earlier legacy
+4096-pixel masters were retired because their physical coverage metadata made
+the pieces render oversized. Manufacturer photography cannot replace an
+in-person sample for color approval.
 
 ## Pearl Mantels
 

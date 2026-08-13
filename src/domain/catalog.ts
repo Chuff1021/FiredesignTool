@@ -202,6 +202,10 @@ export const stoneProductSchema = z.object({
     heightMin: positiveInches,
     heightMax: positiveInches,
   }),
+  textureCoverage: z.object({
+    width: positiveInches,
+    height: positiveInches,
+  }),
   assets: z.array(assetSourceSchema).length(2),
   thumbnailAsset: assetSourceSchema,
   hearthstone: z.object({
@@ -2092,6 +2096,7 @@ export const legacyStoneProducts20260805 = z.array(stoneProductSchema).parse([
     sourceUrl: "https://www.centurionstone.com/pattern/ledge/",
     joint: "dry-stack",
     pieceRange: ledgePieceRange,
+    textureCoverage: { width: 192, height: 144 },
     assets: [
       officialLayer(
         "/assets/centurion-kentucky-ledge.webp",
@@ -2144,6 +2149,7 @@ export const legacyStoneProducts20260805 = z.array(stoneProductSchema).parse([
     sourceUrl: "https://www.centurionstone.com/pattern/ledge/",
     joint: "dry-stack",
     pieceRange: ledgePieceRange,
+    textureCoverage: { width: 192, height: 144 },
     assets: [
       officialLayer(
         "/assets/centurion-brown-ledge.webp",
@@ -2186,7 +2192,7 @@ export const legacyStoneProducts20260805 = z.array(stoneProductSchema).parse([
 
 export const stoneProducts = z.array(stoneProductSchema).parse(generatedCenturionStoneProducts);
 
-export const APP_VERSION = "0.28.0";
+export const APP_VERSION = "0.28.1";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

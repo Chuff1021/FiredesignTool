@@ -32,8 +32,8 @@ async function collectFiles(directory) {
 await collectFiles(assetsDirectory);
 
 const manifest = {
-  version: "2026.08.13-1",
-  generatedAt: "2026-08-13T18:00:00.000Z",
+  version: "2026.08.13-2",
+  generatedAt: "2026-08-13T21:00:00.000Z",
   files,
 };
 
