@@ -127,7 +127,7 @@ for catalog-related pull requests. Each run retains a JSON evidence report for
 the installed showroom application or its Vercel build depend on a manufacturer
 website being available.
 
-Release `2026.08.13-2` retains all 27 models and factory variants in FPX's
+Release `2026.08.13-3` retains all 27 models and factory variants in FPX's
 current marketed gas-fireplace and gas-insert collections plus all three
 current wood fireplaces as checked on 2026-08-11: ten premium traditional fireplaces, two premium linear fireplaces,
 five traditional ProBuilder fireplaces, four linear ProBuilder fireplaces, and

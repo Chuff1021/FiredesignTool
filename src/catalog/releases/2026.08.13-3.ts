@@ -5,12 +5,12 @@ import {
   stoneProducts,
 } from "@/domain/catalog";
 
-/** Approved showroom snapshot with physically calibrated seamless Centurion atlases. */
-export const RELEASE_2026_08_13_2 = {
+/** Approved showroom snapshot with color-accurate, course-registered Centurion atlases. */
+export const RELEASE_2026_08_13_3 = {
   schemaVersion: 1,
-  id: "firedesign-2026.08.13-2",
-  version: "2026.08.13-2",
-  effectiveAt: "2026-08-13T21:00:00.000Z",
+  id: "firedesign-2026.08.13-3",
+  version: "2026.08.13-3",
+  effectiveAt: "2026-08-13T21:46:00.000Z",
   status: "approved",
   brands: [
     {

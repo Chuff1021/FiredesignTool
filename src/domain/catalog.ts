@@ -2192,7 +2192,7 @@ export const legacyStoneProducts20260805 = z.array(stoneProductSchema).parse([
 
 export const stoneProducts = z.array(stoneProductSchema).parse(generatedCenturionStoneProducts);
 
-export const APP_VERSION = "0.28.1";
+export const APP_VERSION = "0.28.2";
 
 export type FireplaceId = z.infer<typeof fireplaceIdSchema>;
 export type FaceOptionId = z.infer<typeof faceOptionIdSchema>;

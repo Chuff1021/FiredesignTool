@@ -4,12 +4,11 @@ import { Line, OrthographicCamera, PerspectiveCamera, RoundedBox } from "@react-
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import {
-  ACESFilmicToneMapping,
   CanvasTexture,
   ClampToEdgeWrapping,
   LinearFilter,
   LinearMipmapLinearFilter,
-  RepeatWrapping,
+  MirroredRepeatWrapping,
   SRGBColorSpace,
   TextureLoader,
   type Group,
@@ -258,7 +257,7 @@ function FeatureWall({
       stone.textureCoverage,
     );
     for (const texture of [color, bump]) {
-      texture.wrapS = texture.wrapT = RepeatWrapping;
+      texture.wrapS = texture.wrapT = MirroredRepeatWrapping;
       texture.repeat.set(transform.repeatX, transform.repeatY);
       texture.offset.set(transform.offsetX, transform.offsetY);
       texture.needsUpdate = true;
@@ -310,7 +309,7 @@ function FeatureWall({
       stone.textureCoverage,
     );
     for (const texture of [color, bump]) {
-      texture.wrapS = texture.wrapT = RepeatWrapping;
+      texture.wrapS = texture.wrapT = MirroredRepeatWrapping;
       texture.repeat.set(transform.repeatX, transform.repeatY);
       texture.offset.set(transform.offsetX, transform.offsetY);
       texture.needsUpdate = true;
@@ -726,19 +725,17 @@ export function FeatureWallCanvas({
           powerPreference: "high-performance",
           preserveDrawingBuffer: false,
           stencil: false,
-          toneMapping: ACESFilmicToneMapping,
-          toneMappingExposure: 1.03,
         }}
         shadows="basic"
       >
         <color args={["#171513"]} attach="background" />
         <CameraRig />
-        <ambientLight color="#fff6e9" intensity={1.2} />
-        <hemisphereLight color="#fff3dc" groundColor="#29211c" intensity={1.05} />
+        <ambientLight color="#ffffff" intensity={1.05} />
+        <hemisphereLight color="#ffffff" groundColor="#302e2c" intensity={0.72} />
         <directionalLight
           castShadow
-          color="#fff0d6"
-          intensity={2.15}
+          color="#ffffff"
+          intensity={1.35}
           position={[-80, 150, 100]}
           shadow-bias={-0.00008}
           shadow-mapSize-height={2048}
