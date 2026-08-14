@@ -465,16 +465,29 @@ const slugify = (value: string) =>
     .replace(/^-|-$/g, "");
 const decodeName = (value: string) => value.replace(/&#8243;/g, '"').replace(/&amp;/g, "&");
 
-async function fetchBuffer(url: string) {
-  const response = await fetch(url, {
-    headers: { "User-Agent": "FireDesignTool catalog sync" },
-  });
-  if (!response.ok) throw new Error(`Could not download ${url}: ${response.status}`);
-  return Buffer.from(await response.arrayBuffer());
+async function fetchWithRetry(url: string) {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { "User-Agent": "FireDesignTool catalog sync" },
+      });
+      if (!response.ok) throw new Error(`Could not download ${url}: ${response.status}`);
+      return response;
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 750));
+    }
+  }
+  throw lastError;
 }
 
-const ATLAS_WIDTH = 2048;
-const ATLAS_HEIGHT = 1536;
+async function fetchBuffer(url: string) {
+  return Buffer.from(await (await fetchWithRetry(url)).arrayBuffer());
+}
+
+const ATLAS_WIDTH = 4096;
+const ATLAS_HEIGHT = 3072;
 const ATLAS_PHYSICAL_WIDTH = 192;
 const ATLAS_PHYSICAL_HEIGHT = 144;
 
@@ -513,6 +526,7 @@ async function normalizeBroadVerticalLighting(atlas: Buffer) {
         data[offset + channel] = Math.round(Math.min(255, data[offset + channel]! * gain));
     }
   }
+
   return sharp(data, {
     raw: { width: info.width, height: info.height, channels: info.channels },
   })
@@ -520,7 +534,57 @@ async function normalizeBroadVerticalLighting(atlas: Buffer) {
     .toBuffer();
 }
 
-async function makeBrickAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: string) {
+async function normalizeBroadHorizontalLighting(atlas: Buffer) {
+  const { data, info } = await sharp(atlas)
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const columnLuminance = new Float64Array(info.width);
+  for (let x = 0; x < info.width; x += 1) {
+    let total = 0;
+    for (let y = 0; y < info.height; y += 1) {
+      const offset = (y * info.width + x) * info.channels;
+      total += data[offset]! * 0.2126 + data[offset + 1]! * 0.7152 + data[offset + 2]! * 0.0722;
+    }
+    columnLuminance[x] = total / info.height;
+  }
+  const columnRadius = Math.max(48, Math.round(info.width * 0.18));
+  const smoothedColumns = new Float64Array(info.width);
+  let windowTotal = 0;
+  let windowStart = 0;
+  let windowEnd = -1;
+  for (let x = 0; x < info.width; x += 1) {
+    const nextStart = Math.max(0, x - columnRadius);
+    const nextEnd = Math.min(info.width - 1, x + columnRadius);
+    while (windowEnd < nextEnd) windowTotal += columnLuminance[++windowEnd]!;
+    while (windowStart < nextStart) windowTotal -= columnLuminance[windowStart++]!;
+    smoothedColumns[x] = windowTotal / (windowEnd - windowStart + 1);
+  }
+  const columnTarget =
+    smoothedColumns.reduce((sum, value) => sum + value, 0) / smoothedColumns.length;
+  for (let x = 0; x < info.width; x += 1) {
+    const gain = Math.min(1.22, Math.max(0.82, columnTarget / smoothedColumns[x]!));
+    for (let y = 0; y < info.height; y += 1) {
+      const offset = (y * info.width + x) * info.channels;
+      for (let channel = 0; channel < 3; channel += 1)
+        data[offset + channel] = Math.round(Math.min(255, data[offset + channel]! * gain));
+    }
+  }
+  return sharp(data, {
+    raw: { width: info.width, height: info.height, channels: info.channels },
+  })
+    .png()
+    .toBuffer();
+}
+
+async function makeBrickAtlas(
+  sourceBuffer: Buffer,
+  sourceFieldWidth: number,
+  seed: string,
+  pieceWidthInches = 7.5,
+  pieceHeightInches = 2.25,
+) {
+  void seed;
   const rotated = await sharp(sourceBuffer).rotate().toBuffer();
   const metadata = await sharp(rotated).metadata();
   if (!metadata.width || !metadata.height) throw new Error("Invalid Centurion brick swatch");
@@ -540,7 +604,7 @@ async function makeBrickAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, se
     .removeAlpha();
   const { data: source, info } = await scaled.raw().toBuffer({ resolveWithObject: true });
   const pixelsPerInch = info.width / sourceFieldWidth;
-  const nominalCourseHeight = (2.25 + 0.5) * pixelsPerInch;
+  const nominalCourseHeight = (pieceHeightInches + 0.5) * pixelsPerInch;
   const courseStep = Math.max(16, Math.round(nominalCourseHeight));
   const rowSaturation = new Float64Array(info.height);
   for (let y = 0; y < info.height; y += 1) {
@@ -585,321 +649,144 @@ async function makeBrickAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, se
     .slice(0, -1)
     .map((top, index) => ({ top, height: boundaries[index + 1]! - top }))
     .filter(({ height }) => height >= courseStep * 0.65 && height <= courseStep * 1.35);
-  if (courses.length < 6)
+  const minimumCourses = pieceHeightInches >= 6 ? 3 : 6;
+  if (courses.length < minimumCourses)
     throw new Error("Official Brick Stone swatch has too few complete courses");
 
-  const random = deterministicRandom(seed);
-  const atlas = Buffer.alloc(ATLAS_WIDTH * ATLAS_HEIGHT * info.channels);
-  const sourceGlobal = [0, 0, 0];
-  for (let pixel = 0; pixel < info.width * info.height; pixel += 1)
-    for (let channel = 0; channel < 3; channel += 1)
-      sourceGlobal[channel] += source[pixel * info.channels + channel]!;
-  for (let channel = 0; channel < 3; channel += 1)
-    sourceGlobal[channel] /= info.width * info.height;
-  const sections = Math.ceil(ATLAS_WIDTH / info.width);
-  for (let section = 0; section < sections; section += 1) {
-    const sectionLeft = section * info.width;
-    const sectionWidth = Math.min(info.width, ATLAS_WIDTH - sectionLeft);
-    const selectedCourses: number[] = [];
-    for (let row = 0; row * courseStep < ATLAS_HEIGHT; row += 1) {
-      let courseIndex = Math.floor(random() * courses.length);
-      if (courseIndex === selectedCourses.at(-1))
-        courseIndex = (courseIndex + 1) % courses.length;
-      selectedCourses.push(courseIndex);
-    }
-    for (let row = 0; row < selectedCourses.length; row += 1) {
-      const outputY = row * courseStep;
-      const outputHeight = Math.min(courseStep, ATLAS_HEIGHT - outputY);
-      const course = courses[selectedCourses[row]!]!;
-      const verticalInset = Math.max(2, Math.round(course.height * 0.18));
-      let mortarJoint = 0;
-      let mortarScore = Number.POSITIVE_INFINITY;
-      for (let x = 0; x < info.width; x += 1) {
-        let score = 0;
-        for (
-          let y = course.top + verticalInset;
-          y < course.top + course.height - verticalInset;
-          y += 1
-        ) {
-          const offset = (y * info.width + x) * info.channels;
-          const red = source[offset]!;
-          const green = source[offset + 1]!;
-          const blue = source[offset + 2]!;
-          score += Math.max(red, green, blue) - Math.min(red, green, blue);
-        }
-        if (score < mortarScore) {
-          mortarScore = score;
-          mortarJoint = x;
-        }
-      }
-      mortarJoint =
-        (mortarJoint + Math.round(((row + section) % 2) * 4 * pixelsPerInch)) % info.width;
-      const mean = [0, 0, 0];
-      for (let y = 0; y < outputHeight; y += 1) {
-        const sourceY =
-          course.top +
-          Math.min(course.height - 1, Math.floor((y / courseStep) * course.height));
-        for (let x = 0; x < info.width; x += 1) {
-          const sourceOffset =
-            (sourceY * info.width + ((mortarJoint + x) % info.width)) * info.channels;
-          for (let channel = 0; channel < 3; channel += 1)
-            mean[channel] += source[sourceOffset + channel]!;
-        }
-      }
-      const gains = mean.map((total, channel) =>
-        Math.min(
-          1.06,
-          Math.max(0.94, sourceGlobal[channel]! / (total / (info.width * outputHeight))),
-        ),
-      );
-      for (let y = 0; y < outputHeight; y += 1) {
-        const sourceY =
-          course.top +
-          Math.min(course.height - 1, Math.floor((y / courseStep) * course.height));
-        for (let x = 0; x < sectionWidth; x += 1) {
-          const sourceX = (mortarJoint + x) % info.width;
-          const sourceOffset = (sourceY * info.width + sourceX) * info.channels;
-          const outputOffset = ((outputY + y) * ATLAS_WIDTH + sectionLeft + x) * info.channels;
-          for (let channel = 0; channel < info.channels; channel += 1)
-            atlas[outputOffset + channel] = Math.round(
-              Math.min(255, source[sourceOffset + channel]! * (gains[channel] ?? 1)),
-            );
-        }
-      }
-    }
-  }
-  return sharp(atlas, {
-    raw: { width: ATLAS_WIDTH, height: ATLAS_HEIGHT, channels: info.channels },
+  const scaledImage = await sharp(source, {
+    raw: { width: info.width, height: info.height, channels: info.channels },
   })
     .png()
     .toBuffer();
-}
-
-/**
- * Builds an installed field from course-preserving bands. Vertical seams vary
- * the horizontal stone arrangement, while horizontal seams follow the closest
- * mortar/stone boundary between complete bands. This avoids rectangular
- * exposure blocks, mirrored faces, and the broken courses produced by small
- * two-dimensional patches.
- */
-async function makeCourseRegisteredAtlas(
-  sourceBuffer: Buffer,
-  sourceFieldWidth: number,
-  seed: string,
-) {
-  const rotated = await sharp(sourceBuffer).rotate().toBuffer();
-  const metadata = await sharp(rotated).metadata();
-  if (!metadata.width || !metadata.height) throw new Error("Invalid Centurion swatch image");
-  const insetX = Math.max(2, Math.round(metadata.width * 0.02));
-  const insetY = Math.max(2, Math.round(metadata.height * 0.02));
-  const cropped = sharp(rotated)
-    .extract({
-      left: insetX,
-      top: insetY,
-      width: metadata.width - insetX * 2,
-      height: metadata.height - insetY * 2,
-    })
-    .resize({
-      width: Math.round((sourceFieldWidth / ATLAS_PHYSICAL_WIDTH) * ATLAS_WIDTH),
-      kernel: sharp.kernel.lanczos3,
-    })
-    .removeAlpha();
-  const { data: source, info } = await cropped.raw().toBuffer({ resolveWithObject: true });
-  const sourceWidth = info.width;
-  const sourceHeight = info.height;
-  const channels = info.channels;
-  const stripWidth = Math.min(640, Math.max(256, Math.floor(sourceWidth * 0.78)));
-  const horizontalOverlap = Math.max(56, Math.round(stripWidth * 0.24));
-  const xPositions = patchPositions(ATLAS_WIDTH, stripWidth, horizontalOverlap);
-  const bandHeight = Math.min(sourceHeight, Math.max(240, Math.floor(sourceHeight * 0.76)));
-  const verticalOverlap = Math.max(64, Math.round(bandHeight * 0.24));
-  const yPositions = patchPositions(ATLAS_HEIGHT, bandHeight, verticalOverlap);
-  const target = Buffer.alloc(ATLAS_WIDTH * ATLAS_HEIGHT * channels);
-  const filled = new Uint8Array(ATLAS_WIDTH * ATLAS_HEIGHT);
-  const random = deterministicRandom(seed);
-  const maxSourceX = Math.max(0, sourceWidth - stripWidth);
-  const maxSourceY = Math.max(0, sourceHeight - bandHeight);
-  const pixelDifference = (
-    first: Buffer,
-    firstPixel: number,
-    second: Buffer,
-    secondPixel: number,
-  ) => {
-    const firstOffset = firstPixel * channels;
-    const secondOffset = secondPixel * channels;
-    let difference = 0;
-    for (let channel = 0; channel < 3; channel += 1) {
-      const delta = first[firstOffset + channel]! - second[secondOffset + channel]!;
-      difference += delta * delta;
-    }
-    return difference;
-  };
-
-  const buildBand = (sourceY: number) => {
-    const band = Buffer.alloc(ATLAS_WIDTH * bandHeight * channels);
-    const bandFilled = new Uint8Array(ATLAS_WIDTH * bandHeight);
-    const scoreCandidate = (targetX: number, sourceX: number, overlapWidth: number) => {
-      let score = 0;
-      let samples = 0;
-      for (let y = 0; y < bandHeight; y += 5) {
-        for (let x = 0; x < overlapWidth; x += 3) {
-          const bandPixel = y * ATLAS_WIDTH + targetX + x;
-          const sourcePixel = (sourceY + y) * sourceWidth + sourceX + x;
-          score += pixelDifference(band, bandPixel, source, sourcePixel);
-          samples += 1;
-        }
-      }
-      return samples === 0 ? 0 : score / samples;
-    };
-    const verticalSeam = (targetX: number, sourceX: number, overlapWidth: number) => {
-      const backtrack = new Int16Array(overlapWidth * bandHeight);
-      let previous = new Float64Array(overlapWidth);
-      let current = new Float64Array(overlapWidth);
-      for (let y = 0; y < bandHeight; y += 1) {
-        for (let x = 0; x < overlapWidth; x += 1) {
-          const bandPixel = y * ATLAS_WIDTH + targetX + x;
-          const sourcePixel = (sourceY + y) * sourceWidth + sourceX + x;
-          let predecessor = x;
-          if (y > 0) {
-            if (x > 0 && previous[x - 1]! < previous[predecessor]!) predecessor = x - 1;
-            if (x + 1 < overlapWidth && previous[x + 1]! < previous[predecessor]!)
-              predecessor = x + 1;
-          }
-          backtrack[y * overlapWidth + x] = predecessor;
-          current[x] =
-            pixelDifference(band, bandPixel, source, sourcePixel) +
-            (y === 0 ? 0 : previous[predecessor]!);
-        }
-        [previous, current] = [current, previous];
-      }
-      let cursor = 0;
-      for (let x = 1; x < overlapWidth; x += 1)
-        if (previous[x]! < previous[cursor]!) cursor = x;
-      const seam = new Int16Array(bandHeight);
-      for (let y = bandHeight - 1; y >= 0; y -= 1) {
-        seam[y] = cursor;
-        cursor = backtrack[y * overlapWidth + cursor]!;
-      }
-      return seam;
-    };
-
-    for (let index = 0; index < xPositions.length; index += 1) {
-      const targetX = xPositions[index]!;
-      const overlapWidth = index === 0 ? 0 : xPositions[index - 1]! + stripWidth - targetX;
-      let bestSourceX = 0;
-      let bestScore = Number.POSITIVE_INFINITY;
-      const candidates = index === 0 ? 1 : 24;
-      for (let candidate = 0; candidate < candidates; candidate += 1) {
-        const sourceX = index === 0 ? 0 : Math.round(random() * maxSourceX);
-        const score = scoreCandidate(targetX, sourceX, overlapWidth);
-        if (score < bestScore) {
-          bestScore = score;
-          bestSourceX = sourceX;
-        }
-      }
-      const seam =
-        overlapWidth > 0 ? verticalSeam(targetX, bestSourceX, overlapWidth) : undefined;
-      for (let y = 0; y < bandHeight; y += 1) {
-        for (let x = 0; x < stripWidth; x += 1) {
-          const outputX = targetX + x;
-          const bandPixel = y * ATLAS_WIDTH + outputX;
-          if (bandFilled[bandPixel] === 1 && seam && x < seam[y]!) continue;
-          const sourcePixel = (sourceY + y) * sourceWidth + bestSourceX + x;
-          const outputOffset = bandPixel * channels;
-          const sourceOffset = sourcePixel * channels;
-          for (let channel = 0; channel < channels; channel += 1)
-            band[outputOffset + channel] = source[sourceOffset + channel]!;
-          bandFilled[bandPixel] = 1;
-        }
-      }
-    }
-    return band;
-  };
-
-  const horizontalSeam = (targetY: number, band: Buffer, overlapHeight: number) => {
-    const backtrack = new Int16Array(overlapHeight * ATLAS_WIDTH);
-    let previous = new Float64Array(overlapHeight);
-    let current = new Float64Array(overlapHeight);
-    for (let x = 0; x < ATLAS_WIDTH; x += 1) {
-      for (let y = 0; y < overlapHeight; y += 1) {
-        const outputPixel = (targetY + y) * ATLAS_WIDTH + x;
-        const bandPixel = y * ATLAS_WIDTH + x;
-        let predecessor = y;
-        if (x > 0) {
-          if (y > 0 && previous[y - 1]! < previous[predecessor]!) predecessor = y - 1;
-          if (y + 1 < overlapHeight && previous[y + 1]! < previous[predecessor]!)
-            predecessor = y + 1;
-        }
-        backtrack[x * overlapHeight + y] = predecessor;
-        current[y] =
-          pixelDifference(target, outputPixel, band, bandPixel) +
-          (x === 0 ? 0 : previous[predecessor]!);
-      }
-      [previous, current] = [current, previous];
-    }
-    let cursor = 0;
-    for (let y = 1; y < overlapHeight; y += 1) if (previous[y]! < previous[cursor]!) cursor = y;
-    const seam = new Int16Array(ATLAS_WIDTH);
-    for (let x = ATLAS_WIDTH - 1; x >= 0; x -= 1) {
-      seam[x] = cursor;
-      cursor = backtrack[x * overlapHeight + cursor]!;
-    }
-    return seam;
-  };
-
-  for (let index = 0; index < yPositions.length; index += 1) {
-    const targetY = yPositions[index]!;
-    const overlapHeight = index === 0 ? 0 : yPositions[index - 1]! + bandHeight - targetY;
-    const sourceY = index === 0 ? 0 : Math.round(random() * maxSourceY);
-    const band = buildBand(sourceY);
-    if (overlapHeight > 0) {
-      const targetTotals = [0, 0, 0];
-      const bandTotals = [0, 0, 0];
-      let samples = 0;
-      for (let y = 0; y < overlapHeight; y += 4) {
-        for (let x = 0; x < ATLAS_WIDTH; x += 4) {
-          const outputOffset = ((targetY + y) * ATLAS_WIDTH + x) * channels;
-          const bandOffset = (y * ATLAS_WIDTH + x) * channels;
-          for (let channel = 0; channel < 3; channel += 1) {
-            targetTotals[channel] += target[outputOffset + channel]!;
-            bandTotals[channel] += band[bandOffset + channel]!;
-          }
-          samples += 1;
-        }
-      }
-      const gains = targetTotals.map((total, channel) =>
-        Math.min(1.08, Math.max(0.92, total / Math.max(1, bandTotals[channel]!))),
-      );
-      if (samples > 0) {
-        for (let pixel = 0; pixel < ATLAS_WIDTH * bandHeight; pixel += 1) {
-          const offset = pixel * channels;
-          for (let channel = 0; channel < 3; channel += 1)
-            band[offset + channel] = Math.round(
-              Math.min(255, band[offset + channel]! * gains[channel]!),
-            );
-        }
-      }
-    }
-    const seam = overlapHeight > 0 ? horizontalSeam(targetY, band, overlapHeight) : undefined;
-    for (let y = 0; y < bandHeight; y += 1) {
-      for (let x = 0; x < ATLAS_WIDTH; x += 1) {
-        const outputPixel = (targetY + y) * ATLAS_WIDTH + x;
-        if (filled[outputPixel] === 1 && seam && y < seam[x]!) continue;
-        const bandPixel = y * ATLAS_WIDTH + x;
-        const outputOffset = outputPixel * channels;
-        const bandOffset = bandPixel * channels;
-        for (let channel = 0; channel < channels; channel += 1)
-          target[outputOffset + channel] = band[bandOffset + channel]!;
-        filled[outputPixel] = 1;
+  const mortarTotals = [0, 0, 0];
+  let mortarSamples = 0;
+  for (const boundary of boundaries) {
+    for (
+      let y = Math.max(0, boundary - 1);
+      y <= Math.min(info.height - 1, boundary + 1);
+      y += 1
+    ) {
+      for (let x = 0; x < info.width; x += 2) {
+        const offset = (y * info.width + x) * info.channels;
+        for (let channel = 0; channel < 3; channel += 1)
+          mortarTotals[channel] += source[offset + channel]!;
+        mortarSamples += 1;
       }
     }
   }
-
-  return sharp(target, { raw: { width: ATLAS_WIDTH, height: ATLAS_HEIGHT, channels } })
+  const mortar = mortarTotals.map((total) => Math.round(total / mortarSamples));
+  const nominalBrickWidth = Math.round(pieceWidthInches * pixelsPerInch);
+  const nominalBrickHeight = Math.round(pieceHeightInches * pixelsPerInch);
+  const boxes: Array<{ left: number; top: number; width: number; height: number }> = [];
+  const horizontalJoint = Math.max(6, Math.round(0.5 * pixelsPerInch));
+  const verticalJoint = Math.max(6, Math.round(0.5 * pixelsPerInch));
+  const cellWidth = nominalBrickWidth + horizontalJoint;
+  for (const course of courses) {
+    const top = Math.min(info.height - 1, course.top + Math.floor(verticalJoint / 2));
+    const height = Math.max(1, course.height - verticalJoint);
+    let bestJointPhase = 0;
+    let bestJointScore = Number.POSITIVE_INFINITY;
+    const jointProbeRadius = Math.max(1, Math.floor(horizontalJoint * 0.28));
+    for (let phase = 0; phase < cellWidth; phase += 1) {
+      let score = 0;
+      let samples = 0;
+      for (let center = phase; center < info.width; center += cellWidth) {
+        for (
+          let x = Math.max(0, center - jointProbeRadius);
+          x <= Math.min(info.width - 1, center + jointProbeRadius);
+          x += 1
+        ) {
+          for (let y = top; y < top + height; y += 3) {
+            const offset = (y * info.width + x) * info.channels;
+            score += Math.sqrt(
+              (source[offset]! - mortar[0]!) ** 2 +
+                (source[offset + 1]! - mortar[1]!) ** 2 +
+                (source[offset + 2]! - mortar[2]!) ** 2,
+            );
+            samples += 1;
+          }
+        }
+      }
+      if (samples > 0 && score / samples < bestJointScore) {
+        bestJointScore = score / samples;
+        bestJointPhase = phase;
+      }
+    }
+    for (
+      let jointCenter = bestJointPhase;
+      jointCenter + cellWidth < info.width;
+      jointCenter += cellWidth
+    ) {
+      const left = Math.round(jointCenter + horizontalJoint / 2);
+      const right = Math.round(jointCenter + cellWidth - horizontalJoint / 2);
+      if (left >= 0 && right <= info.width && right > left)
+        boxes.push({ left, top, width: right - left, height });
+    }
+  }
+  const minimumPieces = pieceWidthInches >= 20 ? 5 : 12;
+  if (boxes.length < minimumPieces)
+    throw new Error(`Official Brick Stone swatch yielded only ${boxes.length} usable bricks`);
+  const brickWidth = nominalBrickWidth;
+  const brickHeight = nominalBrickHeight;
+  const brickSamples = await Promise.all(
+    boxes.map((box) =>
+      sharp(scaledImage)
+        .extract(box)
+        .resize(brickWidth, brickHeight, { fit: "fill", kernel: sharp.kernel.lanczos3 })
+        .png()
+        .toBuffer(),
+    ),
+  );
+  const random = deterministicRandom(seed);
+  const courseHeight = brickHeight + verticalJoint;
+  const rowWidth = ATLAS_WIDTH + cellWidth;
+  const rows: Buffer[] = [];
+  for (let row = 0; row * courseHeight < ATLAS_HEIGHT; row += 1) {
+    const composites = [];
+    for (let left = 0; left < rowWidth; left += cellWidth) {
+      const sample = brickSamples[Math.floor(random() * brickSamples.length)]!;
+      composites.push({ input: sample, left: left + Math.floor(horizontalJoint / 2), top: 0 });
+    }
+    const rowImage = await sharp({
+      create: {
+        width: Math.ceil(rowWidth / cellWidth) * cellWidth,
+        height: courseHeight,
+        channels: 3,
+        background: { r: mortar[0]!, g: mortar[1]!, b: mortar[2]! },
+      },
+    })
+      .composite(composites)
+      .png()
+      .toBuffer();
+    rows.push(
+      await sharp(rowImage)
+        .extract({
+          left: row % 2 === 0 ? 0 : Math.floor(cellWidth / 2),
+          top: 0,
+          width: ATLAS_WIDTH,
+          height: courseHeight,
+        })
+        .png()
+        .toBuffer(),
+    );
+  }
+  const atlasHeight = rows.length * courseHeight;
+  const atlas = await sharp({
+    create: {
+      width: ATLAS_WIDTH,
+      height: atlasHeight,
+      channels: 3,
+      background: { r: mortar[0]!, g: mortar[1]!, b: mortar[2]! },
+    },
+  })
+    .composite(rows.map((input, row) => ({ input, left: 0, top: row * courseHeight })))
+    .png()
+    .toBuffer();
+  return sharp(atlas)
+    .extract({ left: 0, top: 0, width: ATLAS_WIDTH, height: ATLAS_HEIGHT })
     .png()
     .toBuffer();
 }
-
 function deterministicRandom(seed: string) {
   let state = 2166136261;
   for (const character of seed) {
@@ -939,11 +826,15 @@ async function makeFoundationAtlas(
     .removeAlpha()
     .png()
     .toBuffer();
+  const normalizedTile = await normalizeBroadHorizontalLighting(
+    await normalizeBroadVerticalLighting(tile),
+  );
   const columns = Math.ceil(ATLAS_WIDTH / tileWidth);
   const rows = Math.ceil(ATLAS_HEIGHT / tileHeight);
+  const staggerOffset = Math.floor(tileWidth / 2);
   const tiled = await sharp({
     create: {
-      width: columns * tileWidth + 1,
+      width: (columns + 1) * tileWidth,
       height: rows * tileHeight + 1,
       channels: 3,
       background: "#8c8274",
@@ -951,9 +842,9 @@ async function makeFoundationAtlas(
   })
     .composite(
       Array.from({ length: rows }, (_, row) =>
-        Array.from({ length: columns }, (_, column) => ({
-          input: tile,
-          left: column * tileWidth,
+        Array.from({ length: columns + 1 }, (_, column) => ({
+          input: normalizedTile,
+          left: column * tileWidth + (row % 2 === 0 ? 0 : staggerOffset),
           top: row * tileHeight,
         })),
       ).flat(),
@@ -961,7 +852,7 @@ async function makeFoundationAtlas(
     .png()
     .toBuffer();
   return sharp(tiled)
-    .extract({ left: 0, top: 0, width: ATLAS_WIDTH, height: ATLAS_HEIGHT })
+    .extract({ left: staggerOffset, top: 0, width: ATLAS_WIDTH, height: ATLAS_HEIGHT })
     .png()
     .toBuffer();
 }
@@ -1175,38 +1066,14 @@ async function makeAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: s
 async function writeWallAssets(id: string, sourceUrl: string, sourceFieldWidth: number) {
   const sourceBuffer = await fetchBuffer(sourceUrl);
   await writeFile(path.join(sourceDirectory, `${id}.source`), sourceBuffer);
-  const sourceMetadata = await sharp(sourceBuffer).rotate().metadata();
-  if (!sourceMetadata.width || !sourceMetadata.height)
-    throw new Error(`Official Centurion swatch dimensions are missing: ${id}`);
-  const verticalInset = Math.max(2, Math.round(sourceMetadata.height * 0.06));
-  const registeredSource = await sharp(sourceBuffer)
-    .rotate()
-    .extract({
-      left: 0,
-      top: verticalInset,
-      width: sourceMetadata.width,
-      height: sourceMetadata.height - verticalInset * 2,
-    })
-    .removeAlpha()
-    .png()
-    .toBuffer();
-  const colorAtlas =
-    process.env.FIREDESIGN_EXPERIMENTAL_SYNTHESIS === "1"
-      ? await normalizeBroadVerticalLighting(
-          id.endsWith("-foundation")
-            ? await makeFoundationAtlas(sourceBuffer, sourceFieldWidth, id)
-            : id.endsWith("-brick-stone")
-              ? await makeBrickAtlas(sourceBuffer, sourceFieldWidth, id)
-              : process.env.FIREDESIGN_LEGACY_QUILT === "1"
-                ? await makeAtlas(sourceBuffer, sourceFieldWidth, id)
-                : await makeCourseRegisteredAtlas(sourceBuffer, sourceFieldWidth, id),
-        )
-      : await normalizeBroadVerticalLighting(
-          await sharp(registeredSource)
-            .resize({ width: 2048, kernel: sharp.kernel.lanczos3, withoutEnlargement: true })
-            .png()
-            .toBuffer(),
-        );
+  const generatedAtlas = id.endsWith("-brick-stone")
+    ? await makeBrickAtlas(sourceBuffer, sourceFieldWidth, id)
+    : id.endsWith("-foundation")
+      ? await makeFoundationAtlas(sourceBuffer, sourceFieldWidth, id)
+      : await makeAtlas(sourceBuffer, sourceFieldWidth, id);
+  const colorAtlas = await normalizeBroadHorizontalLighting(
+    await normalizeBroadVerticalLighting(generatedAtlas),
+  );
   await Promise.all([
     sharp(colorAtlas)
       .webp({ quality: 82, smartSubsample: true, effort: 5 })
@@ -1262,7 +1129,7 @@ const swatchUrlByColor = new Map<string, string>();
 const sourceFieldWidthByProductId = new Map<string, number>();
 for (const pattern of patterns) {
   const sourceUrl = `https://www.centurionstone.com/pattern/${pattern.slug}/`;
-  const html = await (await fetch(sourceUrl)).text();
+  const html = await (await fetchWithRetry(sourceUrl)).text();
   const imageTags = [...html.matchAll(/<img[^>]+class="color-variation-image"[^>]*>/gi)].map(
     (match) => match[0],
   );
@@ -1279,7 +1146,13 @@ for (const pattern of patterns) {
     const accessorySlug = slugify(accessoryName);
     swatchUrlByColor.set(colorSlug, swatchUrl);
     sourceFieldWidthByProductId.set(id, pattern.sourceFieldWidth);
-    const wallBase = `/assets/centurion/${id}`;
+    // Kentucky and Brown Ledge were the two original showroom-approved masters.
+    // Keep those exact hand-built 4096 px atlases instead of replacing them with
+    // a newly synthesized catalog texture.
+    const approvedLegacyLedge = id === "kentucky-ledge" || id === "brown-ledge";
+    const wallBase = approvedLegacyLedge
+      ? `/assets/centurion-${id}`
+      : `/assets/centurion/${id}`;
     const thumbPath = `/assets/centurion/thumbs/${id}.webp`;
     const legacyHearth = accessorySlug === "kentucky" || accessorySlug === "brown";
     const hearthBase = legacyHearth
@@ -1354,11 +1227,19 @@ if (products.length !== 122)
 
 if (!process.argv.includes("--catalog-only")) {
   const onlyId = process.argv.find((argument) => argument.startsWith("--only="))?.slice(7);
+  const fromId = process.argv.find((argument) => argument.startsWith("--from="))?.slice(7);
+  if (onlyId && fromId) throw new Error("Use either --only or --from, not both");
+  const fromIndex = fromId
+    ? products.findIndex((product) => (product as { id: string }).id === fromId)
+    : -1;
   const assetProducts = onlyId
     ? products.filter((product) => (product as { id: string }).id === onlyId)
-    : products;
+    : fromId
+      ? products.slice(fromIndex)
+      : products;
   if (onlyId && assetProducts.length !== 1)
     throw new Error(`Unknown Centurion product: ${onlyId}`);
+  if (fromId && fromIndex < 0) throw new Error(`Unknown Centurion product: ${fromId}`);
   // Texture quilting is intentionally memory-heavy; serialize asset construction so
   // the full 122-swatch release is deterministic on showroom/developer hardware.
   const concurrency = 1;
@@ -1370,6 +1251,12 @@ if (!process.argv.includes("--catalog-only")) {
           id: string;
           assets: { sourceUrl: string }[];
         };
+        if (product.id === "kentucky-ledge" || product.id === "brown-ledge") {
+          process.stdout.write(
+            `Protected ${cursor}/${assetProducts.length} ${product.id} approved master\n`,
+          );
+          continue;
+        }
         process.stdout.write(`Preparing ${cursor}/${assetProducts.length} ${product.id}\n`);
         await writeWallAssets(
           product.id,
@@ -1379,34 +1266,6 @@ if (!process.argv.includes("--catalog-only")) {
       }
     }),
   );
-}
-
-const aspectRatiosByPattern = new Map<string, number[]>();
-for (const product of products as Array<{
-  id: string;
-  patternName: string;
-  textureCoverage: { width: number; height: number };
-}>) {
-  const sourcePath = path.join(sourceDirectory, `${product.id}.source`);
-  const metadata = await sharp(await readFile(sourcePath))
-    .rotate()
-    .metadata();
-  if (!metadata.width || !metadata.height)
-    throw new Error(`Official Centurion swatch dimensions are missing: ${product.id}`);
-  const ratios = aspectRatiosByPattern.get(product.patternName) ?? [];
-  ratios.push((metadata.height * 0.88) / metadata.width);
-  aspectRatiosByPattern.set(product.patternName, ratios);
-}
-for (const product of products as Array<{
-  id: string;
-  patternName: string;
-  textureCoverage: { width: number; height: number };
-}>) {
-  const physicalWidth = sourceFieldWidthByProductId.get(product.id)!;
-  const ratios = [...aspectRatiosByPattern.get(product.patternName)!].sort((a, b) => a - b);
-  const medianRatio = ratios[Math.floor(ratios.length / 2)]!;
-  product.textureCoverage.width = physicalWidth;
-  product.textureCoverage.height = Number((physicalWidth * medianRatio).toFixed(3));
 }
 
 const hearthSources = new Map<string, string>();

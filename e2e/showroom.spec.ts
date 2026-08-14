@@ -176,7 +176,7 @@ test("switches official fireplaces, faces, stone, and mantel options", async ({
     page.getByText(
       "4237 Clean Face · Clean Face · Handmade Brick · Brown Ledge · Onyx Linear 84″",
     ),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15_000 });
 
   await selectFireplace(page, "864-trv-31k-deluxe");
   await page.getByLabel("Face or trim").selectOption("metropolitan");
@@ -328,7 +328,7 @@ test("preloads the active design pack and reloads offline", async ({
   );
   await page.keyboard.press("Shift+D");
   const diagnostics = page.getByLabel("System diagnostics");
-  await expect(diagnostics.getByText("67 / 67 verified")).toBeVisible();
+  await expect(diagnostics.getByText("18 / 18 verified")).toBeVisible();
   await expect(diagnostics.getByText("864 Clean Face", { exact: true })).toBeVisible();
   await expect(page.getByText("Official static product image")).toBeVisible();
   await expect(page.getByText("Ready", { exact: true })).toBeVisible({

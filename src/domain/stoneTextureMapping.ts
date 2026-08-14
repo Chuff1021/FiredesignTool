@@ -11,9 +11,9 @@ export type StoneTextureTransform = {
 };
 
 /**
- * Maps a physically sized surface into a manufacturer-calibrated stone atlas.
- * The atlas is centered so the feature-wall and customer-room renderers begin
- * on the same courses, while values above one repeat its mirrored, seamless edges.
+ * Maps a physically sized surface into a manufacturer-calibrated installed-wall
+ * atlas. Every approved atlas covers 192 x 144 inches, so normal showroom walls
+ * sample one continuous field without mirrored seams or repeated symmetry.
  */
 export function centeredStoneTextureTransform(
   surfaceWidth: number,

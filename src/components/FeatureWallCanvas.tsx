@@ -8,7 +8,6 @@ import {
   ClampToEdgeWrapping,
   LinearFilter,
   LinearMipmapLinearFilter,
-  MirroredRepeatWrapping,
   SRGBColorSpace,
   TextureLoader,
   type Group,
@@ -257,7 +256,7 @@ function FeatureWall({
       stone.textureCoverage,
     );
     for (const texture of [color, bump]) {
-      texture.wrapS = texture.wrapT = MirroredRepeatWrapping;
+      texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
       texture.repeat.set(transform.repeatX, transform.repeatY);
       texture.offset.set(transform.offsetX, transform.offsetY);
       texture.needsUpdate = true;
@@ -309,7 +308,7 @@ function FeatureWall({
       stone.textureCoverage,
     );
     for (const texture of [color, bump]) {
-      texture.wrapS = texture.wrapT = MirroredRepeatWrapping;
+      texture.wrapS = texture.wrapT = ClampToEdgeWrapping;
       texture.repeat.set(transform.repeatX, transform.repeatY);
       texture.offset.set(transform.offsetX, transform.offsetY);
       texture.needsUpdate = true;

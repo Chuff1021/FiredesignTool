@@ -20,8 +20,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.306,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -95,8 +95,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.306,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -170,8 +170,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.306,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -245,8 +245,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 43.2,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -320,8 +320,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 43.2,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -393,8 +393,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 43.2,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -468,8 +468,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2.25,
     },
     textureCoverage: {
-      width: 40,
-      height: 40.085,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -543,8 +543,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2.25,
     },
     textureCoverage: {
-      width: 40,
-      height: 40.085,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -616,8 +616,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2.25,
     },
     textureCoverage: {
-      width: 40,
-      height: 40.085,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -691,8 +691,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2.25,
     },
     textureCoverage: {
-      width: 40,
-      height: 40.085,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -766,8 +766,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2.25,
     },
     textureCoverage: {
-      width: 40,
-      height: 40.085,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -841,8 +841,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2.25,
     },
     textureCoverage: {
-      width: 40,
-      height: 40.085,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -914,8 +914,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -987,8 +987,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1062,8 +1062,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 2,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1135,8 +1135,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1208,8 +1208,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1283,8 +1283,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1356,8 +1356,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1429,8 +1429,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1504,8 +1504,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 48,
-      height: 31.68,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1577,8 +1577,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 72,
-      height: 47.52,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1651,8 +1651,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 72,
-      height: 47.52,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1726,8 +1726,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 72,
-      height: 47.52,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1797,8 +1797,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 72,
-      height: 47.52,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1870,8 +1870,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 66.71,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -1944,8 +1944,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 66.71,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2018,8 +2018,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.123,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2091,8 +2091,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.123,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2167,8 +2167,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.123,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2242,8 +2242,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.5,
     },
     textureCoverage: {
-      width: 36,
-      height: 31.418,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2318,8 +2318,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.5,
     },
     textureCoverage: {
-      width: 36,
-      height: 31.418,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2394,8 +2394,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.5,
     },
     textureCoverage: {
-      width: 36,
-      height: 31.418,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2469,8 +2469,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.5,
     },
     textureCoverage: {
-      width: 36,
-      height: 31.418,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2545,8 +2545,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11.5,
     },
     textureCoverage: {
-      width: 36,
-      height: 31.418,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2618,8 +2618,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 10.5,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.536,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2694,8 +2694,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 10.5,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.536,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2767,8 +2767,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 10.5,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.536,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2843,8 +2843,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 15.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 46.243,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2916,8 +2916,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.8,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -2991,8 +2991,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.8,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3066,8 +3066,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.508,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3139,8 +3139,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.508,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3212,8 +3212,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.508,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3285,8 +3285,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.508,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3360,8 +3360,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.508,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3433,8 +3433,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.508,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3507,8 +3507,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.508,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3580,8 +3580,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 1.75,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3653,8 +3653,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 1.75,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3726,8 +3726,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 1.75,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3799,8 +3799,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 1.75,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3872,8 +3872,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 1.75,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -3948,8 +3948,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 1.75,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4022,8 +4022,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 20,
     },
     textureCoverage: {
-      width: 72,
-      height: 64.901,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4095,8 +4095,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 20,
     },
     textureCoverage: {
-      width: 72,
-      height: 64.901,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4168,8 +4168,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 18.75,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.654,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4241,8 +4241,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 18.75,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.654,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4316,8 +4316,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 18.75,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.654,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4389,8 +4389,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 18.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.24,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4464,8 +4464,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.24,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4537,8 +4537,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.24,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4612,8 +4612,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 84,
-      height: 77.52,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4685,8 +4685,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 84,
-      height: 77.52,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4760,8 +4760,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 72,
-      height: 61.949,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4835,8 +4835,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 72,
-      height: 61.949,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4908,8 +4908,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 72,
-      height: 61.949,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -4981,19 +4981,19 @@ export const generatedCenturionStoneProducts = [
       heightMax: 3,
     },
     textureCoverage: {
-      width: 96,
-      height: 84.018,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
-        localPath: "/assets/centurion/kentucky-ledge.webp",
+        localPath: "/assets/centurion-kentucky-ledge.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Kentucky-Ledge-Swatch-scaled.jpg",
         retrievedAt: "2026-08-13",
         label: "Official Centurion Kentucky Ledge showroom texture",
       },
       {
-        localPath: "/assets/centurion/kentucky-ledge-bump.webp",
+        localPath: "/assets/centurion-kentucky-ledge-bump.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Kentucky-Ledge-Swatch-scaled.jpg",
         retrievedAt: "2026-08-13",
@@ -5054,19 +5054,19 @@ export const generatedCenturionStoneProducts = [
       heightMax: 3,
     },
     textureCoverage: {
-      width: 96,
-      height: 84.018,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
-        localPath: "/assets/centurion/brown-ledge.webp",
+        localPath: "/assets/centurion-brown-ledge.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp",
         retrievedAt: "2026-08-13",
         label: "Official Centurion Brown Ledge showroom texture",
       },
       {
-        localPath: "/assets/centurion/brown-ledge-bump.webp",
+        localPath: "/assets/centurion-brown-ledge-bump.webp",
         sourceUrl:
           "https://www.centurionstone.com/wp-content/uploads/2024/03/Brown_Ledge_Swatch.webp",
         retrievedAt: "2026-08-13",
@@ -5127,8 +5127,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 3,
     },
     textureCoverage: {
-      width: 96,
-      height: 84.018,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5202,8 +5202,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 3,
     },
     textureCoverage: {
-      width: 96,
-      height: 84.018,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5277,8 +5277,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 3,
     },
     textureCoverage: {
-      width: 96,
-      height: 84.018,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5350,8 +5350,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 3,
     },
     textureCoverage: {
-      width: 96,
-      height: 84.018,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5425,8 +5425,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 3,
     },
     textureCoverage: {
-      width: 96,
-      height: 84.018,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5498,8 +5498,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 12,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.8,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5573,8 +5573,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 61.103,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5648,8 +5648,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5724,8 +5724,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5799,8 +5799,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5872,8 +5872,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -5945,8 +5945,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.5,
     },
     textureCoverage: {
-      width: 48,
-      height: 35.143,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6019,8 +6019,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.5,
     },
     textureCoverage: {
-      width: 48,
-      height: 35.143,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6094,8 +6094,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.5,
     },
     textureCoverage: {
-      width: 48,
-      height: 35.143,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6167,8 +6167,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.5,
     },
     textureCoverage: {
-      width: 48,
-      height: 35.143,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6240,8 +6240,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 72,
-      height: 47.52,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6313,8 +6313,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13.5,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.045,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6386,8 +6386,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13.5,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.045,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6460,8 +6460,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13.5,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.045,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6535,8 +6535,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13,
     },
     textureCoverage: {
-      width: 72,
-      height: 57.785,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6610,8 +6610,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13,
     },
     textureCoverage: {
-      width: 72,
-      height: 57.785,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6685,8 +6685,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13,
     },
     textureCoverage: {
-      width: 72,
-      height: 57.785,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6758,8 +6758,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13,
     },
     textureCoverage: {
-      width: 72,
-      height: 57.785,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6833,8 +6833,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 11,
     },
     textureCoverage: {
-      width: 72,
-      height: 62.794,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6909,8 +6909,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 15,
     },
     textureCoverage: {
-      width: 48,
-      height: 41.958,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -6984,8 +6984,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 15,
     },
     textureCoverage: {
-      width: 48,
-      height: 41.958,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7059,8 +7059,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 15,
     },
     textureCoverage: {
-      width: 48,
-      height: 41.958,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7132,8 +7132,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.162,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7205,8 +7205,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.162,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7280,8 +7280,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.162,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7353,8 +7353,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.162,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7428,8 +7428,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.162,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7501,8 +7501,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 8.75,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.162,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7574,8 +7574,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.364,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7647,8 +7647,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.364,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7720,8 +7720,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.364,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7793,8 +7793,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.364,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7868,8 +7868,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 6,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.364,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -7943,8 +7943,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.8,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8019,8 +8019,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 5.5,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.8,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8092,8 +8092,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.045,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8167,8 +8167,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.045,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8242,8 +8242,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 13,
     },
     textureCoverage: {
-      width: 48,
-      height: 42.045,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8315,8 +8315,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.408,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8390,8 +8390,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.408,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8465,8 +8465,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.408,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8540,8 +8540,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.408,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8613,8 +8613,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.408,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8686,8 +8686,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 4,
     },
     textureCoverage: {
-      width: 60,
-      height: 52.408,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8759,8 +8759,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 22,
     },
     textureCoverage: {
-      width: 54,
-      height: 45.144,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8834,8 +8834,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 12,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.36,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8907,8 +8907,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 7,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.137,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
@@ -8982,8 +8982,8 @@ export const generatedCenturionStoneProducts = [
       heightMax: 7,
     },
     textureCoverage: {
-      width: 72,
-      height: 63.137,
+      width: 192,
+      height: 144,
     },
     assets: [
       {
