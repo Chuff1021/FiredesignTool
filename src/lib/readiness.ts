@@ -37,7 +37,10 @@ export function detectGraphicsSupport(): GraphicsSupport {
   const canvas = document.createElement("canvas");
   const options: WebGLContextAttributes = {
     antialias: true,
-    failIfMajorPerformanceCaveat: true,
+    // A valid software or integrated-GPU context is an intentional fallback.
+    // Rejecting it here can leave Chromium/WebKit waiting inside getContext()
+    // instead of reaching the diagnostics panel that reports reduced graphics.
+    failIfMajorPerformanceCaveat: false,
     powerPreference: "high-performance",
   };
 

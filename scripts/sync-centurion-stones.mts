@@ -862,7 +862,12 @@ async function makeFoundationAtlas(
  * Overlapping source patches are selected by edge similarity, preserving the real
  * stone scale without the kaleidoscope seams produced by full-image mirroring.
  */
-async function makeAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: string) {
+async function makeAtlas(
+  sourceBuffer: Buffer,
+  sourceFieldWidth: number,
+  seed: string,
+  preferMortarSeams = false,
+) {
   const rotated = await sharp(sourceBuffer).rotate().toBuffer();
   const metadata = await sharp(rotated).metadata();
   if (!metadata.width || !metadata.height) throw new Error("Invalid Centurion swatch image");
@@ -936,6 +941,26 @@ async function makeAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: s
     return difference;
   };
 
+  const seamCost = (outputPixel: number, sourcePixel: number) => {
+    const difference = pixelDifference(outputPixel, sourcePixel);
+    if (!preferMortarSeams) return difference;
+    const outputOffset = outputPixel * channels;
+    const sourceOffset = sourcePixel * channels;
+    const outputLuma =
+      target[outputOffset]! * 0.2126 +
+      target[outputOffset + 1]! * 0.7152 +
+      target[outputOffset + 2]! * 0.0722;
+    const sourceLuma =
+      source[sourceOffset]! * 0.2126 +
+      source[sourceOffset + 1]! * 0.7152 +
+      source[sourceOffset + 2]! * 0.0722;
+    // Castle swatches contain the real installed mortar network. Make the
+    // minimum-error cut travel through matching dark joints instead of slicing
+    // across photographed stone faces, which is what caused the fake black lines.
+    const jointPenalty = Math.max(outputLuma, sourceLuma) ** 2 * 2.4;
+    return difference + jointPenalty;
+  };
+
   const verticalSeam = (
     targetX: number,
     targetY: number,
@@ -958,7 +983,7 @@ async function makeAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: s
         }
         backtrack[y * overlapWidth + x] = predecessor;
         current[x] =
-          pixelDifference(outputPixel, sourcePixel) + (y === 0 ? 0 : previous[predecessor]!);
+          seamCost(outputPixel, sourcePixel) + (y === 0 ? 0 : previous[predecessor]!);
       }
       [previous, current] = [current, previous];
     }
@@ -994,7 +1019,7 @@ async function makeAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: s
         }
         backtrack[x * overlapHeight + y] = predecessor;
         current[y] =
-          pixelDifference(outputPixel, sourcePixel) + (x === 0 ? 0 : previous[predecessor]!);
+          seamCost(outputPixel, sourcePixel) + (x === 0 ? 0 : previous[predecessor]!);
       }
       [previous, current] = [current, previous];
     }
@@ -1066,14 +1091,31 @@ async function makeAtlas(sourceBuffer: Buffer, sourceFieldWidth: number, seed: s
 async function writeWallAssets(id: string, sourceUrl: string, sourceFieldWidth: number) {
   const sourceBuffer = await fetchBuffer(sourceUrl);
   await writeFile(path.join(sourceDirectory, `${id}.source`), sourceBuffer);
+  const isBucksCountyCastle = id === "bucks-county-centurion-castle";
   const generatedAtlas = id.endsWith("-brick-stone")
     ? await makeBrickAtlas(sourceBuffer, sourceFieldWidth, id)
     : id.endsWith("-foundation")
       ? await makeFoundationAtlas(sourceBuffer, sourceFieldWidth, id)
-      : await makeAtlas(sourceBuffer, sourceFieldWidth, id);
-  const colorAtlas = await normalizeBroadHorizontalLighting(
+      : await makeAtlas(
+          sourceBuffer,
+          // Calibrated from the published 5.5, 8.5, and 11.5-inch pieces in
+          // this exact official swatch rather than the old generic 36-inch guess.
+          isBucksCountyCastle ? 43 : sourceFieldWidth,
+          id,
+          isBucksCountyCastle,
+        );
+  const normalizedAtlas = await normalizeBroadHorizontalLighting(
     await normalizeBroadVerticalLighting(generatedAtlas),
   );
+  const colorAtlas = isBucksCountyCastle
+    ? await sharp(normalizedAtlas)
+        // The isolated swatch was photographed under much harder, warmer light
+        // than the full Centurion jobsite reference. Bring the showroom material
+        // into that installed range without inventing or recoloring stone faces.
+        .modulate({ brightness: 0.82, saturation: 0.78 })
+        .png()
+        .toBuffer()
+    : normalizedAtlas;
   await Promise.all([
     sharp(colorAtlas)
       .webp({ quality: 82, smartSubsample: true, effort: 5 })
